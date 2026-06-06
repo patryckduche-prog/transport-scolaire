@@ -18,12 +18,18 @@ import passengerRoutes from './routes/passenger.routes.js';
 import publicRoutes from './routes/public.routes.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
+const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
 const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
 app.use('/code-generator', express.static(path.join(publicDir, 'code-generator')));
+app.get('/download/bus-scolaire-connect.apk', (_, res) => {
+  res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+  res.setHeader('Content-Disposition', 'attachment; filename="bus-scolaire-connect.apk"');
+  res.download(apkPath, 'bus-scolaire-connect.apk');
+});
 app.use('/download', express.static(path.join(publicDir, 'download')));
 app.get('/', (_, res) =>
   res.json({

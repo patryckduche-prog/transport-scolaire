@@ -21,6 +21,7 @@ const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../pu
 const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
 const appVersion = '1.0.10';
 const app = express();
+app.set('trust proxy', true);
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
@@ -50,7 +51,10 @@ app.get('/', (_, res) =>
 );
 app.get('/health', (_, res) => res.json({ ok: true, name: 'Bus Scolaire Connect API' }));
 app.get('/api/app-version', (req, res) => {
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const host = req.get('host');
+  const local = host?.startsWith('localhost') || host?.startsWith('127.0.0.1');
+  const protocol = local ? req.protocol : 'https';
+  const baseUrl = `${protocol}://${host}`;
   res.json({
     latestVersion: appVersion,
     minSupportedVersion: '1.0.9',

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/user.dart';
 import '../services/api_service.dart';
@@ -22,6 +23,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  static const currentAppVersion =
+      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.9');
+
   final driverCode = TextEditingController(text: 'AUMALE-2026');
   final adminEmail = TextEditingController(text: 'entreprise@demo.local');
   final adminPassword = TextEditingController(text: 'demo1234');
@@ -49,6 +53,76 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     loadAlerts();
+    WidgetsBinding.instance.addPostFrameCallback((_) => checkForUpdate());
+  }
+
+  bool isNewerVersion(String latest, String current) {
+    final latestParts =
+        latest.split('.').map((part) => int.tryParse(part) ?? 0).toList();
+    final currentParts =
+        current.split('.').map((part) => int.tryParse(part) ?? 0).toList();
+    final maxLength = latestParts.length > currentParts.length
+        ? latestParts.length
+        : currentParts.length;
+    for (var index = 0; index < maxLength; index++) {
+      final latestValue = index < latestParts.length ? latestParts[index] : 0;
+      final currentValue =
+          index < currentParts.length ? currentParts[index] : 0;
+      if (latestValue > currentValue) return true;
+      if (latestValue < currentValue) return false;
+    }
+    return false;
+  }
+
+  Future<void> checkForUpdate() async {
+    try {
+      final version = await context.read<ApiService>().getAppVersion();
+      if (!mounted) return;
+
+      final latestVersion = version['latestVersion'] as String? ?? '';
+      final apkUrl = version['apkUrl'] as String? ?? '';
+      final title =
+          version['title'] as String? ?? 'Nouvelle version disponible';
+      final message = version['message'] as String? ??
+          'Une nouvelle version de Bus Scolaire Connect est disponible.';
+      if (latestVersion.isEmpty ||
+          apkUrl.isEmpty ||
+          !isNewerVersion(latestVersion, currentAppVersion)) {
+        return;
+      }
+
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: version['mandatory'] != true,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(title),
+          content: Text(
+              '$message\n\nVersion installee : $currentAppVersion\nNouvelle version : $latestVersion'),
+          actions: [
+            if (version['mandatory'] != true)
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Plus tard'),
+              ),
+            FilledButton.icon(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                final uri = Uri.parse(apkUrl);
+                final opened =
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                if (!mounted || opened) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Impossible d ouvrir le telechargement.')),
+                );
+              },
+              icon: const Icon(Icons.download_outlined),
+              label: const Text('Telecharger'),
+            ),
+          ],
+        ),
+      );
+    } catch (_) {}
   }
 
   Future<void> loadAlerts() async {

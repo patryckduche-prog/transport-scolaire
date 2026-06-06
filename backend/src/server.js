@@ -19,6 +19,7 @@ import publicRoutes from './routes/public.routes.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
 const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
+const appVersion = '1.0.10';
 const app = express();
 app.use(helmet());
 app.use(cors());
@@ -48,6 +49,18 @@ app.get('/', (_, res) =>
   }),
 );
 app.get('/health', (_, res) => res.json({ ok: true, name: 'Bus Scolaire Connect API' }));
+app.get('/api/app-version', (req, res) => {
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  res.json({
+    latestVersion: appVersion,
+    minSupportedVersion: '1.0.9',
+    apkUrl: `${baseUrl}/download/bus-scolaire-connect.apk`,
+    downloadPageUrl: `${baseUrl}/download/`,
+    title: 'Nouvelle version disponible',
+    message: 'Une nouvelle version de Bus Scolaire Connect est prete. Telechargez-la pour profiter des dernieres corrections.',
+    mandatory: false,
+  });
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/driver-codes', driverCodeRoutes);
 app.use('/api/public', publicRoutes);

@@ -64,6 +64,9 @@ class ApiService {
   Future<Map<String, dynamic>> dashboard() async =>
       (await _dio.get('/reports/dashboard')).data as Map<String, dynamic>;
 
+  Future<Map<String, dynamic>> getAppVersion() async =>
+      (await _dio.get('/app-version')).data as Map<String, dynamic>;
+
   Future<List<dynamic>> getPublicAlerts() async =>
       ((await _dio.get('/public/alerts')).data['alerts'] as List<dynamic>);
 

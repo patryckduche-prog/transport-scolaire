@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bus Scolaire Connect - Test Android</title>
+    <style>
+      :root {
+        --brand: #0f6f78;
+        --ink: #132326;
+        --muted: #5c6f74;
+        --panel: #f4f9f9;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: #eef4f5;
+        color: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      main {
+        width: min(720px, 100%);
+        padding: 26px;
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 10px 28px rgba(0,0,0,.10);
+        text-align: center;
+      }
+      h1 { margin: 0 0 8px; font-size: 32px; }
+      p { color: var(--muted); line-height: 1.5; }
+      .qr {
+        width: 240px;
+        height: 240px;
+        margin: 18px auto;
+        padding: 10px;
+        border-radius: 8px;
+        background: white;
+      }
+      a.button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 22px;
+        border-radius: 8px;
+        background: var(--brand);
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .links {
+        display: grid;
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border: 1px solid #c7d7da;
+        border-radius: 8px;
+        background: white;
+        color: var(--ink);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      code {
+        display: block;
+        margin-top: 16px;
+        padding: 12px;
+        border-radius: 8px;
+        background: white;
+        word-break: break-all;
+      }
+      .note {
+        margin-top: 14px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Bus Scolaire Connect</h1>
+      <p><strong>Version test 1.0.5</strong> - retour arriere protege, choix ligne conducteur, parcours arrets et GPS serveur.</p>
+      <p>Scannez le QR code avec un téléphone Android, ou ouvrez le lien direct ci-dessous.</p>
+      <img class="qr" alt="QR code de téléchargement" src="./qr-code.png">
+      <p><a class="button" href="./bus-scolaire-connect.apk" download>Télécharger Android récent</a></p>
+      <div class="links">
+        <a class="secondary" href="./bus-scolaire-connect-ancien-android.apk" download>Ancien téléphone Android</a>
+        <a class="secondary" href="./bus-scolaire-connect-tablette-emulateur.apk" download>Tablette ou émulateur x86</a>
+      </div>
+      <code>https://wondering-schemes-newton-mph.trycloudflare.com/download/bus-scolaire-connect.apk</code>
+      <p class="note">Lien temporaire : gardez ce PC allumé pendant les tests.</p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+if (file("google-services.json").exists()) {
+    apply plugin: "com.google.gms.google-services"
+}
+
+android {
+    namespace "fr.busscolaireconnect.mobile"
+    compileSdk 36
+    ndkVersion "28.2.13676358"
+
+    defaultConfig {
+        applicationId "fr.busscolaireconnect.mobile"
+        minSdkVersion flutter.minSdkVersion
+        targetSdk 36
+        versionCode 4003
+        versionName "1.0.5"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("bus-scolaire-connect-test.jks")
+            storePassword "BusScolaireConnect2026!"
+            keyAlias "bus_scolaire_connect"
+            keyPassword "BusScolaireConnect2026!"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.5"
+}
+
+kotlin {
+    jvmToolchain(21)
+}
+
+flutter { source "../.." }

@@ -1,0 +1,525 @@
+5017 - LYCÉES NEUFCHÂTEL
+Validité à partir du 01/09/2025
+ALLER
+132 1 jour --Me---- Période Scolaire (hors JF) Dynamique : Non Non Non Oui Non Non Non Non Non Non Non Non Non Non Non Non Non
+415 4 jours LuMa-JeVe-- Période Scolaire (hors JF) Dynamique : Non Non Non Non Oui Non Non Non Non Non Non Non Non Non Oui Oui Non
+513 5 jours LuMaMeJeVe-- Période Scolaire (hors JF) Dynamique : Oui Oui Oui Non Non Oui Oui Oui Oui Oui Oui Oui Oui Oui Non Non Oui
+Nota A A
+Itinéraires 5017A1 5017B9 5017C5 5017G8 5017G6 5017C9 5017D4 5017D6 5017C8 5017D5 5017H7 5017D3 5017H6 5017D0 5017C1 5017H5 5017A2
+Services 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+CP Commune Point d'arrêt LMMeJV-- LMMeJV-- LMMeJV-- --Me---- LM-JV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LM-JV-- LM-JV-- LMMeJV--
+76340 SAINT-MARTIN-AU-BOSC D26 Abribus 06:19
+76340 HODENG-AU-BOSC Centre 06:30
+76340 NESLE-NORMANDEUSE Place 06:38
+76340 PIERRECOURT École 06:42
+76340 CAMPNEUSEVILLE Le Puits 06:53
+Place 06:55
+76340 DANCOURT Béthencourt 07:13 07:17
+Saint-Rémy - Le Buisson 07:16 07:20
+Les Hauts de Saint-Rémy 07:18 07:22
+Centre 07:21 07:25
+76340 SAINT-RIQUIER-EN-RIVIERE Place de la Mairie 07:23 07:26
+Mont Cailleux 07:28
+76340 FALLENCOURT Centre (Route de Criel) 07:25 07:32
+76340 FOUCARMONT Place des Cateliers (École) 07:29
+76510 SAINT-NICOLAS-D'ALIERMONT Place de la Mairie 07:05
+Bout d'Amont 07:08
+76510 NOTRE-DAME-D'ALIERMONT Salle des Fêtes 07:10
+76660 SAINTE-AGATHE-D'ALIERMONT Route de Saint-Vaast 07:15
+École 07:17
+Rue de Normandie, n° 79 07:19
+76660 MESNIL-FOLLEMPRISE Carrefour D298 x D12 07:20
+Foyer Rural 07:24
+Henri IV 07:25
+76660 OSMOY-SAINT-VALERY Les Bosquets 07:27
+Maintru 07:35
+Le Hamel 07:36
+École 07:37
+76660 BURES-EN-BRAY Foyer Rural 07:41
+Le Pont 07:43
+76660 CROIXDALLE L'Auge de Beauval 07:50
+Le Val Mesneret 07:55
+Mairie / École 07:22
+76660 BAILLEUL-NEUVILLE Bailleul 07:15 07:34
+Centre 07:36
+Maison Poyer 07:38
+76660 BAILLOLET Queue du Hellet 07:43
+Centre 07:48
+Garage 07:53
+76660 FREAUVILLE Rte de Neufchâtel 08:00
+76660 CLAIS Mairie / École 07:22
+Hambures 07:27
+76660 SMERMESNIL Château 07:31
+École Mairie 07:35
+La Leuqueue 07:37
+Lignemare 07:41
+76660 SAINT-PIERRE-DES-JONQUIERES Houppelande 07:45
+Mairie / École 07:49
+Parfondeval 07:53
+76660 LONDINIERES Collège Paul-Henri Cahingt 08:02 08:05 07:58 08:05
+Rue du Pont de Pierre 08:07
+76270 VATIERVILLE Brémont Mairie 07:28
+76270 SAINTE-BEUVE-EN-RIVIERE L'Épinay 07:35
+Mairie / École 07:37
+76270 SAINT-GERMAIN-SUR-EAULNE Mairie École 07:40
+Le Tilleul 07:42
+Le Merisier des Bois 07:31
+76390 LE CAULE-SAINTE-BEUVE Route des Mésanges 07:34
+76270 AUVILLIERS Église 07:36
+76270 FLAMETS-FRETILS Les Frétils 07:38
+Centre 07:42
+76270 MORTEMER Mairie 07:45
+76270 GRAVAL Centre 07:48
+76270 NESLE-HODENG Chemin de Torcy 07:17
+Mairie / École 07:27
+Patte d'Oie 07:30
+La Mare aux Daims 07:52
+La Montagne 07:56
+76270 BOUELLES Cornemesnil 07:59
+76270 SAINT-GERMAIN-SUR-EAULNE Plateau de la Mare 08:02
+76270 SAINT-SAIRE Passage à Niveau n° 70 (Avenue Verte) 07:31
+Mairie / École 07:34
+La Huchonne - Calvaire 07:30
+La Huchonne 07:32
+Le Guide 07:36
+Salle des Fêtes 07:38
+La Croix des Cloutiers 07:40
+Route des Mazis 07:42
+La Croix des Mazis 07:44
+76270 QUIEVRECOURT Cité Caron 07:31
+76270 ESCLAVELLES Mont Edeline 07:33
+Beau Séjour 07:35
+Les Hayons 07:54
+La Folie, n° 5 07:35
+La Folie n° 17 07:37
+76270 BULLY Martincamp 07:38
+La Tremblay 07:40
+Le Passe-Temps 07:43
+La Cressonnière 07:46
+Mairie 07:50
+Le Quesnay 07:55
+76270 QUIEVRECOURT Route de Bully, n° 20 07:58
+Mairie 08:00
+Le Four Rouge 07:30
+La Ceriseraie 07:32
+76270 MASSY Brémontier 07:40
+Le Quesnay 07:43
+Mairie / École 07:46
+Route de Fontaine 07:49
+76440 FONTAINE-EN-BRAY Mairie / École 07:52
+Carrefour (D1 x D119) 07:54
+Chemin de la Plaine 07:59
+76270 BOUELLES Centre 07:40
+Rue du Bourg 07:42
+Les Thuyas 07:44
+76270 NEUVILLE-FERRIERES L'Épinette 07:48
+La Houpperie 08:02
+Les Quesnets 07:48
+Carrefour du Mont Jean 07:49
+Mairie / École 07:51
+Les Prés du Centre 07:52
+76270 VATIERVILLE Pisciculture 07:45
+76270 MENONVAL Mairie 07:46
+La Broche 07:49
+76270 FRESLES Le Haut de Fresles 07:43
+Village 07:47
+76270 SAINT-MARTIN-L'HORTIER Croix au Guet 07:52
+Hameau le Village 07:55
+Mairie 07:56
+Aulage 07:59
+76270 MESNIERES-EN-BRAY Isembertheville 07:38
+Les Mesnerettes 07:40
+Hameau de Rambure 07:54
+Mairie / École 07:44 07:56
+Autrecourt 07:50
+Grand Hattehoule 07:52
+76440 FORGES-LES-EAUX FORGES-LES-EAUX_Lycée E. Delamare / Collège A. de Saint-Exupéry 07:35 07:42
+76440 SERQUEUX Gare 07:45
+76270 NEUFCHATEL-EN-BRAY Lycée Georges Brassens 08:00 08:27 08:10 08:15
+Parking des Tilleuls (Collège Albert Schweitzer) 07:55 07:58 08:00 08:00 08:05 08:06 08:07 08:10 08:15 08:20 08:25
+Nota
+A : Correspondance vers Établissements Neufchâtel-en-Bray
+RETOUR
+132 1 jour --Me---- Période Scolaire (hors JF) Dynamique : Oui Oui Oui Oui Oui Oui Oui Non Non Non Non Non Non Non Non Oui Oui Non Non Oui Oui Non Non Oui Non Oui Non Oui Oui Oui Oui Non Oui Non Oui Oui Oui Oui Non Non Oui Non Non Non Non Non Non Non Non Oui Non
+415 4 jours LuMa-JeVe-- Période Scolaire (hors JF) Dynamique : Non Non Non Non Non Non Non Oui Oui Oui Oui Oui Oui Oui Oui Non Non Oui Oui Non Non Oui Oui Non Oui Non Oui Non Non Non Non Oui Non Oui Non Non Non Non Oui Oui Non Non Oui Oui Oui Oui Oui Oui Oui Non Oui
+513 5 jours LuMaMeJeVe-- Période Scolaire (hors JF) Dynamique : Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Non Oui Non Non Non Non Non Non Non Non Non
+Nota B A
+Itinéraires 5017A3 5017A0 5017E8 5017F1 5017E5 5017E3 5017D8 5017F1 5017E9 5017E5 5017E3 5017D8 5017F3 5017F0 5017E6 5017E4 5017E3 5017E2 5017D9 5017F1 5017E0 5017F2 5017E7 5017D8 5017E1 5017A7 5017H9 5017G5 5017F7 5017B6 5017B0 5017B4 5017A6 5017C4 5017G3 5017G0 5017C6 5017C0 5017B1 5017B0 5017G2 5017A5 5017B2 5017G1 5017F9 5017F8 5017C2 5017B8 5017F6 5017G9 5017G7
+Services 1 1 1 2 2 3 3 1 1 1 1 2 1 1 1 1 2 1 1 3 1 1 2 1 1 1 1 1 1 1 2 1 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+CP Commune Point d'arrêt --Me---- --Me---- --Me---- --Me---- --Me---- --Me---- --Me---- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- --Me---- --Me---- LM-JV-- LM-JV-- --Me---- --Me---- LM-JV-- LM-JV-- --Me---- LM-JV-- --Me---- LM-JV-- --Me---- --Me---- --Me---- --Me---- LM-JV-- --Me---- LM-JV-- --Me---- --Me---- --Me---- --Me---- LM-JV-- LM-JV-- --Me---- LMMeJV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- --Me---- LM-JV--
+76340 FOUCARMONT Place des Cateliers (École) 17:55
+76340 FALLENCOURT Centre (Route de Criel) 18:00 18:10
+76340 SAINT-RIQUIER-EN-RIVIERE Mont Cailleux 18:14
+Place de la Mairie 18:03 18:19
+76340 DANCOURT Centre 18:06 18:23
+Les Hauts de Saint-Rémy 18:25
+Saint-Rémy - Le Buisson 18:28
+Béthencourt 18:08 18:30
+76340 CAMPNEUSEVILLE Place 18:26
+Le Puits 18:29
+76340 PIERRECOURT École 18:40
+76340 NESLE-NORMANDEUSE Place 18:44
+76340 HODENG-AU-BOSC Centre 18:53
+76270 NEUFCHATEL-EN-BRAY Lycée Georges Brassens 13:35 13:40 13:40 13:40 13:40 16:40 17:30 17:35 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:45 17:45 17:45 17:45 17:45 17:50
+Parking des Tilleuls (Collège Albert Schweitzer) 12:40 12:40 12:40 12:40 12:40 16:40 16:40 16:40 16:40 16:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40 17:40
+Lycée Georges Brassens 17:45
+76270 QUIEVRECOURT Le Four Rouge 12:44 16:44 17:44 17:48
+La Ceriseraie 12:45 16:45 17:45 17:50
+Mairie 16:43 17:44 17:47
+Cité Caron 16:44 17:45 17:49
+76270 ESCLAVELLES Mont Edeline 12:47 16:47 17:47 17:53
+Beau Séjour 12:51 16:51 17:51 17:55
+Les Hayons 12:56 16:56 17:56 17:55
+La Folie n° 17 16:47 17:49
+La Folie, n° 5 16:48 17:51 17:54
+76270 BULLY Martincamp 13:00 17:00 18:00 17:59
+La Tremblay 16:51 17:54
+Le Passe-Temps 16:52 17:56
+La Cressonnière 17:58
+76270 FRESLES Le Haut de Fresles 13:04 17:04 18:04 18:02
+Village 16:54 18:00 18:06
+76270 MESNIERES-EN-BRAY Grand Hattehoule 12:44
+Autrecourt 12:47
+Isembertheville 12:48
+Les Mesnerettes 12:49
+Mairie / École 12:50
+Hameau de Rambure 12:51 16:58 18:04
+Mairie / École 17:02 18:06
+Les Mesnerettes 17:03 18:08
+76270 FRESLES Village 12:54
+76270 BULLY Mairie 13:09 17:09 18:09
+La Cressonnière 12:56 13:12 17:12 18:12
+Le Passe-Temps 12:59
+La Tremblay 13:00
+76270 SAINT-MARTIN-L'HORTIER Croix au Guet 13:17 17:17 18:17 18:09
+Hameau le Village 13:19 17:19 18:19 18:12
+Mairie 13:20 17:20 18:20 18:14
+Aulage 13:21 17:21 17:45 18:21 18:22
+76270 ESCLAVELLES La Folie, n° 5 13:02
+La Folie n° 17 13:03 17:56
+76270 BULLY La Tremblay 17:59
+Le Passe-Temps 18:02
+La Cressonnière 18:05
+Mairie 18:15
+Le Quesnay 18:18
+76270 QUIEVRECOURT Route de Bully, n° 20 18:22
+Cité Caron 13:06
+Mairie 13:07 18:24
+76660 BURES-EN-BRAY Le Pont 18:13
+Foyer Rural 18:14
+76660 MESNIL-FOLLEMPRISE Carrefour D298 x D12 18:17
+Foyer Rural 18:19
+Henri IV 18:21
+76660 OSMOY-SAINT-VALERY Route de Londinières 18:26
+Le Hamel 18:27
+Maintru 18:28
+76270 MESNIERES-EN-BRAY Grand Hattehoule 17:47
+Autrecourt 17:49
+Mairie / École 17:55
+Les Mesnerettes 17:59
+Isembertheville 17:06 18:03 18:33
+Hameau de Rambure 18:10
+Autrecourt 17:07 18:35
+Grand Hattehoule 17:10
+76440 FORGES-LES-EAUX FORGES-LES-EAUX_Lycée E. Delamare / Collège A. de Saint-Exupéry 14:25 14:25 14:25 18:15
+76440 SERQUEUX Terrain de foot 18:17
+Gare 14:28
+76440 LE THIL-RIBERPRE Carrefour de Triages 14:32
+Les Fresnes 14:35
+76870 GAILLEFONTAINE Place de la Mairie 14:35 14:37
+Le Beau Soleil 14:37
+Saint-Maurice 14:40
+Le Mont des Vergis 14:41
+76440 COMPAINVILLE Le Bel Endroit 17:54
+Tréfiquet Bellefoitière 17:58
+Trépied 14:42
+Mairie / École 14:44
+76440 MESNIL-MAUGER Tréforêt 17:58
+Mairie / École 14:50
+Le Bel Endroit 14:52
+Louvicamp 14:55
+76440 BEAUBEC-LA-ROSIERE Le Bourg 14:31 18:03
+76440 SERQUEUX Gare 18:06
+76440 FORGES-LES-EAUX FORGES-LES-EAUX_Lycée E. Delamare / Collège A. de Saint-Exupéry 18:06 18:10
+FORGES-LES-EAUX_Place Brévière 18:08
+76440 SAUMONT-LA-POTERIE La Brèche 18:18
+La Poterie 18:22
+76220 GOURNAY-EN-BRAY Collège Rollon 18:45
+76440 LA FERTE-SAINT-SAMSON Bosc Aubin 18:17
+76440 SOMMERY Centre 14:44
+76440 RONCHEROLLES-EN-BRAY L'Épinay 18:20
+76440 MAUQUENCHY Salle des Fêtes 14:49 18:24
+Liffremont 18:28
+76440 SOMMERY Peau de Leu 18:30
+Les Hauts Champs 18:31
+Centre 18:32
+La Cavée 18:35
+76440 ROUVRAY-CATILLON Le Bourg 14:54 18:25
+76780 SIGY-EN-BRAY Mairie 14:57 18:29
+76780 ARGUEIL Mairie 18:33
+76780 FRY Centre 18:35
+76780 SAINT-LUCIEN École 15:00
+Grand Mont Alix 15:11
+76780 LA HALLOTIERE Mairie / École 15:15 18:40
+Maison Neuve 18:46
+76780 NOLLEVAL Mairie / École 18:47
+76220 LA FEUILLIE Mairie 18:53
+76220 BEAUVOIR-EN-LYONS Mairie / École 18:58
+76440 LA FERTE-SAINT-SAMSON Les Brouillards 19:05
+76870 BEAUSSAULT Grattenoix 17:47 17:57
+Mairie / École 14:58 17:51 18:01
+Toupray 15:00
+Grattenoix 15:03
+76870 GAILLEFONTAINE Place de la Mairie 17:57 18:07
+76390 CONTEVILLE Centre 14:42
+Mairie 18:04 18:14
+Les Défends 14:44 18:07 18:17
+76390 CRIQUIERS Le Vergenet 14:47 18:11 18:21
+Bois des Puits 14:50 18:13 18:23
+Quartier l'Abbaye 14:53 18:15 18:25
+Mairie / École 14:55 18:17 18:26
+76390 AUMALE Place de la Libération 15:05
+60220 FORMERIE Gare 18:21 18:29
+Mairie 18:24 18:32
+76440 GRUMESNIL Moutier Romain 18:37
+Rousseville - Le Mont Fiquet 18:29 18:39
+Salle des Fêtes 18:34 18:44
+76440 HAUSSEZ Mairie / École 18:40 18:50
+76270 NEUFCHATEL-EN-BRAY Place de la Libération 15:16
+76660 BAILLOLET Queue du Hellet 17:53 17:48
+Centre 17:56 17:50
+Garage 18:00 17:55
+76660 CLAIS Mairie / École 13:53 18:01 17:57
+76660 BAILLEUL-NEUVILLE Bailleul 18:04 18:08
+76660 CROIXDALLE Le Val Mesneret 17:55 18:18
+Mairie / École 18:28
+76660 SAINTE-AGATHE-D'ALIERMONT Rue de Normandie, n° 79 18:29
+Route de Saint-Vaast 18:31
+École 18:32
+76660 CROIXDALLE L'Auge de Beauval 18:35
+76660 OSMOY-SAINT-VALERY Route de Londinières 18:37
+Le Hamel 18:38
+Maintru 18:39
+76660 BURES-EN-BRAY Le Pont 18:43
+Foyer Rural 18:44
+76660 MESNIL-FOLLEMPRISE Carrefour D298 x D12 18:50
+Foyer Rural 18:55
+Henri IV 19:00
+76660 OSMOY-SAINT-VALERY Les Bosquets 19:05
+76660 FREAUVILLE Rte de Neufchâtel 18:06 17:55
+76660 LONDINIERES Rue du Pont de Pierre 16:55 17:58
+Collège Paul-Henri Cahingt 18:08
+Béthencourt 17:55 18:06
+Hameau Boisselet 17:57 18:08
+76660 SMERMESNIL Château 18:17
+76660 CLAIS Hambures 13:59 18:19
+76660 SMERMESNIL Château 14:03
+La Leuqueue 18:25
+Lignemare 18:28
+76660 SAINT-PIERRE-DES-JONQUIERES Mairie / École 14:09 18:30 18:08
+76660 CROIXDALLE Mairie / École 18:32
+76660 SAINTE-AGATHE-D'ALIERMONT Rue de Normandie, n° 79 18:47
+Route de Saint-Vaast 18:50
+École 18:52
+76660 CROIXDALLE L'Auge de Beauval 18:56
+76660 WANCHY-CAPVAL Le Hamel 18:00 18:11
+École 18:07 18:14
+Ferme de Capval 18:10 18:20
+Fumechon 2 18:17 18:30
+Les Vieux Ifs 18:34
+76630 LES IFS Mairie / École 18:20 18:38
+76660 WANCHY-CAPVAL Les Vieux Ifs 18:23
+76660 FRESNOY-FOLNY École 14:15
+Centre 18:26
+Élevage Avicole 18:28
+Bailly-en-Campagne 14:17 18:42
+École 18:30 18:47
+Folny - Centre 18:32 18:51
+76660 LONDINIERES École Primaire 14:25
+76660 CROIXDALLE Mairie / École 14:32
+76660 SAINTE-AGATHE-D'ALIERMONT Rue de Normandie, n° 79 14:37
+76660 OSMOY-SAINT-VALERY Route de Londinières 14:45
+Maintru 14:50
+76630 AVESNES-EN-VAL Villy-le-Haut - Abri 18:35 18:54
+Maisoncelle 18:37 18:55
+Aigumont - Calvaire 18:39 18:57
+Mairie / Église 18:44 19:00
+Régnetuit - Place 19:05
+Saint-Aignan 18:46 19:08
+Régnetuit - Place 18:48
+Blanques 18:50 19:10
+76660 GRANDCOURT Route de Puisenval 19:23
+Caserne 19:24
+Lotissement Pierrepont 19:27
+76660 SMERMESNIL Lignemare 18:13
+La Leuqueue 18:18
+École Mairie 18:23
+76660 CLAIS Hambures 18:25
+76660 PREUSEVILLE Mairie 18:30
+76660 PUISENVAL Centre 18:40
+76660 PREUSEVILLE Hesmy 19:34 18:45
+76660 GRANDCOURT Lotissement Pierrepont 18:50
+Caserne 18:54
+La Hétrelle 18:57
+76660 PUISENVAL Centre 19:39
+76660 PREUSEVILLE Mairie 19:44
+76270 MASSY Brémontier 12:45 16:45 17:45 18:05
+Le Quesnay 12:47 16:47 17:47 18:08
+Mairie / École 12:48 16:48 17:48 18:11
+Route de Fontaine 12:51 16:51 17:51 18:14
+76440 FONTAINE-EN-BRAY Mairie / École 12:53 16:53 17:53 18:17
+Carrefour (D1 x D119) 12:54 16:54 17:54 18:22
+Chemin de la Plaine 12:56 16:56 17:56 18:27
+76270 MENONVAL La Broche 12:48 16:48 17:48 17:50
+Mairie 12:53 16:53 17:53 17:55
+76270 VATIERVILLE Pisciculture 12:54 16:54 17:54 18:01
+Brémont Mairie 12:59 16:59 17:53 17:59
+76270 SAINT-GERMAIN-SUR-EAULNE Mairie École 12:50 16:50 17:50
+Le Tilleul 12:51 16:51 17:51 18:04
+Mairie École 18:07
+Le Merisier des Bois 13:01 17:01 17:56 18:01
+76390 LE CAULE-SAINTE-BEUVE Route des Mésanges 13:04 17:04 17:59 18:04
+76270 AUVILLIERS Église 13:06 17:06 18:01 18:06
+76270 FLAMETS-FRETILS Les Frétils 13:13 17:13 18:08
+Centre 13:15 17:16 18:10
+76270 MORTEMER Mairie 13:17 17:19 18:12 18:13
+76270 FLAMETS-FRETILS Centre 18:16
+76270 GRAVAL Centre 13:19 17:21 18:18 18:19
+76270 NESLE-HODENG La Montagne 13:23 17:23 18:23
+La Mare aux Daims 13:27 17:27 18:22 18:27
+La Montagne 18:26
+76270 BOUELLES Cornemesnil 13:29 17:29 18:29 18:29
+76270 SAINT-GERMAIN-SUR-EAULNE Plateau de la Mare 18:32
+76270 NEUVILLE-FERRIERES L'Épinette 17:50
+La Houpperie 12:58 16:58 17:58 18:30
+Mairie / École 13:03 17:03 18:03
+Les Prés du Centre 13:04 17:04 17:48 18:04
+Mairie / École 17:52
+Carrefour du Mont Jean 13:06 17:06 17:55 18:06
+Les Quesnets 13:07 17:07 17:57 18:07
+76270 SAINTE-BEUVE-EN-RIVIERE Mairie / École 12:53 16:53 17:53 18:11
+L'Épinay 12:54 16:54 17:54 18:16
+76270 NEUVILLE-FERRIERES La Vallée 13:33 17:33 18:33 18:21
+76270 SAINT-SAIRE Passage à Niveau n° 70 (Avenue Verte) 13:08 17:08 18:08
+Mairie / École 13:09 17:09 18:09
+La Croix des Mazis 13:09 17:09 17:59 18:09
+Route des Mazis 13:10 17:10 18:01 18:10
+La Croix des Cloutiers 13:11 17:11 18:02 18:11
+Salle des Fêtes 13:13 17:13 18:05 18:13
+Le Guide 13:15 17:15 18:07 18:15
+La Huchonne 13:18 17:18 18:09 18:18
+La Huchonne - Calvaire 13:19 17:19 18:12 18:19
+76270 NESLE-HODENG Patte d'Oie 13:11 17:11 18:11
+Chemin de Torcy 13:17 17:17 18:17
+Mairie / École 13:27 17:27 18:27
+76270 BOUELLES Les Thuyas 17:55
+Rue du Bourg 17:57
+Centre 13:29 17:29 18:00 18:29
+Rue du Bourg 13:30 17:30 18:30
+Les Thuyas 13:31 17:31 18:31
+76270 NESLE-HODENG Patte d'Oie 18:03
+76270 SAINT-SAIRE Mairie / École 18:08
+Passage à Niveau n° 70 (Avenue Verte) 18:13
+76270 NESLE-HODENG Mairie / École 18:18
+Chemin de Torcy 18:26
+76270 NEUVILLE-FERRIERES L'Épinette 13:33 17:33 18:33
+76680 MAUCOMBLE Centre 13:55 17:55 18:10
+Mairie 17:56 18:11
+76680 BOSC-MESNIL Les Buhots 17:58 18:13
+Centre 18:01
+Chapelle de Perduville 18:04 18:03
+Centre 18:06
+76680 BRADIANCOURT Ferme de la Briqueterie 13:56 18:05
+Mairie / École 13:57 18:12
+Calvaire 13:58 18:13
+76680 NEUFBOSC Rougemont 14:01 18:14
+Centre 14:06 18:15
+76680 MONTEROLIER Mairie / École 14:10 18:19
+Grande Place 18:21
+Le Mesnil - Chemin des Patis 18:22
+Bosc au Renard 18:24
+École de Saveaumare 18:28
+76750 BUCHY BUCHY_Collège Francis Yard 14:10 18:10 18:34
+76680 SAINT-MARTIN-OSMONVILLE La Salle 18:21
+Route des Buhots 18:09
+Bréquigny 18:10
+La Boissière 18:11
+Centre 14:18 18:46
+La Prée 14:22
+76680 BOSC-BERENGER Mairie / École 14:25
+76680 SAINT-MARTIN-OSMONVILLE Osmonville sur Varenne 18:48 18:12
+La Boissière Carrefour 18:49 18:14
+Centre 18:16
+Bréquigny 18:52
+Route des Buhots 18:53
+Le Beau Soleil 18:56 18:15
+76680 MONTEROLIER École de Saveaumare 18:22
+Bosc au Renard 18:26
+Le Mesnil - Chemin des Patis 18:27
+Grande Place 18:28
+Mairie / École 18:29
+76680 NEUFBOSC Centre 18:32
+Rougemont 18:37
+76680 BRADIANCOURT Calvaire 18:40
+Mairie / École 18:41
+Ferme de la Briqueterie 18:42
+76680 SAINT-SAENS Le Pont du Thil 18:57 18:23
+Val de Boulogne 13:59 17:58
+Centre 14:01 18:01 18:26
+Saint-Martinet 14:03 18:03 18:07
+Le Vaudichon 14:04 18:04 18:08
+76680 ROSAY La Fonte 14:06 18:06 18:10
+École 14:07 18:07 18:11
+76680 BELLENCOMBRE Gendarmerie 14:09 18:09 18:14
+76850 LA CRIQUE Les Innocents 14:11 18:11 18:17
+École 14:12 18:12 18:18
+Saint-Ouen 14:15 18:15 18:20
+Le Mont Rouge 14:17 18:18 18:22
+76680 BELLENCOMBRE Route de la Heuze 18:21 18:24
+Le Campaturel 18:22 18:25
+La Grande Heuze 18:24 18:26
+Saint-Martin 14:23 18:30 18:32
+76680 SAINT-HELLIER Orival 14:24 18:31 18:34
+Orival - Chapelle 14:25 18:32 18:35
+La Varenne 14:26 18:33 18:36
+Mairie / École 14:28 18:35 18:38
+La Frenaye 18:39 18:42
+76950 LES GRANDES-VENTES Mairie / Église 14:41
+76680 ARDOUVAL Foyer des Jeunes 14:51
+76680 POMMEREVAL Mairie / École 18:00
+Les Essarts 14:54 18:01
+Le Bourg 14:55
+76680 VENTES-SAINT-REMY Centre 18:34
+Station d'Épuration 14:59 18:07 18:35
+Centre 15:00 18:08
+76680 POMMEREVAL Mairie / École 18:40
+Les Essarts 18:44
+76680 ARDOUVAL Rue des Cèdres 18:52 18:49
+Foyer des Jeunes 18:53 18:50
+76950 LES GRANDES-VENTES Les Novales 19:01 18:58
+Mairie / Église 19:04 19:01
+Hauts Champs 19:05 19:03
+76680 SAINT-SAENS Centre 18:15
+Le Quesnay 18:18 18:28
+Mesnil Bénard 18:22 18:33
+76850 BEAUMONT-LE-HARENG Mairie / École 18:30 18:42
+Beuzeville 18:34 18:47
+76850 COTTEVRARD Le Bourg 18:38
+Rue des Champs 18:39
+76680 CRITOT Bertramesnil 18:45
+Les Alouettes 18:46
+Les Acacias 18:50
+Église 14:29 18:51
+76850 COTTEVRARD Le Bourg 14:37
+76850 BEAUMONT-LE-HARENG Beuzeville 14:41
+Mairie / École 14:46
+76680 BOSC-BERENGER Mairie / École 18:55
+Le Clos Bérenger 18:57
+Route de Saint-Saëns 18:58
+76680 SAINT-MARTIN-OSMONVILLE Bosc Tillot 19:00
+La Prée 19:05
+La Salle 19:07
+76340 SAINT-MARTIN-AU-BOSC D26 Abribus 19:04
+Nota
+A : Correspondance avec 5017xC2
+B : Correspondance vers Établissements Neufchâtel-en-Bray

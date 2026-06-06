@@ -1,0 +1,44 @@
+5004 - LYCÉE AGRICOLE BRÉMONTIER-MERVAL
+Validité à partir du 01/09/2025
+ALLER
+117 1 jour Internat (Aller) Période Scolaire (hors JF) Dynamique : Oui
+Itinéraires 5004A0
+Services 1
+CP Commune Point d'arrêt L------
+76260 EU Place Guillaume le Conquérant 06:47 A
+76910 CRIEL-SUR-MER Abribus 07:00
+76630 PETIT-CAUX BIVILLE-SUR-MER_Avenue de l'Europe 07:08
+DERCHIGNY_Berneval-Graincourt 07:15
+76200 DIEPPE Gare Routière 07:45
+76880 ARQUES-LA-BATAILLE Gare 07:55
+76510 SAINT-NICOLAS-D'ALIERMONT Place de la Mairie 08:00
+Square Aval 08:05
+76510 NOTRE-DAME-D'ALIERMONT Salle des Fêtes 08:10
+76510 SAINT-VAAST-D'EQUIQUEVILLE Église 08:20
+76270 NEUFCHATEL-EN-BRAY Place de la Libération 08:37
+76440 SERQUEUX Gare 08:55
+76440 FORGES-LES-EAUX FORGES-LES-EAUX_Place Brévière 09:00
+76220 BREMONTIER-MERVAL Lycée Agricole du Pays de Bray 09:20
+Nota
+A : Possibilité de correspondance / Correspondance avec le réseau Nomad Car
+RETOUR
+157 1 jour Internat (Retour) Période Scolaire (hors JF) Dynamique : Oui
+Itinéraires 5004A1
+Services 1
+CP Commune Point d'arrêt ----V--
+76220 BREMONTIER-MERVAL Lycée Agricole du Pays de Bray 16:15
+76440 FORGES-LES-EAUX FORGES-LES-EAUX_Place Brévière 16:30
+76440 SERQUEUX Gare 16:50
+76270 NEUFCHATEL-EN-BRAY Place de la Libération 17:00
+76510 SAINT-VAAST-D'EQUIQUEVILLE Église 17:25
+76510 NOTRE-DAME-D'ALIERMONT Salle des Fêtes 17:30
+76510 SAINT-NICOLAS-D'ALIERMONT Place de la Mairie 17:35
+Square Aval 17:37
+76880 ARQUES-LA-BATAILLE Gare 17:40
+76200 DIEPPE Gare Routière 17:50
+76630 PETIT-CAUX DERCHIGNY_Berneval-Graincourt 18:10
+BIVILLE-SUR-MER_Avenue de l'Europe 18:15
+76910 CRIEL-SUR-MER Abribus 18:20
+76260 EU Place Guillaume le Conquérant 18:30 A
+Nota
+A : Possibilité de correspondance / Correspondance avec le réseau Nomad Car

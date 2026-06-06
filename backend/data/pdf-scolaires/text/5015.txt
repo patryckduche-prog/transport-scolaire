@@ -1,0 +1,19 @@
+5015 - COLLEGE ST CHARLES DE FOUCAULD
+Validité à partir du 01/09/2025
+ALLER
+513 5 jours LuMaMeJeVe-- Période Scolaire (hors JF) Dynamique : Oui
+Itinéraires 5015A0
+Services 1
+CP Commune Point d'arrêt LMMeJV--
+76270 NEUFCHATEL-EN-BRAY Parking des Tilleuls (Collège Albert Schweitzer) 08:25
+Lycée Georges Brassens 08:30
+Place de la Libération 08:35
+RETOUR
+132 1 jour --Me---- Période Scolaire (hors JF) Dynamique : Oui Oui Non
+415 4 jours LuMa-JeVe-- Période Scolaire (hors JF) Dynamique : Non Non Oui
+Itinéraires 5015A2 5015A1 5015A1
+Services 1 2 1
+CP Commune Point d'arrêt --Me---- --Me---- LM-JV--
+76270 NEUFCHATEL-EN-BRAY Place de la Libération 12:15 13:15 17:20
+Lycée Georges Brassens 13:20 17:25
+Parking des Tilleuls (Collège Albert Schweitzer) 12:20

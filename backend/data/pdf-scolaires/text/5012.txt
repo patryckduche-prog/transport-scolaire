@@ -1,0 +1,224 @@
+5012 - ÉTABLISSEMENTS GOURNAY-EN-BRAY
+Validité à partir du 01/09/2025
+ALLER
+513 5 jours LuMaMeJeVe-- Période Scolaire (hors JF) Dynamique : Oui Oui Oui Oui Oui Oui Oui Oui
+Itinéraires 5012A6 5012A8 5012A0 5012A1 5012A7 5012A5 5012A2 5012A4
+Services 1 1 1 1 1 1 1 1
+CP Commune Point d'arrêt LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV--
+76220 FERRIERES-EN-BRAY Les Valembours 06:49
+Hardencourt 06:54
+60380 SAINT-QUENTIN-DES-PRES Mothois 06:55
+Equesne 06:57
+Hyancourt, n°17 07:02
+Centre 07:08
+Beaulévrier Bas 07:12
+Beaulévrier Haut 07:14
+60380 HECOURT Haincourt - Rue de Gournay Haincourt, n° 6 07:19
+Haincourt - Rue de Pichelieu, n° 51 07:25
+76220 FERRIERES-EN-BRAY Laudencourt - Centre 07:31
+Haut de Laudencourt 07:33
+Le Forêt 07:38
+Auchy - Les Jardins 07:44
+Place de l'Église 07:47
+La Croix Verte - Centre 07:50
+La Croix Verte 07:52
+27150 MARTAGNY Ferme 07:26
+Mairie 07:28
+La Rougemare 07:34
+76220 NEUF-MARCHE Carrefour Pichard 07:39
+Les Flamands 07:40
+27150 BOUCHEVILLIERS Centre 07:45
+Centre 07:47
+76220 NEUF-MARCHE Vardes 07:51
+La Poste 07:30
+76220 ERNEMONT-LA-VILLETTE Launay - Croisettes 07:36
+La Carel 07:37
+Le Blanc Pignon 07:38
+Centre 07:40
+76220 AVESNES-EN-BRAY Maisons Rouges 07:43
+La Cotte 07:44
+La Plaine 07:45
+Mairie / École 07:47
+La Haute Haye 07:49
+Les Aulnaies 07:14
+76220 BREMONTIER-MERVAL Les Bruyères 07:20
+Route d'Hodenger 07:23
+Merval 07:25
+Mairie / École 07:28
+Bellozanne 07:31
+Le Haut Durand 07:32
+Le Guette-Leu 07:33
+76220 ELBEUF-EN-BRAY L'Enseigne 07:35
+Le Château 07:37
+École 07:39
+Route d'Elbeuf 07:15
+La Croix du Bas 07:17
+Les Communs 07:18 07:42
+Les Bruyères 07:22 07:44
+76220 CUY-SAINT-FIACRE Les Bruyères 07:26
+Bois des Bruyères 07:28
+Cabine 07:30
+Mairie / École 07:32
+76220 MOLAGNIES Passage à Niveau 07:34
+Menne Vieux 07:35
+Centre 07:37
+Humermont 07:39
+76220 GANCOURT-SAINT-ETIENNE Bouricourt 07:18
+60380 BAZANCOURT Place 07:22
+76220 DOUDEAUVILLE Mairie / École 07:29
+76220 GANCOURT-SAINT-ETIENNE Centre 07:33
+Saint-Étienne 07:37
+Le Grimbourg 07:40
+76220 CUY-SAINT-FIACRE Le Ménillet 07:43
+76440 FORGES-LES-EAUX FORGES-LES-EAUX_Place Brévière 07:22
+76220 MENERVAL Le Petit Hautier 07:32
+Centre 07:36
+76220 DAMPIERRE-EN-BRAY La Vieuville 07:40
+Mairie / École 07:41
+Les Hulis 07:43
+76220 ELBEUF-EN-BRAY Les Morues 07:49
+76220 MONTROTY Les Deux Mares 07:26
+Tête d'Enfer 07:27
+76220 BOSC-HYONS La Briqueterie 07:29
+76220 BEZANCOURT Centre 07:32
+76220 MONTROTY Centre 07:37
+76220 BOSC-HYONS Le Puys 07:39
+Mairie / École 07:40
+Les Croix 07:41
+Le Village 07:43
+Les Carreaux 07:45
+76220 CUY-SAINT-FIACRE Torcy 07:42
+Le Pavillon 07:44
+Les Mortes Terres 07:46
+76220 GOURNAY-EN-BRAY Le Vieux Saint-Clair 07:49
+Saint-Crespin 07:56
+Haut de Saint-Aubin 07:52
+Les Morues, n° 1905 07:50
+Les Morues, n° 1515 07:51
+Les Morues, n° 591 07:53
+Sauvageot 07:49
+Jean Moulin 07:50
+Cité Saint-Clair 07:46
+76220 FERRIERES-EN-BRAY La Cidrerie 07:50
+Route Neuve - Le Pont 07:55 07:55
+76220 GOURNAY-EN-BRAY Institution Saint-Hildevert 07:57 07:57 07:58 07:57 07:58 07:58 07:58 07:59
+Collège Rollon 08:00 08:00 08:00 08:00 08:00 08:00 08:00 08:00
+RETOUR
+132 1 jour --Me---- Période Scolaire (hors JF) Dynamique : Oui Oui Oui Oui Oui Non Oui Non Non Non Non Non Non Non Non
+415 4 jours LuMa-JeVe-- Période Scolaire (hors JF) Dynamique : Non Non Non Non Non Oui Non Oui Oui Oui Oui Oui Oui Oui Oui
+Itinéraires 5012B9 5012B4 5012B3 5012B1 5012B0 5012B2 5012B6 5012C2 5012C1 5012C0 5012B1 5012A9 5012B8 5012B5 5012B4
+Services 1 2 1 2 1 1 1 1 1 1 1 1 2 1 1
+CP Commune Point d'arrêt --Me---- --Me---- --Me---- --Me---- --Me---- LM-JV-- --Me---- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV--
+76220 GOURNAY-EN-BRAY École Georges Brassens 16:30
+École Pierre et Marie Curie 16:40
+Institution Saint-Hildevert 12:20 16:45 17:15
+Collège Rollon 12:30 12:30 12:30 12:30 12:30 12:30 16:00 16:55 16:55 16:55 16:55 16:55 17:00
+Saint-Crespin 12:35 16:48 17:00
+Collège Rollon 16:55
+Cité Saint-Clair 12:40 17:05
+Le Vieux Saint-Clair 12:45 17:10
+Haut de Saint-Aubin 12:32 17:00
+Sauvageot 12:35 17:00
+Jean Moulin 12:36 17:01
+Les Morues, n° 591 12:37 17:02
+Les Morues, n° 1515 12:43 17:08
+Les Morues, n° 1905 12:44 17:09
+76220 ERNEMONT-LA-VILLETTE Centre 12:38 17:03
+La Carel 12:43
+Le Blanc Pignon 12:44 17:05
+La Carel 17:08
+Launay - Croisettes 12:45 17:10
+76220 NEUF-MARCHE Vardes 12:53 17:18
+La Poste 12:57 17:22
+27150 BOUCHEVILLIERS Centre 13:02 17:28
+Centre 13:04 17:30
+76220 NEUF-MARCHE Les Flamands 13:11 17:37
+Carrefour Pichard 13:13 17:39
+27150 MARTAGNY La Rougemare 13:17 17:43
+Mairie 13:19 17:45
+Ferme 13:22 17:47
+76220 FERRIERES-EN-BRAY Route Neuve - Le Pont 12:36 16:03 17:06
+La Cidrerie 12:41 16:05 17:11
+Place de l'Église 12:45 16:10 17:15
+La Croix Verte - Centre 12:47 16:12 17:17
+La Croix Verte 12:48 16:13 17:18
+Les Valembours 12:50 16:14 17:20
+Laudencourt - Centre 12:52 16:16 17:22
+Haut de Laudencourt 12:53 16:18 17:23
+Le Forêt 12:57 16:23 17:27
+Auchy - Les Jardins 13:03 17:33
+Hardencourt 13:09 17:39
+60380 SAINT-QUENTIN-DES-PRES Mothois 13:11 17:41
+Equesne 13:13 17:43
+Hyancourt, n°17 13:17 17:47
+Centre 13:23 17:53
+Beaulévrier Bas 13:25 17:55
+Beaulévrier Haut 13:27 17:57
+60380 HECOURT Haincourt - Rue de Gournay Haincourt, n° 6 13:33 18:03
+Haincourt - Rue de Pichelieu, n° 51 13:34 18:04
+76220 MONTROTY Les Deux Mares 12:43 17:08
+Tête d'Enfer 12:45 17:10
+76220 BOSC-HYONS La Briqueterie 12:46 17:11
+76220 BEZANCOURT Centre 12:49 17:16
+76220 MONTROTY Centre 12:54 17:20
+76220 BOSC-HYONS Le Puys 12:56 17:23
+Mairie / École 12:58 17:25
+Les Croix 12:59 17:26
+Le Village 13:01 17:27
+Les Carreaux 13:02 17:29
+76220 AVESNES-EN-BRAY Maisons Rouges 16:59
+La Cotte 17:00
+La Plaine 17:01
+Mairie / École 17:03
+La Haute Haye 13:06 17:04
+Mairie / École 13:07
+La Plaine 13:09
+La Cotte 13:10
+Maisons Rouges 13:11
+Les Aulnaies 12:37 17:03
+76220 ELBEUF-EN-BRAY Route d'Elbeuf 12:38 17:04
+Les Morues 12:45 17:10
+Les Bruyères 12:47 17:12
+La Croix du Bas 12:50 17:15
+Les Communs 12:52 17:07 17:17
+Le Château 12:53 17:08 17:18
+École 12:54 17:10 17:19
+L'Enseigne 12:55 17:20
+76220 BREMONTIER-MERVAL Le Guette-Leu 12:56 17:21
+Le Haut Durand 12:58 17:23
+Bellozanne 13:01 17:26
+Route d'Hodenger 13:04 17:29
+Merval 13:06 17:31
+Mairie / École 13:11 17:36
+Les Bruyères 13:15 17:40
+76220 CUY-SAINT-FIACRE Le Ménillet 12:51 17:16
+Les Bruyères 12:43 17:18
+Bois des Bruyères 12:45 17:20
+Cabine 12:46 17:22
+Le Pavillon 12:47
+Les Mortes Terres 12:48
+Mairie / École 12:51 17:24
+Le Ménillet 17:26
+Les Mortes Terres 17:27
+Le Pavillon 17:30
+Torcy 12:55 17:33
+76220 MOLAGNIES Passage à Niveau 12:53 17:18
+Menne Vieux 12:54 17:19
+Centre 12:56 17:21
+Humermont 12:57 17:22
+76220 GANCOURT-SAINT-ETIENNE Le Grimbourg 12:59 17:24
+Bouricourt 13:01 17:26
+60380 BAZANCOURT Place 13:05 17:30
+76220 GANCOURT-SAINT-ETIENNE Centre 13:09
+76220 DOUDEAUVILLE Mairie / École 13:14 17:37
+Les Ravinnes 13:17
+76220 GANCOURT-SAINT-ETIENNE Centre 17:41
+Hyaumet 13:19
+Saint-Étienne 13:22 17:45
+76220 DAMPIERRE-EN-BRAY La Vieuville 12:58 17:35
+76220 MENERVAL Centre 13:00 17:39
+Le Petit Hautier 13:06 17:45
+76440 FORGES-LES-EAUX LE FOSSÉ_Les Bruyères 13:13 17:32
+FORGES-LES-EAUX_Place Brévière 13:23 17:45
+76220 DAMPIERRE-EN-BRAY Les Hulis 13:16 17:41
+Mairie / École 13:20 17:49 17:45

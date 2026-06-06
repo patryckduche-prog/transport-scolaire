@@ -1,0 +1,46 @@
+5980 - DÉPARTEMENT SOMME
+Validité à partir du 01/09/2025
+415 4 jours LuMa-JeVe-- Période Scolaire (hors JF) Dynamique : Non Non Oui Non Non Non Non Non Oui
+513 5 jours LuMaMeJeVe-- Période Scolaire (hors JF) Dynamique : Non Oui Non Oui Non Oui Non Oui Non
+615 6 jours LuMaMeJeVeSa- Période Scolaire (hors JF) Dynamique : Oui Non Non Non Oui Non Oui Non Non
+Itinéraires 5980E0 5980D0 5980I0 5980A0 5980F0 5980C0 5980B0 5980H0 5980G0
+Services 1 1 1 1 1 1 1 1 1
+CP Commune Point d'arrêt LMMeJVS- LMMeJV-- LM-JV-- LMMeJV-- LMMeJVS- LMMeJV-- LMMeJVS- LMMeJV-- LM-JV--
+80220 BOUTTENCOURT École 08:25
+École Élémentaire d'Ansennes 08:30
+École 08:40
+80350 MERS-LES-BAINS Prairie 06:00
+76470 LE TREPORT Gare Sncf 06:01 A,B 07:14 A,B
+Hôtel de Ville 06:03 07:22
+80350 MERS-LES-BAINS Prairie 07:17 07:27
+76260 EU Champ de Mars 06:09
+Lycée Michel Anguier 06:13 07:26
+80520 YZENGREMER Mairie 07:39
+80210 FEUQUIERES-EN-VIMEU Place de la Mairie 07:56
+80100 ABBEVILLE Gare 08:25
+80220 GAMACHES Place de la Mairie 06:45
+Collège Louis Jouvet 06:29 06:47
+Place de la Mairie 06:31
+80770 BEAUCHAMPS Place (Grande Rue) 06:53
+80570 DARGNIES Place 06:57
+80520 WOINCOURT Place 07:00
+80130 FRIVILLE-ESCARBOTIN Collège Rose des Vents 07:54
+Lycée du Vimeu 07:05 07:45
+Place Beauval 08:49
+80390 FRESSENNEVILLE Centre 08:08
+80210 AIGNEVILLE Centre 08:16
+80210 FEUQUIERES-EN-VIMEU Place de la Mairie 08:22
+80100 ABBEVILLE Lycée Boucher de Perthes 09:45
+80140 LE TRANSLAY École 06:39
+80140 OISEMONT Les Halles 06:45
+76340 BLANGY-SUR-BRESLE Place Roger Thiébault 06:11
+80140 NESLE-L'HOPITAL Mairie 06:18 07:32
+80140 SENARPONT Centre 06:22 07:38
+80140 SAINT-LEGER-SUR-BRESLE Centre 07:50
+80430 BEAUCAMPS-LE-VIEUX Collège Maréchal Leclerc de Hauteclocque 08:20
+76390 AUMALE Place de la Libération 06:17
+80090 AMIENS Gare Routière 07:35 07:40
+Lycée de l'Acheuléen 07:40
+Nota
+A : Possibilité de correspondance / Correspondance avec le réseau Nomad Car / Train
+B : Possibilité de correspondance / Correspondance avec le réseau Nomad Car (12h05)  / Train (11h59)

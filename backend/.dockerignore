@@ -1,0 +1,8 @@
+node_modules
+npm-debug.log
+*.log
+.env
+config/firebase-service-account*.json
+localtunnel*.log
+lt*.log
+backend-*.log

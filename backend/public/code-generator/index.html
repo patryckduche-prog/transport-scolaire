@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Generateur de codes conducteur</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Bus Scolaire Connect</p>
+          <h1>Generateur de codes conducteur</h1>
+          <p class="lead">Creez un seul code pour les conducteurs d'une meme entreprise, region ou zone. Ce code limite automatiquement l'application aux circuits du secteur.</p>
+        </div>
+        <div class="badge">Acces gestion</div>
+      </section>
+
+      <section class="grid">
+        <form class="panel" id="loginForm">
+          <h2>Connexion gestion</h2>
+          <label>
+            Email
+            <input id="email" type="email" value="entreprise@demo.local" autocomplete="username">
+          </label>
+          <label>
+            Mot de passe
+            <input id="password" type="password" value="demo1234" autocomplete="current-password">
+          </label>
+          <button type="submit">Se connecter</button>
+          <p class="status" id="loginStatus">Non connecte</p>
+        </form>
+
+        <form class="panel" id="codeForm">
+          <h2>Nouveau code de secteur</h2>
+          <label>
+            Compte conducteur technique
+            <input id="driverEmail" type="email" value="conducteur@demo.local">
+          </label>
+          <label>
+            Nom du code
+            <input id="label" type="text" value="Code secteur Aumale">
+          </label>
+          <label>
+            Secteur
+            <input id="sectorName" type="text" value="Aumale">
+          </label>
+          <label>
+            Mots-cles des lignes et arrets
+            <input id="sectorKeywords" type="text" value="aumale">
+          </label>
+          <label>
+            Code
+            <div class="codeLine">
+              <input id="code" type="text" value="AUMALE-2026">
+              <button id="generate" type="button">Generer</button>
+            </div>
+          </label>
+          <button type="submit">Enregistrer le code</button>
+          <p class="status" id="codeStatus">Connectez-vous avant de creer un code de secteur.</p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="listHeader">
+          <h2>Codes crees</h2>
+          <button id="refresh" type="button">Actualiser</button>
+        </div>
+        <div id="codes" class="codes"></div>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

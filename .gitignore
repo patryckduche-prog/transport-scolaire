@@ -1,35 +1,21 @@
-# dependencies
 node_modules/
-
-# expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
-
-# native
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macos
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
 .env
+.dart_tool/
+build/
+.firebase/
+*.log
+*.iml
+.idea/
+.vscode/
+.DS_Store
 
-# typescript
-*.tsbuildinfo
+mobile/.flutter-plugins-dependencies
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/app/bus-scolaire-connect-test.jks
+mobile/android/app/google-services.json
+mobile/*.png
+
+backend/config/firebase-service-account*.json
+backend/public/download/*.apk
+!backend/public/download/bus-scolaire-connect.apk

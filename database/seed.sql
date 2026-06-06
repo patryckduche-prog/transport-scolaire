@@ -1,0 +1,2 @@
+﻿-- Le seed executable est dans backend/src/db/seed.js afin de generer un hash bcrypt frais pour demo1234.
+-- Commande : cd backend && npm run seed

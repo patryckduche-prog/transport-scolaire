@@ -1,0 +1,160 @@
+5001 - ÉTABLISSEMENTS AUMALE
+Validité à partir du 01/09/2025
+ALLER
+513 5 jours LuMaMeJeVe-- Période Scolaire (hors JF) Dynamique : Oui Oui Oui Oui Oui
+Itinéraires 5001A1 5001A0 5001A2 5001A3 5001A4
+Services 1 1 1 1 1
+CP Commune Point d'arrêt LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV--
+76390 CRIQUIERS Pierrement 07:07
+Les Anthieux 07:12
+Mairie / École 07:18
+Quartier l'Abbaye 07:21
+Bois des Puits 07:22
+Le Vergenet 07:27
+76390 CONTEVILLE Le Campdos 07:10
+Les Défends Saint-Nicolas 07:15
+Mairie 07:23
+Route de Foucarmont (D82) 07:31
+76390 HAUDRICOURT Beaufresne 07:38
+76390 RONCHOIS Centre 07:31
+Ormesnil 07:34
+Petit Ronchois 07:41
+76390 HAUDRICOURT Sous les Quesnes 07:43
+Église 07:46
+76390 ILLOIS RN 29 07:41
+Église 07:43
+Château de Coupigny 07:45
+Le Ménivier 07:46
+Garage 07:00
+Carrefour (N29 x D82) 07:02
+76390 NULLEMONT Le Forestel - Carrefour 07:04
+Lotissement 07:05
+Centre 07:07
+Bernompré 07:12
+76390 ILLOIS Centre Équestre 07:17
+76390 LE CAULE-SAINTE-BEUVE Salle des Fêtes 07:20
+76270 AUVILLIERS Église 07:24
+76390 LE CAULE-SAINTE-BEUVE Route des Mésanges 07:29
+Salle des Fêtes 07:37
+Sainte-Beuve-aux-Champs 07:40
+76390 LANDES-VIEILLES-ET-NEUVES Tortillard 07:42
+Église 07:45
+Rougemare 07:47
+Les Vieilles Landes 07:48
+76390 AUBEGUIMONT Coquereaux 07:20
+Mairie / École 07:27
+Rue Principale 07:32
+76390 RICHEMONT Ancienne Place 07:34
+Mairie / École Primaire 07:36
+La Neuville 07:40
+Les Câteliers 07:45
+La Mare Guilbert 07:46
+76390 MARQUES Blingemer 07:55
+La Comtée 07:50
+Église / École 07:55
+Barques 08:00
+Ronde Épine 08:02
+76390 HAUDRICOURT Roupied 07:51
+Villers 08:02
+76390 ELLECOURT Église 07:56
+Les Communes 07:57
+Le Marescot 08:00
+Val à Leu 08:02
+76390 VIEUX-ROUEN-SUR-BRESLE Beau Soleil 07:30
+Sailly 07:35
+Bouafles 07:40
+Ressenroy 07:42
+Centre 07:45
+Sortival 07:47
+76390 AUMALE Rivery 07:50
+76390 MORIENNE Bois de la Ville 07:54
+Église 07:57
+Coppegueule 08:00
+76390 AUMALE Collège Saint-Joseph 07:56 08:03 08:08 08:08 08:09
+Collège Henri Dunant / École Primaire 08:00 08:06 08:10 08:10 08:10
+RETOUR
+132 1 jour --Me---- Période Scolaire (hors JF) Dynamique : Oui Oui Oui Oui Oui Non Non Non Non Non
+415 4 jours LuMa-JeVe-- Période Scolaire (hors JF) Dynamique : Non Non Non Non Non Oui Oui Oui Oui Oui
+Itinéraires 5001A7 5001B0 5001A8 5001A5 5001B2 5001A6 5001B1 5001A7 5001A8 5001B3
+Services 1 1 2 1 1 1 1 2 1 1
+CP Commune Point d'arrêt --Me---- --Me---- --Me---- --Me---- --Me---- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV--
+76390 AUMALE Collège Saint-Joseph 12:30 17:05
+Collège Henri Dunant / École Primaire 12:25 12:30 12:30 12:30 12:32 17:00 17:05 17:05 17:10 17:17
+Collège Saint-Joseph 12:37 12:32 12:32 12:35 17:02 17:07 17:10 17:12
+76390 MORIENNE Coppegueule 12:45 17:10
+Église 12:49 17:14
+Bois de la Ville 12:51 17:16
+76390 AUMALE Rivery 12:56 17:22
+76390 VIEUX-ROUEN-SUR-BRESLE Sortival 13:00 17:25
+Centre 13:03 17:29
+Ressenroy 17:35
+Runneval 13:06
+Ressenroy 13:11
+Bouafles 13:12 17:37
+Sailly 13:14 17:41
+Beau Soleil 13:18 17:45
+76390 AUBEGUIMONT Coquereaux 13:30 18:05
+76390 HAUDRICOURT La Couture 12:47 17:20
+Roupied 12:58 17:31
+Villers 12:35 17:15
+Église 12:37 17:17
+La Bretagne 12:43
+76390 MARQUES Ronde Épine 17:14
+Ronde Épine 12:48
+Barques 12:50 17:17
+Église / École 12:55 17:22
+Blingemer 12:58
+La Comtée 13:00 17:28
+76390 ELLECOURT Val à Leu 12:35 17:20
+Le Marescot 12:41 17:24
+Les Communes 12:44 17:26
+Église 12:45 17:28
+Église 13:02
+76390 MARQUES Blingemer 17:32
+76390 AUBEGUIMONT Mairie / École 17:35
+Église 12:50 17:36
+Rue Principale 12:55 17:37
+76390 RICHEMONT Ancienne Place 17:39
+Mairie / École Primaire 17:41
+La Mare Guilbert 17:53
+Ancienne Place 12:57
+Mairie / École Primaire 12:59
+La Neuville 13:09 17:55
+Les Câteliers 17:57
+La Mare Guilbert 13:11
+76390 LANDES-VIEILLES-ET-NEUVES Les Vieilles Landes 17:30
+Les Vieilles Landes 13:06
+Rougemare 13:08 17:34
+Église 13:10 17:39
+Tortillard 13:13 17:42
+76390 LE CAULE-SAINTE-BEUVE Sainte-Beuve-aux-Champs 13:15 17:45
+Salle des Fêtes 13:17 17:52
+Route des Mésanges 13:27 17:55
+76270 AUVILLIERS Église 17:57
+Église 13:30
+76390 LE CAULE-SAINTE-BEUVE Salle des Fêtes 13:34
+76390 ILLOIS Château de Coupigny 13:02 17:36
+Église 13:05 17:39
+Le Ménivier 12:49 17:29
+Centre Équestre 13:38 18:01
+76390 HAUDRICOURT Sous les Quesnes 12:55 17:35
+76390 RONCHOIS Petit Ronchois 12:57 17:37
+76390 CONTEVILLE Les Défends Saint-Nicolas 12:59 17:39
+Le Campdos 13:02 17:42
+76390 CRIQUIERS Pierrement 13:04 17:44
+Les Anthieux 13:08 17:48
+Mairie / École 13:12 17:52
+Quartier l'Abbaye 13:14 17:54
+Bois des Puits 13:16 17:56
+Le Vergenet 13:18 17:58
+76390 CONTEVILLE Route de Foucarmont (D82) 13:20 18:00
+76390 HAUDRICOURT Beaufresne 13:22 18:02
+76390 NULLEMONT Bernompré 13:46 18:05
+Centre 13:49 18:10
+Lotissement 13:50 18:11
+Le Forestel - Carrefour 13:51 18:15
+76390 ILLOIS Carrefour (N29 x D82) 18:18
+RN 29 13:08 13:53 17:42
+76390 RONCHOIS Centre 13:15 17:51
+Ormesnil 13:19 17:55
+76390 CONTEVILLE Mairie 13:27 18:03

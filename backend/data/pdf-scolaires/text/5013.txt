@@ -1,0 +1,23 @@
+5013 - INSTITUTION ST-JOSEPH MESNIÈRES-EN-B
+Validité à partir du 01/09/2025
+ALLER
+112 1 jour Lu------ Période Scolaire (hors JF) Dynamique : Non Oui
+513 5 jours LuMaMeJeVe-- Période Scolaire (hors JF) Dynamique : Oui Non
+Itinéraires 5013A3 5013A0
+Services 1 1
+CP Commune Point d'arrêt LMMeJV-- L------
+76270 NEUFCHATEL-EN-BRAY Parking des Tilleuls (Collège Albert Schweitzer) 08:20
+76270 MESNIERES-EN-BRAY Grand Hattehoule 09:55
+Institution Saint-Joseph 08:30 10:00
+RETOUR
+152 1 jour ----Ve-- Période Scolaire (hors JF) Dynamique : Oui Non
+412 4 jours LuMaMeJe--- Période Scolaire (hors JF) Dynamique : Non Oui
+Itinéraires 5013A4 5013A1
+Services 1 1
+CP Commune Point d'arrêt ----V-- LMMeJ---
+76270 MESNIERES-EN-BRAY Institution Saint-Joseph 15:15 17:15
+Grand Hattehoule 17:20
+76270 NEUFCHATEL-EN-BRAY Lycée Georges Brassens 15:35
+76440 SERQUEUX Gare 16:00
+76440 FORGES-LES-EAUX FORGES-LES-EAUX_Lycée E. Delamare / Collège A. de Saint-Exupéry 16:05
+76270 NEUFCHATEL-EN-BRAY Parking des Tilleuls (Collège Albert Schweitzer) 17:30

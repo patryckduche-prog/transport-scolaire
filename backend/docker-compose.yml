@@ -1,0 +1,13 @@
+﻿services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bus
+      POSTGRES_PASSWORD: bus
+      POSTGRES_DB: bus_scolaire_connect
+    ports:
+      - "5432:5432"
+    volumes:
+      - bus_pgdata:/var/lib/postgresql/data
+volumes:
+  bus_pgdata:

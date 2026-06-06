@@ -1,0 +1,160 @@
+5011 - ÉTABLISSEMENTS LA FEUILLIE
+Validité à partir du 01/09/2025
+ALLER
+513 5 jours LuMaMeJeVe-- Période Scolaire (hors JF) Dynamique : Oui Oui Oui Oui Oui
+Itinéraires 5011B1 5011A8 5011A7 5011A0 5011A9
+Services 1 1 1 2 1
+CP Commune Point d'arrêt LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV-- LMMeJV--
+76220 BOSC-HYONS Les Carreaux 07:00
+76220 BEAUVOIR-EN-LYONS Les Carreaux 07:02
+Le Chemin Croisant 07:04
+Camp Caillot 07:06
+Mont Réal - Calvaire 07:08
+Mairie / École 07:12
+76780 HODENG-HODENGER Mairie / École 07:18
+Rond-Point d'Hodenger 07:23
+Le Pont 07:25
+76220 BEAUVOIR-EN-LYONS Les Acres 07:31
+Les Livrées 07:36
+Ferme des Livrées 07:37
+27480 LE TRONQUAY Place du Tronquay 07:06
+27480 LORLEAU Église 07:11
+27480 BEAUFICEL-EN-LYONS Nouveau Monde 07:12
+27480 LORLEAU La Lande Asseline 07:14
+Carrefour Beauficel 07:16
+27480 FLEURY-LA-FORET Centre 07:23
+Le Fayel 07:25
+La Cavée 07:26
+Le Montrouge 07:27
+Écorcheval 07:29
+La Boulaye - Route des Hameaux, n° 2 07:30
+La Boulaye - Route de La Feuillie, n° 19 07:31
+27480 LORLEAU Cabine 07:36
+76780 LA HALLOTIERE La Papillonnerie 06:59
+Mairie / École 07:02
+Maison Neuve 07:03
+76780 LA CHAPELLE-SAINT-OUEN Rondine 07:10
+Mairie 07:12
+Bois Gautier 07:14
+Bruquedalles 07:16
+76780 LE HERON Les Hameaux 07:23
+École 07:27
+76780 MORVILLE-SUR-ANDELLE Mairie / École 07:32
+La Poste 07:33
+76780 SAINT-LUCIEN Petit Mont Alix 07:39
+La Croix 07:41
+École 07:44
+76780 SIGY-EN-BRAY Rue du Bas 07:45
+76220 LA FEUILLIE La Poterie 07:39
+La Ferme du Bray 07:41
+La Cuette 07:47
+Le Pavillon 07:49
+Le Haut Manoir 07:51
+Route de Beauvoir-en-Lyons 07:52
+Les Mazis 07:43
+76780 FRY Centre 07:15
+76780 LE MESNIL-LIEUBRAY Centre 07:17
+La Vente 07:47
+Les Houx 07:48
+76780 NOLLEVAL Le Boulay 07:25
+Le Rouget 07:21 07:53
+Salle des Fêtes 07:22
+Montagny 07:54
+76780 MORVILLE-SUR-ANDELLE Clanquemeule 07:30
+Vallée Crosnier 07:28
+76780 LA HAYE Église 07:32
+76780 LE HERON La Forge 07:35
+76116 SAINT-DENIS-LE-THIBOULT Les Grandes Ventes 07:40
+76780 ELBEUF-SUR-ANDELLE Le Catillon 07:42
+La Carbonnière 07:43
+Mairie / École 07:46
+76780 CROISY-SUR-ANDELLE Le Pont de l'Andelle 07:48
+Mairie / École 07:50
+Val Saint-Pierre 07:55
+76220 LA FEUILLIE Les 13 Acres 07:39
+Le Richebourg - Centre 07:40
+Entre Deux Landes 07:41
+La Planche 07:42
+Les Ventes 07:47
+Les Cornets 07:50
+Camp Jean 08:00
+Le Vert Four 08:01
+Collège La Hêtraie 07:55 07:55 08:00 08:05 08:09
+RETOUR
+132 1 jour --Me---- Période Scolaire (hors JF) Dynamique : Oui Oui Oui Oui Oui Non Non Non Non Non
+415 4 jours LuMa-JeVe-- Période Scolaire (hors JF) Dynamique : Non Non Non Non Non Oui Oui Oui Oui Oui
+Itinéraires 5011B2 5011A6 5011A4 5011A2 5011A1 5011B0 5011A2 5011A1 5011A5 5011B3
+Services 1 1 1 1 1 1 2 2 1 2
+CP Commune Point d'arrêt --Me---- --Me---- --Me---- --Me---- --Me---- LM-JV-- LM-JV-- LM-JV-- LM-JV-- LM-JV--
+76220 LA FEUILLIE Collège La Hêtraie 12:30 12:30 12:30 12:30 12:30 17:00 17:00 17:00 17:02 17:05
+La Ferme du Bray 12:40 17:10
+Les Ventes 12:43 17:13
+Les Cornets 12:45 17:15
+Le Vert Four 12:55 17:25
+Camp Jean 12:57 17:27
+27480 LE TRONQUAY Place du Tronquay 12:42 17:17
+27480 LORLEAU Église 12:50 17:25
+27480 BEAUFICEL-EN-LYONS Nouveau Monde 12:51 17:26
+27480 LORLEAU La Lande Asseline 12:54 17:29
+Carrefour Beauficel 12:57 17:33
+27480 FLEURY-LA-FORET Centre 12:59 17:34
+Le Fayel 13:01 17:36
+La Cavée 13:03 17:38
+Le Montrouge 13:04 17:39
+Écorcheval 13:05 17:40
+La Boulaye - Route des Hameaux, n° 2 13:08 17:43
+27480 LORLEAU Cabine 13:13 17:48
+76220 BEAUVOIR-EN-LYONS Les Carreaux 12:42 17:12
+Camp Caillot 12:43 17:13
+Mont Réal - Calvaire 12:44 17:14
+Mairie / École 12:48 17:18
+76780 HODENG-HODENGER Mairie / École 12:53 17:23
+Le Pont 12:55 17:25
+Rond-Point d'Hodenger 12:56 17:26
+76220 BEAUVOIR-EN-LYONS Les Acres 13:03 17:33
+Les Livrées 13:07 17:37
+Ferme des Livrées 13:08 17:38
+76220 LA FEUILLIE Les Mazis 13:14 17:44
+La Poterie 13:14 17:49
+La Cuette 13:16 17:52
+Le Pavillon 13:18 17:56
+Le Haut Manoir 13:21 18:00
+76780 LE MESNIL-LIEUBRAY La Vente 13:19 17:49
+Les Houx 13:20 17:50
+Centre 13:25 17:55
+76780 FRY Centre 13:26 17:56
+76780 NOLLEVAL Le Boulay 12:45 17:15
+Salle des Fêtes 13:01 17:31
+Montagny 12:36 17:08
+Le Rouget 12:37 17:09
+76780 LA HALLOTIERE La Papillonnerie 12:42 17:14
+Mairie / École 12:44 17:16
+Maison Neuve 12:45 17:17
+76780 LA CHAPELLE-SAINT-OUEN Rondine 12:48 17:20
+Mairie 12:51 17:23
+Bruquedalles 12:54 17:26
+Bois Gautier 13:00 17:32
+76780 LE HERON Les Hameaux 13:04 17:36
+École 13:07 17:39
+76780 MORVILLE-SUR-ANDELLE Clanquemeule 12:48 17:18
+Vallée Crosnier 13:06 17:36
+Mairie / École 13:12 17:44
+La Poste 13:13 17:45
+Le Pont Léon - Chemin de la Croix 13:14 17:46
+76780 LE HERON La Forge 12:53 17:23
+76780 ELBEUF-SUR-ANDELLE Mairie / École 12:55 17:25
+76116 SAINT-DENIS-LE-THIBOULT Les Grandes Ventes 13:01 17:31
+76780 ELBEUF-SUR-ANDELLE Le Catillon 13:03 17:33
+La Carbonnière 13:04 17:34
+76780 CROISY-SUR-ANDELLE Le Pont de l'Andelle 13:08 17:38
+Mairie / École 13:12 17:42
+Val Saint-Pierre 13:17 17:47
+76780 LA HAYE Église 13:14 17:44
+76220 LA FEUILLIE Les 13 Acres 13:22 17:52
+Le Richebourg - Centre 13:24 17:54
+Entre Deux Landes 13:27 17:57
+La Planche 13:28 17:58
+76780 SAINT-LUCIEN Petit Mont Alix 13:18 17:50
+La Croix 13:19 17:51
+École 13:21 17:53
+76780 SIGY-EN-BRAY Rue du Bas 13:22 17:54

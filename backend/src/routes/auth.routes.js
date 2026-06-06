@@ -1,0 +1,59 @@
+﻿import { Router } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { pool } from '../db/pool.js';
+import { env } from '../config/env.js';
+import { requireAuth } from '../middleware/auth.js';
+
+const router = Router();
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  const { rows } = await pool.query('select id, name, email, role, password_hash from users where email=$1', [email]);
+  const user = rows[0];
+  if (!user || !(await bcrypt.compare(password, user.password_hash))) return res.status(401).json({ error: 'invalid_credentials' });
+  await pool.query('insert into login_history(user_id, ip_address) values ($1, $2)', [user.id, req.ip]);
+  const token = jwt.sign({ sub: user.id, role: user.role, email: user.email }, env.jwtSecret, { expiresIn: '12h' });
+  res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+});
+
+router.post('/driver-code', async (req, res) => {
+  const code = String(req.body?.code ?? '').trim();
+  if (!code) return res.status(400).json({ error: 'code_required' });
+
+  const { rows } = await pool.query(`
+    select c.id as code_id, c.code_hash, c.sector_name, c.sector_keywords, u.id, u.name, u.email, u.role
+    from driver_access_codes c
+    join users u on u.id = c.driver_id
+    where c.active=true and u.role='driver' and (c.expires_at is null or c.expires_at > now())
+  `);
+
+  for (const user of rows) {
+    if (await bcrypt.compare(code, user.code_hash)) {
+      await pool.query('insert into login_history(user_id, ip_address) values ($1, $2)', [user.id, req.ip]);
+      const sector = { name: user.sector_name, keywords: user.sector_keywords ?? [] };
+      const token = jwt.sign({ sub: user.id, role: user.role, email: user.email, sector }, env.jwtSecret, { expiresIn: '12h' });
+      return res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, sector } });
+    }
+  }
+
+  return res.status(401).json({ error: 'invalid_code' });
+});
+
+router.post('/guest/passenger', async (req, res) => {
+  const user = {
+    id: '00000000-0000-0000-0000-000000000002',
+    name: 'Acces parent eleve',
+    email: 'parent@demo.local',
+    role: 'parent',
+  };
+  const token = jwt.sign({ sub: user.id, role: user.role, email: user.email, guest: true }, env.jwtSecret, { expiresIn: '24h' });
+  res.json({ token, user });
+});
+
+router.post('/fcm-token', requireAuth(), async (req, res) => {
+  const fcmToken = String(req.body?.fcmToken ?? '').trim();
+  if (!fcmToken) return res.status(400).json({ error: 'fcm_token_required' });
+  await pool.query('update users set fcm_token=$1 where id=$2', [fcmToken, req.user.sub]);
+  res.json({ ok: true });
+});
+export default router;

@@ -71,7 +71,8 @@ function routeMatchesKeywords(route, keywords) {
 router.use(requireAuth());
 
 router.get('/routes', (req, res) => {
-  const query = String(req.query.q ?? '').toLowerCase();
+  const query = normalize(req.query.q ?? '');
+  const queryTerms = query.split(/\s+/).filter(Boolean);
   const highlighted = req.query.highlighted === 'true';
   const data = readNomadData();
   const schoolData = readSchoolData();
@@ -87,11 +88,10 @@ router.get('/routes', (req, res) => {
     routes = routes.filter((route) => route.highlighted);
   }
 
-  if (query) {
+  if (queryTerms.length > 0) {
     routes = routes.filter((route) => {
-      const routeText = `${route.shortName} ${route.longName}`.toLowerCase();
-      const stopText = route.stops.map((stop) => stop.name).join(' ').toLowerCase();
-      return routeText.includes(query) || stopText.includes(query);
+      const searchable = normalize(`${route.shortName} ${route.longName} ${(route.sectorKeywords ?? []).join(' ')} ${route.stops.map((stop) => stop.name).join(' ')}`);
+      return queryTerms.every((term) => searchable.includes(term));
     });
   }
 

@@ -41,6 +41,8 @@ router.post('/driver-code', async (req, res) => {
 
 router.post('/guest/passenger', async (req, res) => {
   try {
+    await pool.query('alter table users add column if not exists guest_device_id text unique');
+
     const rawDeviceId = String(req.body?.deviceId ?? '').trim();
     const deviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80);
     if (!deviceId) return res.status(400).json({ error: 'device_id_required' });

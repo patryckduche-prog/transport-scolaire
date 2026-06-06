@@ -7,171 +7,562 @@
       "shortName": "5001A1",
       "longName": "Criquiers > Aumale Etablissements",
       "type": "Circuit scolaire",
-      "sectorKeywords": ["aumale", "criquiers", "conteville", "haudricourt"],
+      "sectorKeywords": [
+        "aumale",
+        "criquiers",
+        "conteville",
+        "haudricourt"
+      ],
       "tripCount": 1,
-      "stops": ["Pierrement", "Les Anthieux", "Mairie / Ecole", "Quartier l'Abbaye", "Bois des Puits", "Le Vergenet", "College Saint-Joseph", "College Henri Dunant / Ecole Primaire"]
+      "stops": [
+        "Pierrement",
+        "Les Anthieux",
+        "Mairie / Ecole",
+        "Quartier l'Abbaye",
+        "Bois des Puits",
+        "Le Vergenet",
+        "College Saint-Joseph",
+        "College Henri Dunant / Ecole Primaire"
+      ]
     },
     {
       "id": "SCHOOL-5001A0",
       "shortName": "5001A0",
       "longName": "Conteville / Haudricourt / Ronchois > Aumale Etablissements",
       "type": "Circuit scolaire",
-      "sectorKeywords": ["aumale", "conteville", "haudricourt", "ronchois"],
+      "sectorKeywords": [
+        "aumale",
+        "conteville",
+        "haudricourt",
+        "ronchois"
+      ],
       "tripCount": 1,
-      "stops": ["Le Campdos", "Les Defends Saint-Nicolas", "Mairie", "Route de Foucarmont", "Beaufresne", "Centre", "Ormesnil", "Petit Ronchois", "College Saint-Joseph", "College Henri Dunant / Ecole Primaire"]
+      "stops": [
+        "Le Campdos",
+        "Les Defends Saint-Nicolas",
+        "Mairie",
+        "Route de Foucarmont",
+        "Beaufresne",
+        "Centre",
+        "Ormesnil",
+        "Petit Ronchois",
+        "College Saint-Joseph",
+        "College Henri Dunant / Ecole Primaire"
+      ]
     },
     {
       "id": "SCHOOL-5001A2",
       "shortName": "5001A2",
       "longName": "Illois / Nullemont / Le Caule > Aumale Etablissements",
       "type": "Circuit scolaire",
-      "sectorKeywords": ["aumale", "illois", "nullemont", "le caule", "auvilliers"],
+      "sectorKeywords": [
+        "aumale",
+        "illois",
+        "nullemont",
+        "le caule",
+        "auvilliers"
+      ],
       "tripCount": 1,
-      "stops": ["Garage", "Carrefour N29 x D82", "Le Forestel", "Lotissement", "Centre", "Bernompre", "Centre Equestre", "Salle des Fetes", "Eglise", "College Saint-Joseph", "College Henri Dunant / Ecole Primaire"]
+      "stops": [
+        "Garage",
+        "Carrefour N29 x D82",
+        "Le Forestel",
+        "Lotissement",
+        "Centre",
+        "Bernompre",
+        "Centre Equestre",
+        "Salle des Fetes",
+        "Eglise",
+        "College Saint-Joseph",
+        "College Henri Dunant / Ecole Primaire"
+      ]
     },
     {
       "id": "SCHOOL-5001A3",
       "shortName": "5001A3",
       "longName": "Aubeguimont / Richemont / Marques / Ellecourt > Aumale Etablissements",
       "type": "Circuit scolaire",
-      "sectorKeywords": ["aumale", "aubeguimont", "richemont", "marques", "ellecourt"],
+      "sectorKeywords": [
+        "aumale",
+        "aubeguimont",
+        "richemont",
+        "marques",
+        "ellecourt"
+      ],
       "tripCount": 1,
-      "stops": ["Coquereaux", "Mairie / Ecole", "Rue Principale", "Ancienne Place", "Ecole Primaire", "La Neuville", "Les Cateliers", "La Mare Guilbert", "Blingemer", "La Comtee", "Eglise / Ecole", "College Saint-Joseph", "College Henri Dunant / Ecole Primaire"]
+      "stops": [
+        "Coquereaux",
+        "Mairie / Ecole",
+        "Rue Principale",
+        "Ancienne Place",
+        "Ecole Primaire",
+        "La Neuville",
+        "Les Cateliers",
+        "La Mare Guilbert",
+        "Blingemer",
+        "La Comtee",
+        "Eglise / Ecole",
+        "College Saint-Joseph",
+        "College Henri Dunant / Ecole Primaire"
+      ]
     },
     {
       "id": "SCHOOL-5001A4",
       "shortName": "5001A4",
       "longName": "Vieux-Rouen-sur-Bresle / Morienne > Aumale Etablissements",
       "type": "Circuit scolaire",
-      "sectorKeywords": ["aumale", "vieux-rouen-sur-bresle", "bresle", "morienne"],
+      "sectorKeywords": [
+        "aumale",
+        "vieux-rouen-sur-bresle",
+        "bresle",
+        "morienne"
+      ],
       "tripCount": 1,
-      "stops": ["Beau Soleil", "Sailly", "Bouafles", "Ressenroy", "Centre", "Sortival", "Rivery", "Bois de la Ville", "Eglise", "Coppegueule", "College Saint-Joseph", "College Henri Dunant / Ecole Primaire"]
+      "stops": [
+        "Beau Soleil",
+        "Sailly",
+        "Bouafles",
+        "Ressenroy",
+        "Centre",
+        "Sortival",
+        "Rivery",
+        "Bois de la Ville",
+        "Eglise",
+        "Coppegueule",
+        "College Saint-Joseph",
+        "College Henri Dunant / Ecole Primaire"
+      ]
     },
     {
       "id": "SCHOOL-5001A7-MIDI",
       "shortName": "5001A7",
       "longName": "Aumale Etablissements > Morienne / Vieux-Rouen-sur-Bresle",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "morienne", "vieux-rouen-sur-bresle", "bresle"],
+      "sectorKeywords": [
+        "aumale",
+        "morienne",
+        "vieux-rouen-sur-bresle",
+        "bresle"
+      ],
       "tripCount": 1,
-      "stops": ["College Henri Dunant / Ecole Primaire", "College Saint-Joseph", "Coppegueule", "Eglise", "Bois de la Ville", "Rivery", "Sortival", "Centre", "Bouafles", "Sailly", "Beau Soleil"]
+      "stops": [
+        "College Henri Dunant / Ecole Primaire",
+        "College Saint-Joseph",
+        "Coppegueule",
+        "Eglise",
+        "Bois de la Ville",
+        "Rivery",
+        "Sortival",
+        "Centre",
+        "Bouafles",
+        "Sailly",
+        "Beau Soleil"
+      ]
     },
     {
       "id": "SCHOOL-5001B0",
       "shortName": "5001B0",
       "longName": "Aumale Etablissements > Aubeguimont / Haudricourt",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "aubeguimont", "haudricourt"],
+      "sectorKeywords": [
+        "aumale",
+        "aubeguimont",
+        "haudricourt"
+      ],
       "tripCount": 1,
-      "stops": ["College Henri Dunant / Ecole Primaire", "College Saint-Joseph", "Coquereaux", "La Couture", "Roupied", "Villers", "Eglise", "La Bretagne"]
+      "stops": [
+        "College Henri Dunant / Ecole Primaire",
+        "College Saint-Joseph",
+        "Coquereaux",
+        "La Couture",
+        "Roupied",
+        "Villers",
+        "Eglise",
+        "La Bretagne"
+      ]
     },
     {
       "id": "SCHOOL-5001A8",
       "shortName": "5001A8",
       "longName": "Aumale Etablissements > Marques / Ellecourt / Aubeguimont / Richemont",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "marques", "ellecourt", "aubeguimont", "richemont"],
+      "sectorKeywords": [
+        "aumale",
+        "marques",
+        "ellecourt",
+        "aubeguimont",
+        "richemont"
+      ],
       "tripCount": 1,
-      "stops": ["College Henri Dunant / Ecole Primaire", "College Saint-Joseph", "Val a Leu", "Le Marescot", "Les Communes", "Eglise", "Ronde Epine", "Barques", "Eglise / Ecole", "Blingemer", "La Comtee", "Rue Principale", "Ancienne Place", "La Neuville"]
+      "stops": [
+        "College Henri Dunant / Ecole Primaire",
+        "College Saint-Joseph",
+        "Val a Leu",
+        "Le Marescot",
+        "Les Communes",
+        "Eglise",
+        "Ronde Epine",
+        "Barques",
+        "Eglise / Ecole",
+        "Blingemer",
+        "La Comtee",
+        "Rue Principale",
+        "Ancienne Place",
+        "La Neuville"
+      ]
     },
     {
       "id": "SCHOOL-5001A5",
       "shortName": "5001A5",
       "longName": "Aumale Etablissements > Landes / Le Caule / Auvilliers",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "landes", "le caule", "auvilliers"],
+      "sectorKeywords": [
+        "aumale",
+        "landes",
+        "le caule",
+        "auvilliers"
+      ],
       "tripCount": 1,
-      "stops": ["College Henri Dunant / Ecole Primaire", "College Saint-Joseph", "Les Vieilles Landes", "Rougemare", "Eglise", "Tortillard", "Sainte-Beuve-aux-Champs", "Salle des Fetes", "Route des Mesanges", "Eglise"]
+      "stops": [
+        "College Henri Dunant / Ecole Primaire",
+        "College Saint-Joseph",
+        "Les Vieilles Landes",
+        "Rougemare",
+        "Eglise",
+        "Tortillard",
+        "Sainte-Beuve-aux-Champs",
+        "Salle des Fetes",
+        "Route des Mesanges",
+        "Eglise"
+      ]
     },
     {
       "id": "SCHOOL-5001B2",
       "shortName": "5001B2",
       "longName": "Aumale Etablissements > Illois / Ronchois / Conteville / Criquiers",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "illois", "ronchois", "conteville", "criquiers"],
+      "sectorKeywords": [
+        "aumale",
+        "illois",
+        "ronchois",
+        "conteville",
+        "criquiers"
+      ],
       "tripCount": 1,
-      "stops": ["College Henri Dunant / Ecole Primaire", "College Saint-Joseph", "Chateau de Coupigny", "Eglise", "Le Menivier", "Sous les Quesnes", "Petit Ronchois", "Les Defends Saint-Nicolas", "Le Campdos", "Pierrement", "Les Anthieux", "Mairie / Ecole", "Le Vergenet"]
+      "stops": [
+        "College Henri Dunant / Ecole Primaire",
+        "College Saint-Joseph",
+        "Chateau de Coupigny",
+        "Eglise",
+        "Le Menivier",
+        "Sous les Quesnes",
+        "Petit Ronchois",
+        "Les Defends Saint-Nicolas",
+        "Le Campdos",
+        "Pierrement",
+        "Les Anthieux",
+        "Mairie / Ecole",
+        "Le Vergenet"
+      ]
     },
     {
       "id": "SCHOOL-5001A6",
       "shortName": "5001A6",
       "longName": "Aumale Etablissements > Nullemont / Illois / Le Caule",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "nullemont", "illois", "le caule"],
+      "sectorKeywords": [
+        "aumale",
+        "nullemont",
+        "illois",
+        "le caule"
+      ],
       "tripCount": 1,
-      "stops": ["College Henri Dunant / Ecole Primaire", "College Saint-Joseph", "Bernompre", "Centre", "Lotissement", "Le Forestel", "Carrefour N29 x D82", "RN 29", "Centre Equestre", "Salle des Fetes"]
+      "stops": [
+        "College Henri Dunant / Ecole Primaire",
+        "College Saint-Joseph",
+        "Bernompre",
+        "Centre",
+        "Lotissement",
+        "Le Forestel",
+        "Carrefour N29 x D82",
+        "RN 29",
+        "Centre Equestre",
+        "Salle des Fetes"
+      ]
     },
     {
       "id": "SCHOOL-5001B1",
       "shortName": "5001B1",
       "longName": "Aumale Etablissements > Vieux-Rouen-sur-Bresle / Morienne soir",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "vieux-rouen-sur-bresle", "bresle", "morienne"],
+      "sectorKeywords": [
+        "aumale",
+        "vieux-rouen-sur-bresle",
+        "bresle",
+        "morienne"
+      ],
       "tripCount": 1,
-      "stops": ["College Henri Dunant / Ecole Primaire", "College Saint-Joseph", "Rivery", "Sortival", "Centre", "Ressenroy", "Bouafles", "Sailly", "Beau Soleil", "Coppegueule", "Eglise", "Bois de la Ville"]
+      "stops": [
+        "College Henri Dunant / Ecole Primaire",
+        "College Saint-Joseph",
+        "Rivery",
+        "Sortival",
+        "Centre",
+        "Ressenroy",
+        "Bouafles",
+        "Sailly",
+        "Beau Soleil",
+        "Coppegueule",
+        "Eglise",
+        "Bois de la Ville"
+      ]
     },
     {
       "id": "SCHOOL-5001B3",
       "shortName": "5001B3",
       "longName": "Aumale Etablissements > Criquiers / Conteville / Haudricourt soir",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "criquiers", "conteville", "haudricourt"],
+      "sectorKeywords": [
+        "aumale",
+        "criquiers",
+        "conteville",
+        "haudricourt"
+      ],
       "tripCount": 1,
-      "stops": ["College Henri Dunant / Ecole Primaire", "College Saint-Joseph", "RN 29", "Centre", "Ormesnil", "Mairie", "Route de Foucarmont", "Beaufresne", "Les Anthieux", "Mairie / Ecole", "Quartier l'Abbaye", "Bois des Puits"]
+      "stops": [
+        "College Henri Dunant / Ecole Primaire",
+        "College Saint-Joseph",
+        "RN 29",
+        "Centre",
+        "Ormesnil",
+        "Mairie",
+        "Route de Foucarmont",
+        "Beaufresne",
+        "Les Anthieux",
+        "Mairie / Ecole",
+        "Quartier l'Abbaye",
+        "Bois des Puits"
+      ]
     },
     {
       "id": "SCHOOL-5010A4",
       "shortName": "5010A4",
       "longName": "Aumale > Forges-les-Eaux Etablissements",
       "type": "Circuit scolaire",
-      "sectorKeywords": ["aumale", "forges-les-eaux", "forges les eaux", "ronchois", "beaussault", "compainville"],
+      "sectorKeywords": [
+        "aumale",
+        "forges-les-eaux",
+        "forges les eaux",
+        "ronchois",
+        "beaussault",
+        "compainville"
+      ],
       "tripCount": 1,
-      "stops": ["Aumale - College Henri Dunant / Ecole Primaire", "Ronchois - Centre", "Ronchois - Petit Ronchois", "Nesle-Hodeng - Les Noyers", "Nesle-Hodeng - Le Quesnay", "Nesle-Hodeng - Cressy", "Beaussault - Ecole", "Compainville - Mesnil David", "Forges-les-Eaux - College Saint-Exupery", "Forges-les-Eaux - Lycee Delamare Deboutteville", "Forges-les-Eaux - College Saint-Joseph"]
+      "stops": [
+        "Aumale - College Henri Dunant / Ecole Primaire",
+        "Ronchois - Centre",
+        "Ronchois - Petit Ronchois",
+        "Nesle-Hodeng - Les Noyers",
+        "Nesle-Hodeng - Le Quesnay",
+        "Nesle-Hodeng - Cressy",
+        "Beaussault - Ecole",
+        "Compainville - Mesnil David",
+        "Forges-les-Eaux - College Saint-Exupery",
+        "Forges-les-Eaux - Lycee Delamare Deboutteville",
+        "Forges-les-Eaux - College Saint-Joseph"
+      ]
     },
     {
       "id": "SCHOOL-5010A0",
       "shortName": "5010A0",
-      "longName": "Conteville / Haudricourt / Ronchois > Forges-les-Eaux Etablissements",
+      "longName": "Aumale / Haudricourt / Conteville / Ronchois > Forges-les-Eaux Etablissements",
       "type": "Circuit scolaire",
-      "sectorKeywords": ["aumale", "conteville", "haudricourt", "ronchois", "forges-les-eaux", "forges les eaux"],
+      "sectorKeywords": [
+        "aumale",
+        "haudricourt",
+        "conteville",
+        "ronchois",
+        "forges-les-eaux",
+        "forges les eaux"
+      ],
       "tripCount": 1,
-      "stops": ["Conteville - Le Campdos", "Conteville - Les Defends Saint-Nicolas", "Haudricourt - Mairie", "Haudricourt - Route de Foucarmont", "Haudricourt - Beaufresne", "Ronchois - Petit Ronchois", "Ronchois - Centre", "Forges-les-Eaux - College Saint-Exupery", "Forges-les-Eaux - Lycee Delamare Deboutteville", "Forges-les-Eaux - College Saint-Joseph"]
+      "stops": [
+        "Aumale - Place de la Liberation (07:00)",
+        "Aumale - Bailly (07:03)",
+        "Haudricourt - Villers (07:06)",
+        "Haudricourt - Pont de la Bresle (07:09)",
+        "Haudricourt - Beaufresne (07:12)",
+        "Conteville - Les Defends (07:14)",
+        "Ronchois - Centre (07:22)",
+        "Conteville - Centre (07:28)",
+        "Forges-les-Eaux - Lycee E. Delamare / College A. de Saint-Exupery (07:45)"
+      ]
     },
     {
       "id": "SCHOOL-5010A3",
       "shortName": "5010A3",
       "longName": "Richemont / Marques / Ellecourt > Forges-les-Eaux Etablissements",
       "type": "Circuit scolaire",
-      "sectorKeywords": ["aumale", "richemont", "marques", "ellecourt", "forges-les-eaux", "forges les eaux"],
+      "sectorKeywords": [
+        "aumale",
+        "richemont",
+        "marques",
+        "ellecourt",
+        "forges-les-eaux",
+        "forges les eaux"
+      ],
       "tripCount": 1,
-      "stops": ["Richemont - Rue Principale", "Marques - Ancienne Place", "Marques - Ecole Primaire", "Marques - La Neuville", "Marques - Les Cateliers", "Marques - La Mare Guilbert", "Ellecourt - Blingemer", "Ellecourt - La Comtee", "Ellecourt - Eglise / Ecole", "Forges-les-Eaux - College Saint-Exupery", "Forges-les-Eaux - Lycee Delamare Deboutteville", "Forges-les-Eaux - College Saint-Joseph"]
+      "stops": [
+        "Richemont - Rue Principale",
+        "Marques - Ancienne Place",
+        "Marques - Ecole Primaire",
+        "Marques - La Neuville",
+        "Marques - Les Cateliers",
+        "Marques - La Mare Guilbert",
+        "Ellecourt - Blingemer",
+        "Ellecourt - La Comtee",
+        "Ellecourt - Eglise / Ecole",
+        "Forges-les-Eaux - College Saint-Exupery",
+        "Forges-les-Eaux - Lycee Delamare Deboutteville",
+        "Forges-les-Eaux - College Saint-Joseph"
+      ]
     },
     {
       "id": "SCHOOL-5010B1",
       "shortName": "5010B1",
       "longName": "Forges-les-Eaux Etablissements > Aumale / Ronchois / Conteville",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "forges-les-eaux", "forges les eaux", "ronchois", "conteville"],
+      "sectorKeywords": [
+        "aumale",
+        "forges-les-eaux",
+        "forges les eaux",
+        "ronchois",
+        "conteville"
+      ],
       "tripCount": 1,
-      "stops": ["Forges-les-Eaux - College Saint-Joseph", "Forges-les-Eaux - Lycee Delamare Deboutteville", "Forges-les-Eaux - College Saint-Exupery", "Beaussault - Ecole", "Nesle-Hodeng - Cressy", "Nesle-Hodeng - Le Quesnay", "Nesle-Hodeng - Les Noyers", "Ronchois - Centre", "Ronchois - Petit Ronchois", "Conteville - Les Defends Saint-Nicolas", "Conteville - Le Campdos", "Aumale - College Henri Dunant / Ecole Primaire"]
+      "stops": [
+        "Forges-les-Eaux - College Saint-Joseph",
+        "Forges-les-Eaux - Lycee Delamare Deboutteville",
+        "Forges-les-Eaux - College Saint-Exupery",
+        "Beaussault - Ecole",
+        "Nesle-Hodeng - Cressy",
+        "Nesle-Hodeng - Le Quesnay",
+        "Nesle-Hodeng - Les Noyers",
+        "Ronchois - Centre",
+        "Ronchois - Petit Ronchois",
+        "Conteville - Les Defends Saint-Nicolas",
+        "Conteville - Le Campdos",
+        "Aumale - College Henri Dunant / Ecole Primaire"
+      ]
     },
     {
       "id": "SCHOOL-5010B2",
       "shortName": "5010B2",
       "longName": "Forges-les-Eaux Etablissements > Marques / Ellecourt / Richemont",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "forges-les-eaux", "forges les eaux", "marques", "ellecourt", "richemont"],
+      "sectorKeywords": [
+        "aumale",
+        "forges-les-eaux",
+        "forges les eaux",
+        "marques",
+        "ellecourt",
+        "richemont"
+      ],
       "tripCount": 1,
-      "stops": ["Forges-les-Eaux - College Saint-Joseph", "Forges-les-Eaux - Lycee Delamare Deboutteville", "Forges-les-Eaux - College Saint-Exupery", "Ellecourt - Eglise / Ecole", "Ellecourt - La Comtee", "Ellecourt - Blingemer", "Marques - La Mare Guilbert", "Marques - Les Cateliers", "Marques - La Neuville", "Marques - Ecole Primaire", "Marques - Ancienne Place", "Richemont - Rue Principale"]
+      "stops": [
+        "Forges-les-Eaux - College Saint-Joseph",
+        "Forges-les-Eaux - Lycee Delamare Deboutteville",
+        "Forges-les-Eaux - College Saint-Exupery",
+        "Ellecourt - Eglise / Ecole",
+        "Ellecourt - La Comtee",
+        "Ellecourt - Blingemer",
+        "Marques - La Mare Guilbert",
+        "Marques - Les Cateliers",
+        "Marques - La Neuville",
+        "Marques - Ecole Primaire",
+        "Marques - Ancienne Place",
+        "Richemont - Rue Principale"
+      ]
     },
     {
       "id": "SCHOOL-5010B3",
       "shortName": "5010B3",
       "longName": "Forges-les-Eaux Etablissements > Haudricourt / Aumale",
       "type": "Circuit scolaire retour",
-      "sectorKeywords": ["aumale", "forges-les-eaux", "forges les eaux", "haudricourt"],
+      "sectorKeywords": [
+        "aumale",
+        "forges-les-eaux",
+        "forges les eaux",
+        "haudricourt"
+      ],
       "tripCount": 1,
-      "stops": ["Forges-les-Eaux - College Saint-Joseph", "Forges-les-Eaux - Lycee Delamare Deboutteville", "Forges-les-Eaux - College Saint-Exupery", "Haudricourt - Beaufresne", "Haudricourt - Route de Foucarmont", "Haudricourt - Mairie", "Aumale - College Henri Dunant / Ecole Primaire"]
+      "stops": [
+        "Forges-les-Eaux - College Saint-Joseph",
+        "Forges-les-Eaux - Lycee Delamare Deboutteville",
+        "Forges-les-Eaux - College Saint-Exupery",
+        "Haudricourt - Beaufresne",
+        "Haudricourt - Route de Foucarmont",
+        "Haudricourt - Mairie",
+        "Aumale - College Henri Dunant / Ecole Primaire"
+      ]
+    },
+    {
+      "id": "SCHOOL-5002A1",
+      "shortName": "5002A1",
+      "longName": "Saint-Martin-au-Bosc / Vieux-Rouen-sur-Bresle / Ellecourt > Aumale correspondance Neufchatel - Forges",
+      "type": "Rabattement scolaire",
+      "sectorKeywords": [
+        "aumale",
+        "saint-martin-au-bosc",
+        "vieux-rouen-sur-bresle",
+        "ellecourt",
+        "neufchatel-en-bray",
+        "forges-les-eaux",
+        "forges les eaux"
+      ],
+      "tripCount": 1,
+      "stops": [
+        "Saint-Martin-au-Bosc - Ecole / Centre (06:30)",
+        "Saint-Martin-au-Bosc - Edruchon (06:32)",
+        "Vieux-Rouen-sur-Bresle - Bouafles (06:47)",
+        "Vieux-Rouen-sur-Bresle - Ressenroy (06:49)",
+        "Vieux-Rouen-sur-Bresle - Centre (06:50)",
+        "Vieux-Rouen-sur-Bresle - Sortival (06:52)",
+        "Ellecourt - Caquevelle (06:55)",
+        "Ellecourt - Le Marescot (06:56)",
+        "Ellecourt - Val a Leu (06:57)",
+        "Aumale - Place de la Liberation (07:00) - correspondance Neufchatel / Forges"
+      ]
+    },
+    {
+      "id": "SCHOOL-5002A0",
+      "shortName": "5002A0",
+      "longName": "Conteville / Haudricourt / Marques / Morienne > Aumale correspondance Neufchatel - Forges",
+      "type": "Rabattement scolaire",
+      "sectorKeywords": [
+        "aumale",
+        "conteville",
+        "haudricourt",
+        "marques",
+        "morienne",
+        "neufchatel-en-bray",
+        "forges-les-eaux",
+        "forges les eaux"
+      ],
+      "tripCount": 1,
+      "stops": [
+        "Conteville - Centre (06:15)",
+        "Conteville - Les Defends (06:18)",
+        "Haudricourt - Beaufresne (06:21)",
+        "Haudricourt - Eglise (06:28)",
+        "Haudricourt - Villers (06:31)",
+        "Marques - Ronde Epine (06:41)",
+        "Marques - Barques (06:43)",
+        "Morienne - Eglise (06:49)",
+        "Morienne - Bois de la Ville (06:51)",
+        "Aumale - Rivery (06:58)",
+        "Aumale - Place de la Liberation (07:00) - correspondance Neufchatel / Forges"
+      ]
     }
   ]
 }

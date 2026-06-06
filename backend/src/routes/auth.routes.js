@@ -40,12 +40,26 @@ router.post('/driver-code', async (req, res) => {
 });
 
 router.post('/guest/passenger', async (req, res) => {
-  const user = {
-    id: '00000000-0000-0000-0000-000000000002',
-    name: 'Acces parent eleve',
-    email: 'parent@demo.local',
-    role: 'parent',
-  };
+  const rawDeviceId = String(req.body?.deviceId ?? '').trim();
+  const deviceId = rawDeviceId.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80);
+  if (!deviceId) return res.status(400).json({ error: 'device_id_required' });
+
+  const email = `guest-${deviceId}@bus-scolaire-connect.local`;
+  const { rows } = await pool.query(
+    `insert into users(name, email, password_hash, role, guest_device_id)
+     values ($1, $2, 'guest-access', 'parent', $3)
+     on conflict (guest_device_id)
+     do update set name=excluded.name
+     returning id, name, email, role`,
+    ['Acces parent eleve', email, deviceId],
+  );
+  const user = rows[0];
+  await pool.query(
+    `insert into passenger_notification_settings(user_id, enabled)
+     values ($1, true)
+     on conflict (user_id) do nothing`,
+    [user.id],
+  );
   const token = jwt.sign({ sub: user.id, role: user.role, email: user.email, guest: true }, env.jwtSecret, { expiresIn: '24h' });
   res.json({ token, user });
 });

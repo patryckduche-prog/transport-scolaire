@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/nomad_route.dart';
 import '../../services/api_service.dart';
 import '../../services/app_state.dart';
+import '../../services/notification_service.dart';
 import '../../widgets/root_back_guard.dart';
 import '../login_screen.dart';
 
@@ -25,6 +28,8 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   bool searching = false;
   String? error;
   int requestId = 0;
+  Timer? alertTimer;
+  final seenAlertIds = <String>{};
 
   void returnToLogin() {
     context.read<AppState>().logout();
@@ -39,6 +44,15 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   void initState() {
     super.initState();
     loadInitial();
+    alertTimer = Timer.periodic(
+        const Duration(seconds: 30), (_) => pollFavoriteAlerts());
+  }
+
+  @override
+  void dispose() {
+    alertTimer?.cancel();
+    search.dispose();
+    super.dispose();
   }
 
   Future<void> loadInitial() async {
@@ -57,6 +71,10 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
             settings['notificationsEnabled'] as bool? ?? true;
         favorites = favoriteData.cast<Map<String, dynamic>>();
         alerts = alertData;
+        seenAlertIds.addAll(alertData
+            .map((item) =>
+                ((item as Map<String, dynamic>)['id'] ?? '').toString())
+            .where((id) => id.isNotEmpty));
         loading = false;
       });
       await searchRoutes();
@@ -67,6 +85,33 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
         loading = false;
       });
     }
+  }
+
+  Future<void> pollFavoriteAlerts() async {
+    if (!mounted || !notificationsEnabled) return;
+    try {
+      final alertData = await context.read<ApiService>().getPassengerAlerts();
+      if (!mounted) return;
+
+      final newAlerts = <Map<String, dynamic>>[];
+      for (final item in alertData) {
+        final alert = item as Map<String, dynamic>;
+        final id = (alert['id'] ?? '').toString();
+        if (id.isEmpty || seenAlertIds.contains(id)) continue;
+        seenAlertIds.add(id);
+        newAlerts.add(alert);
+      }
+
+      setState(() => alerts = alertData);
+      for (final alert in newAlerts.reversed) {
+        await NotificationService.instance.showBusAlert(
+          title: alert['routeName'] as String? ?? 'Alerte bus scolaire',
+          body: alert['message'] as String? ??
+              'Nouvelle alerte sur une ligne favorite.',
+          id: int.tryParse((alert['id'] ?? '').toString()),
+        );
+      }
+    } catch (_) {}
   }
 
   Future<void> searchRoutes() async {
@@ -109,6 +154,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   Future<void> toggleNotifications(bool enabled) async {
     setState(() => notificationsEnabled = enabled);
     await context.read<ApiService>().updatePassengerSettings(enabled);
+    if (enabled) await pollFavoriteAlerts();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

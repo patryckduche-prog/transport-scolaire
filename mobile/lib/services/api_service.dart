@@ -27,8 +27,9 @@ class ApiService {
       (await _dio.post('/auth/driver-code', data: {'code': code})).data
           as Map<String, dynamic>;
 
-  Future<Map<String, dynamic>> startPassengerAccess() async =>
-      (await _dio.post('/auth/guest/passenger')).data as Map<String, dynamic>;
+  Future<Map<String, dynamic>> startPassengerAccess(String deviceId) async =>
+      (await _dio.post('/auth/guest/passenger', data: {'deviceId': deviceId}))
+          .data as Map<String, dynamic>;
 
   Future<List<dynamic>> getRoutes() async =>
       (await _dio.get('/routes')).data as List<dynamic>;

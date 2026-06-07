@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestion codes conducteur - Bus Scolaire Connect</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #132326;
+        --muted: #5d7176;
+        --line: #d7e2e4;
+        --panel: #f7fbfb;
+        --brand: #0f6f78;
+        --brand-dark: #0a535a;
+        --accent: #f59d28;
+        --danger: #b33226;
+        --ok: #137a43;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #eef4f5;
+        color: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 20px;
+        align-items: end;
+        min-height: 190px;
+        padding: 26px;
+        border-radius: 8px;
+        color: white;
+        background:
+          linear-gradient(90deg, rgba(6, 34, 38, .88), rgba(6, 34, 38, .28)),
+          linear-gradient(135deg, #0f6f78, #20383d 55%, #f59d28);
+        box-shadow: 0 6px 22px rgba(20, 35, 38, .16);
+      }
+
+      h1, h2, p { margin-top: 0; }
+      h1 { margin-bottom: 10px; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; }
+      h2 { margin-bottom: 14px; }
+      .lead { max-width: 760px; margin-bottom: 0; font-size: 18px; line-height: 1.45; }
+      .badge {
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, .16);
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .panel {
+        margin-top: 16px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 2px 8px rgba(20, 35, 38, .08);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      input, textarea, select {
+        width: 100%;
+        min-height: 46px;
+        margin-top: 6px;
+        padding: 0 12px;
+        border: 1px solid #aebdc1;
+        border-radius: 8px;
+        color: var(--ink);
+        font-size: 16px;
+        background: #fff;
+      }
+
+      textarea {
+        min-height: 80px;
+        padding: 10px 12px;
+        resize: vertical;
+      }
+
+      button {
+        min-height: 46px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 8px;
+        color: #fff;
+        background: var(--brand);
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      button:hover { background: var(--brand-dark); }
+      button.secondary { color: var(--brand); background: #e3f0f2; }
+      button.secondary:hover { background: #d5e8eb; }
+      button.danger { background: var(--danger); }
+      button.danger:hover { background: #8f261e; }
+
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .codeLine {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+      }
+
+      .status {
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      .ok { color: var(--ok); font-weight: 800; }
+      .error { color: var(--danger); font-weight: 800; }
+      .muted { color: var(--muted); }
+
+      .listHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .codes {
+        display: grid;
+        gap: 10px;
+      }
+
+      .codeCard {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .codeCard strong { display: block; margin-bottom: 4px; }
+      .codeCard span { color: var(--muted); }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 92px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(19, 122, 67, .14);
+        color: var(--ok);
+        font-weight: 800;
+      }
+
+      .pill.off {
+        background: rgba(179, 50, 38, .12);
+        color: var(--danger);
+      }
+
+      .quick {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin: 10px 0 14px;
+      }
+
+      .quick button {
+        min-height: 40px;
+        padding: 0 10px;
+        font-size: 14px;
+      }
+
+      @media (max-width: 860px) {
+        .hero, .grid, .codeCard { grid-template-columns: 1fr; }
+        .badge { width: fit-content; }
+        .quick { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <h1>Gestion codes conducteur</h1>
+          <p class="lead">Application locale sans serveur localhost. Elle se connecte directement au backend Render de Bus Scolaire Connect.</p>
+        </div>
+        <div class="badge" id="serverBadge">Render</div>
+      </section>
+
+      <section class="grid">
+        <form class="panel" id="loginForm">
+          <h2>Connexion gestion</h2>
+          <label>
+            Serveur API
+            <input id="apiBase" type="url" value="https://bus-scolaire-connect-api.onrender.com/api">
+          </label>
+          <label>
+            Email
+            <input id="email" type="email" value="entreprise@demo.local" autocomplete="username">
+          </label>
+          <label>
+            Mot de passe
+            <input id="password" type="password" value="demo1234" autocomplete="current-password">
+          </label>
+          <div class="row">
+            <button type="submit">Se connecter</button>
+            <button class="secondary" id="health" type="button">Tester serveur</button>
+            <button class="secondary" id="logout" type="button">Deconnecter</button>
+          </div>
+          <p class="status" id="loginStatus">Non connecte</p>
+        </form>
+
+        <form class="panel" id="codeForm">
+          <h2>Nouveau code de secteur</h2>
+          <div class="quick">
+            <button class="secondary" data-sector="Aumale" data-keywords="aumale,haudricourt,conteville,ronchois,forges" type="button">Aumale</button>
+            <button class="secondary" data-sector="Blangy-sur-Bresle" data-keywords="blangy,bresle,bouttencourt,monchaux" type="button">Blangy</button>
+            <button class="secondary" data-sector="Neufchatel-en-Bray" data-keywords="neufchatel,bray,mesnieres" type="button">Neufchatel</button>
+            <button class="secondary" data-sector="Tous secteurs" data-keywords="" type="button">Tous</button>
+          </div>
+          <label>
+            Compte conducteur technique
+            <input id="driverEmail" type="email" value="conducteur@demo.local">
+          </label>
+          <label>
+            Nom du code
+            <input id="label" type="text" value="Code secteur Aumale">
+          </label>
+          <label>
+            Secteur
+            <input id="sectorName" type="text" value="Aumale">
+          </label>
+          <label>
+            Mots-cles des lignes et arrets
+            <textarea id="sectorKeywords">aumale, haudricourt, conteville, ronchois, forges</textarea>
+          </label>
+          <label>
+            Code
+            <div class="codeLine">
+              <input id="code" type="text" value="AUMALE-2026">
+              <button id="generate" type="button">Generer</button>
+            </div>
+          </label>
+          <button type="submit">Enregistrer le code</button>
+          <p class="status" id="codeStatus">Connectez-vous avant de creer un code.</p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="listHeader">
+          <h2>Codes existants</h2>
+          <button id="refresh" type="button">Actualiser</button>
+        </div>
+        <div id="codes" class="codes">
+          <p class="status">Connectez-vous pour voir les codes.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const state = {
+        token: localStorage.getItem('bsc_admin_token') || '',
+      };
+
+      const $ = (selector) => document.querySelector(selector);
+      const loginForm = $('#loginForm');
+      const codeForm = $('#codeForm');
+      const loginStatus = $('#loginStatus');
+      const codeStatus = $('#codeStatus');
+      const codes = $('#codes');
+
+      function apiBase() {
+        return $('#apiBase').value.trim().replace(/\/$/, '');
+      }
+
+      function setStatus(element, text, type = '') {
+        element.textContent = text;
+        element.className = `status ${type}`.trim();
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      function randomCode() {
+        const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        const part = (length) => Array.from({ length }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+        const sector = $('#sectorName').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) || 'SECTEUR';
+        return `${sector}-${part(4)}`;
+      }
+
+      async function api(path, options = {}) {
+        const response = await fetch(`${apiBase()}${path}`, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}),
+            ...(options.headers ?? {}),
+          },
+        });
+        const text = await response.text();
+        let data = null;
+        try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+        if (!response.ok) {
+          throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+        }
+        return data;
+      }
+
+      async function refreshCodes() {
+        if (!state.token) {
+          codes.innerHTML = '<p class="status">Connectez-vous pour voir les codes.</p>';
+          return;
+        }
+        codes.innerHTML = '<p class="status">Chargement des codes...</p>';
+        try {
+          const data = await api('/driver-codes');
+          if (!data.length) {
+            codes.innerHTML = '<p class="status">Aucun code cree pour le moment.</p>';
+            return;
+          }
+          codes.innerHTML = data.map((item) => `
+            <article class="codeCard">
+              <div>
+                <strong>${escapeHtml(item.label)}</strong>
+                <span>${escapeHtml(item.sector_name)} - ${escapeHtml(item.driver_email)}</span><br>
+                <span>Mots-cles : ${escapeHtml((item.sector_keywords ?? []).join(', ') || 'toutes lignes')}</span><br>
+                <span>Cree le ${new Date(item.created_at).toLocaleString('fr-FR')}</span>
+              </div>
+              <div class="row">
+                <span class="pill ${item.active ? '' : 'off'}">${item.active ? 'Actif' : 'Desactive'}</span>
+                ${item.active ? `<button class="danger" data-disable="${escapeHtml(item.id)}" type="button">Desactiver</button>` : ''}
+              </div>
+            </article>
+          `).join('');
+        } catch (error) {
+          codes.innerHTML = `<p class="status error">Impossible de charger les codes. ${escapeHtml(error.message)}</p>`;
+        }
+      }
+
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        setStatus(loginStatus, 'Connexion en cours...');
+        try {
+          const data = await api('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({
+              email: $('#email').value.trim(),
+              password: $('#password').value,
+            }),
+          });
+          state.token = data.token;
+          localStorage.setItem('bsc_admin_token', state.token);
+          setStatus(loginStatus, `Connecte : ${data.user.name}`, 'ok');
+          await refreshCodes();
+        } catch (error) {
+          setStatus(loginStatus, `Connexion impossible. ${error.message}`, 'error');
+        }
+      });
+
+      $('#logout').addEventListener('click', () => {
+        state.token = '';
+        localStorage.removeItem('bsc_admin_token');
+        setStatus(loginStatus, 'Deconnecte.');
+        refreshCodes();
+      });
+
+      $('#health').addEventListener('click', async () => {
+        setStatus(loginStatus, 'Test serveur...');
+        try {
+          const url = apiBase().replace(/\/api$/, '/health');
+          const response = await fetch(url);
+          const data = await response.json();
+          setStatus(loginStatus, `Serveur OK. FCM: ${data.fcm?.ready ? 'actif' : 'non actif'}`, 'ok');
+        } catch {
+          setStatus(loginStatus, 'Serveur inaccessible.', 'error');
+        }
+      });
+
+      $('#generate').addEventListener('click', () => {
+        $('#code').value = randomCode();
+      });
+
+      document.querySelectorAll('[data-sector]').forEach((button) => {
+        button.addEventListener('click', () => {
+          $('#sectorName').value = button.dataset.sector;
+          $('#sectorKeywords').value = button.dataset.keywords;
+          $('#label').value = `Code secteur ${button.dataset.sector}`;
+          $('#code').value = randomCode();
+        });
+      });
+
+      $('#refresh').addEventListener('click', refreshCodes);
+
+      codes.addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-disable]');
+        if (!button) return;
+        if (!confirm('Desactiver ce code conducteur ?')) return;
+        try {
+          await api(`/driver-codes/${button.dataset.disable}/disable`, { method: 'PATCH' });
+          await refreshCodes();
+        } catch (error) {
+          alert(`Desactivation impossible : ${error.message}`);
+        }
+      });
+
+      codeForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!state.token) {
+          setStatus(codeStatus, 'Connectez-vous avant de creer un code.', 'error');
+          return;
+        }
+        setStatus(codeStatus, 'Creation du code...');
+        try {
+          const data = await api('/driver-codes', {
+            method: 'POST',
+            body: JSON.stringify({
+              code: $('#code').value.trim(),
+              driverEmail: $('#driverEmail').value.trim(),
+              label: $('#label').value.trim(),
+              sectorName: $('#sectorName').value.trim(),
+              sectorKeywords: $('#sectorKeywords').value.split(',').map((item) => item.trim()).filter(Boolean),
+            }),
+          });
+          setStatus(codeStatus, `Code cree : ${data.code}`, 'ok');
+          await refreshCodes();
+        } catch (error) {
+          setStatus(codeStatus, `Creation impossible. ${error.message}`, 'error');
+        }
+      });
+
+      if (state.token) {
+        setStatus(loginStatus, 'Session conservee. Cliquez sur Actualiser.');
+        refreshCodes();
+      }
+    </script>
+  </body>
+</html>

@@ -12,6 +12,16 @@ create table if not exists route_stops (route_id uuid references school_routes(i
 create table if not exists user_routes (user_id uuid references users(id) on delete cascade, route_id uuid references school_routes(id) on delete cascade, primary key(user_id, route_id));
 create table if not exists passenger_favorite_routes (user_id uuid references users(id) on delete cascade, route_external_id text not null, route_name text not null, route_short_name text not null default '', created_at timestamptz not null default now(), primary key(user_id, route_external_id));
 create table if not exists passenger_notification_settings (user_id uuid primary key references users(id) on delete cascade, enabled boolean not null default true, updated_at timestamptz not null default now());
+alter table passenger_notification_settings add column if not exists premium_test_enabled boolean not null default false;
+create table if not exists passenger_absence_reports (
+  user_id uuid references users(id) on delete cascade,
+  route_external_id text not null,
+  route_name text not null default '',
+  service_date date not null default current_date,
+  absent boolean not null default true,
+  updated_at timestamptz not null default now(),
+  primary key(user_id, route_external_id, service_date)
+);
 create table if not exists presences (id bigserial primary key, user_id uuid references users(id), route_id uuid references school_routes(id), stop_id uuid references stops(id), service_date date not null, present boolean not null, updated_at timestamptz not null default now(), unique(user_id, route_id, stop_id, service_date));
 create table if not exists delays (id bigserial primary key, route_id uuid references school_routes(id), driver_id uuid references users(id), status text not null, reason text not null, created_at timestamptz not null default now());
 alter table delays add column if not exists route_external_id text;

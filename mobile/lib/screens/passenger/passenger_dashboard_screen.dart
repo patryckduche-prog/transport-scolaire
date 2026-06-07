@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:provider/provider.dart';
 
 import '../../models/nomad_route.dart';
@@ -22,7 +24,10 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   final search = TextEditingController();
   List<NomadRoute> routes = [];
   List<Map<String, dynamic>> favorites = [];
+  Map<String, NomadRoute> favoriteDetails = {};
   List<dynamic> alerts = [];
+  List<dynamic> absences = [];
+  List<dynamic> livePositions = [];
   bool notificationsEnabled = true;
   bool premiumEnabled = false;
   bool loading = true;
@@ -30,6 +35,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   String? error;
   int requestId = 0;
   Timer? alertTimer;
+  Timer? liveTimer;
   final seenAlertIds = <String>{};
 
   void returnToLogin() {
@@ -47,11 +53,14 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
     loadInitial();
     alertTimer = Timer.periodic(
         const Duration(seconds: 30), (_) => pollFavoriteAlerts());
+    liveTimer =
+        Timer.periodic(const Duration(seconds: 12), (_) => pollLivePositions());
   }
 
   @override
   void dispose() {
     alertTimer?.cancel();
+    liveTimer?.cancel();
     search.dispose();
     super.dispose();
   }
@@ -66,13 +75,28 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
       final settings = await api.getPassengerSettings();
       final favoriteData = await api.getPassengerFavorites();
       final alertData = await api.getPassengerAlerts();
+      final absenceData = await api.getPassengerAbsences();
+      final liveData = await api.getPassengerLivePositions();
+      final details = <String, NomadRoute>{};
+      for (final item in favoriteData) {
+        final favorite = item as Map<String, dynamic>;
+        final routeId = favorite['routeExternalId'] as String?;
+        if (routeId == null) continue;
+        try {
+          details[routeId] =
+              NomadRoute.fromJson(await api.getNomadRoute(routeId));
+        } catch (_) {}
+      }
       if (!mounted) return;
       setState(() {
         notificationsEnabled =
             settings['notificationsEnabled'] as bool? ?? true;
         premiumEnabled = settings['premiumEnabled'] as bool? ?? false;
         favorites = favoriteData.cast<Map<String, dynamic>>();
+        favoriteDetails = details;
         alerts = alertData;
+        absences = absenceData;
+        livePositions = (liveData['positions'] as List?) ?? [];
         seenAlertIds.addAll(alertData
             .map((item) =>
                 ((item as Map<String, dynamic>)['id'] ?? '').toString())
@@ -87,6 +111,19 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
         loading = false;
       });
     }
+  }
+
+  Future<void> pollLivePositions() async {
+    if (!mounted || !premiumEnabled) return;
+    try {
+      final liveData =
+          await context.read<ApiService>().getPassengerLivePositions();
+      if (!mounted) return;
+      setState(() {
+        premiumEnabled = liveData['premium'] as bool? ?? premiumEnabled;
+        livePositions = (liveData['positions'] as List?) ?? [];
+      });
+    } catch (_) {}
   }
 
   Future<void> pollFavoriteAlerts() async {
@@ -106,8 +143,8 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
 
       setState(() => alerts = alertData);
       for (final alert in newAlerts.reversed) {
-        final critical = alert['severity'] == 'critical' ||
-            alert['broadcastToAll'] == true;
+        final critical =
+            alert['severity'] == 'critical' || alert['broadcastToAll'] == true;
         final title = critical
             ? 'Alerte securite transport'
             : alert['routeName'] as String? ?? 'Alerte bus scolaire';
@@ -177,15 +214,49 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
     );
   }
 
-  Future<void> presence(BuildContext context, bool present) async {
-    await context.read<ApiService>().sendPresence(
-        '20000000-0000-0000-0000-000000000001',
-        '30000000-0000-0000-0000-000000000002',
-        present);
-    if (!context.mounted) return;
+  Future<void> togglePremiumTest(bool enabled) async {
+    setState(() => premiumEnabled = enabled);
+    final settings = await context.read<ApiService>().updatePassengerSettings(
+          notificationsEnabled,
+          premiumTestEnabled: enabled,
+        );
+    if (!mounted) return;
+    setState(
+        () => premiumEnabled = settings['premiumEnabled'] as bool? ?? enabled);
+    await pollLivePositions();
+  }
+
+  Future<void> reportAbsence(Map<String, dynamic> favorite, bool absent) async {
+    final routeId = favorite['routeExternalId'] as String;
+    final routeName = favorite['routeName'] as String? ?? 'Ligne favorite';
+    final api = context.read<ApiService>();
+    await api.sendPassengerAbsence(
+      routeExternalId: routeId,
+      routeName: routeName,
+      absent: absent,
+    );
+    final absenceData = await api.getPassengerAbsences();
+    if (!mounted) return;
+    setState(() => absences = absenceData);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:
-            Text(present ? 'Presence enregistree.' : 'Absence enregistree.')));
+      content: Text(absent
+          ? 'Absence enregistree sur $routeName.'
+          : 'Absence annulee sur $routeName.'),
+    ));
+  }
+
+  bool isAbsentToday(String routeId) => absences.any((item) {
+        final absence = item as Map<String, dynamic>;
+        return absence['routeExternalId'] == routeId &&
+            absence['absent'] == true;
+      });
+
+  Map<String, dynamic>? liveForRoute(String routeId) {
+    for (final item in livePositions) {
+      final position = item as Map<String, dynamic>;
+      if (position['routeExternalId'] == routeId) return position;
+    }
+    return null;
   }
 
   @override
@@ -216,6 +287,14 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                     'Favoris uniquement, sauf alerte securite prioritaire'),
                 value: notificationsEnabled,
                 onChanged: toggleNotifications,
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Premium test'),
+                subtitle: const Text(
+                    'Mode developpeur sans paiement, pour valider le suivi GPS parent'),
+                value: premiumEnabled,
+                onChanged: togglePremiumTest,
               ),
               _PassengerPlanCard(premiumEnabled: premiumEnabled),
               const SizedBox(height: 8),
@@ -255,25 +334,63 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                         subtitle: Text(
                             'Cherchez une ligne puis ajoutez-la en favori.')))
               else
-                ...favorites.map((favorite) => Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.star, color: Colors.orange),
-                        title: Text(favorite['routeName'] as String? ??
-                            'Ligne favorite'),
-                        subtitle:
-                            Text(favorite['routeShortName'] as String? ?? ''),
-                        trailing: IconButton(
-                          tooltip: 'Retirer des favoris',
-                          icon: const Icon(Icons.delete_outline),
-                          onPressed: () async {
-                            await context
-                                .read<ApiService>()
-                                .removePassengerFavorite(
-                                    favorite['routeExternalId'] as String);
-                            await loadInitial();
-                          },
-                        ),
-                      ),
+                ...favorites.map((favorite) {
+                  final routeId = favorite['routeExternalId'] as String;
+                  final detail = favoriteDetails[routeId];
+                  final absentToday = isAbsentToday(routeId);
+                  final live = liveForRoute(routeId);
+                  return _FavoriteRouteCard(
+                    favorite: favorite,
+                    detail: detail,
+                    premiumEnabled: premiumEnabled,
+                    livePosition: live,
+                    absentToday: absentToday,
+                    onRemove: () async {
+                      await context
+                          .read<ApiService>()
+                          .removePassengerFavorite(routeId);
+                      await loadInitial();
+                    },
+                    onAbsence: () => reportAbsence(favorite, !absentToday),
+                  );
+                }),
+              const SizedBox(height: 16),
+              Text('Suivi GPS parent',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w700)),
+              const SizedBox(height: 8),
+              if (!premiumEnabled)
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.lock_outline),
+                    title: Text('Suivi GPS du car disponible avec Premium'),
+                    subtitle: Text(
+                        'En gratuit, vous gardez les horaires, favoris, absences et alertes importantes.'),
+                  ),
+                )
+              else if (favorites.isEmpty)
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.star_outline),
+                    title: Text('Ajoutez une ligne favorite'),
+                    subtitle: Text(
+                        'Le GPS Premium ne s affiche que sur vos circuits favoris.'),
+                  ),
+                )
+              else if (livePositions.isEmpty)
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.gps_not_fixed),
+                    title: Text('Aucune tournee active detectee'),
+                    subtitle: Text(
+                        'Le car apparaitra quand un conducteur lancera le suivi sur une ligne favorite.'),
+                  ),
+                )
+              else
+                ...livePositions.map((item) => _PremiumLiveCard(
+                      position: item as Map<String, dynamic>,
                     )),
               const SizedBox(height: 16),
               Text('Alertes sur mes favoris',
@@ -345,17 +462,188 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                     ),
                   )),
               const SizedBox(height: 16),
-              FilledButton.icon(
-                  onPressed: () => presence(context, true),
-                  icon: const Icon(Icons.check_circle_outline),
-                  label: const Text('Present a l\'arret')),
-              OutlinedButton.icon(
-                  onPressed: () => presence(context, false),
-                  icon: const Icon(Icons.cancel_outlined),
-                  label: const Text('Absent aujourd\'hui')),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _FavoriteRouteCard extends StatelessWidget {
+  const _FavoriteRouteCard({
+    required this.favorite,
+    required this.detail,
+    required this.premiumEnabled,
+    required this.livePosition,
+    required this.absentToday,
+    required this.onRemove,
+    required this.onAbsence,
+  });
+
+  final Map<String, dynamic> favorite;
+  final NomadRoute? detail;
+  final bool premiumEnabled;
+  final Map<String, dynamic>? livePosition;
+  final bool absentToday;
+  final VoidCallback onRemove;
+  final VoidCallback onAbsence;
+
+  @override
+  Widget build(BuildContext context) {
+    final routeName = favorite['routeName'] as String? ?? 'Ligne favorite';
+    final shortName = favorite['routeShortName'] as String? ?? '';
+    final stops = detail?.stopsPreview ?? const <NomadStop>[];
+    final nextTimes = stops
+        .where((stop) => stop.arrivalTime.isNotEmpty)
+        .take(4)
+        .map((stop) => '${stop.arrivalTime} ${stop.name}')
+        .join('\n');
+    return Card(
+      child: ExpansionTile(
+        leading: const Icon(Icons.star, color: Colors.orange),
+        title: Text(routeName),
+        subtitle: Text([
+          if (shortName.isNotEmpty) shortName,
+          if (absentToday) 'Absent aujourd hui',
+          if (premiumEnabled && livePosition != null) 'Car en approche',
+          if (!premiumEnabled) 'GPS Premium masque',
+        ].join(' - ')),
+        trailing: IconButton(
+          tooltip: 'Retirer des favoris',
+          icon: const Icon(Icons.delete_outline),
+          onPressed: onRemove,
+        ),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        children: [
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.schedule_outlined),
+            title: const Text('Horaires'),
+            subtitle: Text(nextTimes.isEmpty
+                ? 'Horaires detailles en cours de chargement.'
+                : nextTimes),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(absentToday
+                ? Icons.cancel_outlined
+                : Icons.check_circle_outline),
+            title: Text(absentToday
+                ? 'Absence enfant declaree aujourd hui'
+                : 'Absence enfant'),
+            subtitle: const Text(
+                'Declaration sans nom d eleve, rattachee a cette ligne favorite.'),
+            trailing: OutlinedButton(
+              onPressed: onAbsence,
+              child: Text(absentToday ? 'Annuler' : 'Absent'),
+            ),
+          ),
+          if (!premiumEnabled)
+            const ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.lock_outline),
+              title: Text('Suivi GPS du car disponible avec Premium'),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumLiveCard extends StatelessWidget {
+  const _PremiumLiveCard({required this.position});
+
+  final Map<String, dynamic> position;
+
+  @override
+  Widget build(BuildContext context) {
+    final latitude = (position['latitude'] as num?)?.toDouble();
+    final longitude = (position['longitude'] as num?)?.toDouble();
+    final speed = ((position['speed'] as num?)?.toDouble() ?? 0) * 3.6;
+    final routeName = position['routeName'] as String? ?? 'Ligne favorite';
+    final recordedAt = position['recordedAt']?.toString() ?? '';
+    final eta = position['etaMinutes'] as int?;
+    if (latitude == null || longitude == null) {
+      return const SizedBox.shrink();
+    }
+    final point = LatLng(latitude, longitude);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Icon(Icons.workspace_premium_outlined,
+                color: Colors.green.shade700),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                routeName,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w800),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 8),
+          Text(eta == null
+              ? 'Derniere position recue - vitesse ${speed.round()} km/h'
+              : 'Car en approche - ETA estimee $eta min - vitesse ${speed.round()} km/h'),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 220,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: FlutterMap(
+                options: MapOptions(
+                  initialCenter: point,
+                  initialZoom: 15.8,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.drag |
+                        InteractiveFlag.pinchZoom |
+                        InteractiveFlag.doubleTapZoom,
+                  ),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'fr.busscolaireconnect.mobile',
+                  ),
+                  MarkerLayer(markers: [
+                    Marker(
+                      point: point,
+                      width: 86,
+                      height: 64,
+                      child: Image.asset(
+                        'assets/navigation/coach-marker.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.directions_bus_filled,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ]),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Derniere position : ${latitude.toStringAsFixed(6)}, ${longitude.toStringAsFixed(6)}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          if (recordedAt.isNotEmpty)
+            Text('Recu : $recordedAt',
+                style: Theme.of(context).textTheme.bodySmall),
+        ]),
       ),
     );
   }
@@ -414,7 +702,8 @@ class _PassengerPlanCard extends StatelessWidget {
                     label: 'Securite gratuite'),
                 _PlanChip(
                     icon: Icons.location_on_outlined,
-                    label: premiumEnabled ? 'GPS bus actif' : 'GPS bus premium'),
+                    label:
+                        premiumEnabled ? 'GPS bus actif' : 'GPS bus premium'),
               ],
             ),
             if (!premiumEnabled) ...[

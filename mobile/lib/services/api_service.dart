@@ -151,9 +151,14 @@ class ApiService {
   Future<Map<String, dynamic>> getPassengerSettings() async =>
       (await _dio.get('/passenger/settings')).data as Map<String, dynamic>;
 
-  Future<Map<String, dynamic>> updatePassengerSettings(bool enabled) async =>
-      (await _dio.put('/passenger/settings', data: {'enabled': enabled})).data
-          as Map<String, dynamic>;
+  Future<Map<String, dynamic>> updatePassengerSettings(bool enabled,
+          {bool? premiumTestEnabled}) async =>
+      (await _dio.put('/passenger/settings', data: {
+        'enabled': enabled,
+        if (premiumTestEnabled != null)
+          'premiumTestEnabled': premiumTestEnabled,
+      }))
+          .data as Map<String, dynamic>;
 
   Future<List<dynamic>> getPassengerFavorites() async =>
       (await _dio.get('/passenger/favorites')).data as List<dynamic>;
@@ -175,4 +180,24 @@ class ApiService {
 
   Future<List<dynamic>> getPassengerAlerts() async =>
       ((await _dio.get('/passenger/alerts')).data['alerts'] as List<dynamic>);
+
+  Future<List<dynamic>> getPassengerAbsences() async =>
+      ((await _dio.get('/passenger/absences')).data['absences']
+          as List<dynamic>);
+
+  Future<Map<String, dynamic>> sendPassengerAbsence({
+    required String routeExternalId,
+    required String routeName,
+    required bool absent,
+  }) async =>
+      (await _dio.post('/passenger/absence', data: {
+        'routeExternalId': routeExternalId,
+        'routeName': routeName,
+        'absent': absent,
+      }))
+          .data as Map<String, dynamic>;
+
+  Future<Map<String, dynamic>> getPassengerLivePositions() async =>
+      (await _dio.get('/passenger/live-positions')).data
+          as Map<String, dynamic>;
 }

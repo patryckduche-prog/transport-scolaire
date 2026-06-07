@@ -9,31 +9,71 @@ const favoriteSchema = z.object({
   routeName: z.string().min(1),
   routeShortName: z.string().optional().default(''),
 });
-const settingsSchema = z.object({ enabled: z.boolean() });
+const settingsSchema = z.object({
+  enabled: z.boolean(),
+  premiumTestEnabled: z.boolean().optional(),
+});
+const absenceSchema = z.object({
+  routeExternalId: z.string().min(1),
+  routeName: z.string().optional().default(''),
+  absent: z.boolean().default(true),
+});
 
-router.use(requireAuth(['parent', 'student']));
+async function ensurePassengerColumns() {
+  await pool.query('alter table passenger_notification_settings add column if not exists premium_test_enabled boolean not null default false');
+  await pool.query(`
+    create table if not exists passenger_absence_reports (
+      user_id uuid references users(id) on delete cascade,
+      route_external_id text not null,
+      route_name text not null default '',
+      service_date date not null default current_date,
+      absent boolean not null default true,
+      updated_at timestamptz not null default now(),
+      primary key(user_id, route_external_id, service_date)
+    )
+  `);
+}
 
-router.get('/settings', async (req, res) => {
+async function getPassengerSettings(userId) {
+  await ensurePassengerColumns();
   const { rows } = await pool.query(
     `insert into passenger_notification_settings(user_id, enabled)
      values ($1, true)
      on conflict (user_id) do update set user_id=excluded.user_id
-     returning enabled`,
-    [req.user.sub],
+     returning enabled, premium_test_enabled`,
+    [userId],
   );
-  res.json({ notificationsEnabled: rows[0].enabled, premiumEnabled: false });
+  return {
+    notificationsEnabled: rows[0].enabled,
+    premiumEnabled: rows[0].premium_test_enabled === true,
+    premiumTestEnabled: rows[0].premium_test_enabled === true,
+  };
+}
+
+router.use(requireAuth(['parent', 'student']));
+
+router.get('/settings', async (req, res) => {
+  res.json(await getPassengerSettings(req.user.sub));
 });
 
 router.put('/settings', async (req, res) => {
   const input = settingsSchema.parse(req.body);
+  await ensurePassengerColumns();
   const { rows } = await pool.query(
-    `insert into passenger_notification_settings(user_id, enabled, updated_at)
-     values ($1, $2, now())
-     on conflict (user_id) do update set enabled=excluded.enabled, updated_at=now()
-     returning enabled`,
-    [req.user.sub, input.enabled],
+    `insert into passenger_notification_settings(user_id, enabled, premium_test_enabled, updated_at)
+     values ($1, $2, coalesce($3::boolean, false), now())
+     on conflict (user_id) do update set
+       enabled=excluded.enabled,
+       premium_test_enabled=coalesce($3::boolean, passenger_notification_settings.premium_test_enabled),
+       updated_at=now()
+     returning enabled, premium_test_enabled`,
+    [req.user.sub, input.enabled, input.premiumTestEnabled],
   );
-  res.json({ notificationsEnabled: rows[0].enabled, premiumEnabled: false });
+  res.json({
+    notificationsEnabled: rows[0].enabled,
+    premiumEnabled: rows[0].premium_test_enabled === true,
+    premiumTestEnabled: rows[0].premium_test_enabled === true,
+  });
 });
 
 router.get('/favorites', async (req, res) => {
@@ -93,6 +133,87 @@ router.get('/alerts', async (req, res) => {
       severity: row.severity ?? (row.status.toLowerCase().includes('retard') ? 'warning' : 'info'),
       category: row.alert_category ?? 'route',
       broadcastToAll: row.broadcast_to_all,
+    })),
+  });
+});
+
+router.get('/absences', async (req, res) => {
+  await ensurePassengerColumns();
+  const { rows } = await pool.query(
+    `select route_external_id as "routeExternalId", route_name as "routeName", absent, service_date as "serviceDate", updated_at as "updatedAt"
+     from passenger_absence_reports
+     where user_id=$1 and service_date >= current_date - interval '7 days'
+     order by service_date desc, updated_at desc`,
+    [req.user.sub],
+  );
+  res.json({ absences: rows });
+});
+
+router.post('/absence', async (req, res) => {
+  await ensurePassengerColumns();
+  const input = absenceSchema.parse(req.body);
+  const { rows } = await pool.query(
+    `insert into passenger_absence_reports(user_id, route_external_id, route_name, service_date, absent, updated_at)
+     values ($1, $2, $3, current_date, $4, now())
+     on conflict (user_id, route_external_id, service_date)
+     do update set route_name=excluded.route_name, absent=excluded.absent, updated_at=now()
+     returning route_external_id as "routeExternalId", route_name as "routeName", absent, service_date as "serviceDate", updated_at as "updatedAt"`,
+    [req.user.sub, input.routeExternalId, input.routeName, input.absent],
+  );
+  res.status(201).json(rows[0]);
+});
+
+router.get('/live-positions', async (req, res) => {
+  const settings = await getPassengerSettings(req.user.sub);
+  const { rows: favorites } = await pool.query(
+    `select route_external_id, route_name, route_short_name
+     from passenger_favorite_routes
+     where user_id=$1
+     order by created_at desc`,
+    [req.user.sub],
+  );
+
+  if (!settings.premiumEnabled) {
+    return res.json({
+      premium: false,
+      positions: [],
+      message: 'Suivi GPS du car disponible avec Premium',
+    });
+  }
+
+  if (favorites.length === 0) {
+    return res.json({ premium: true, positions: [] });
+  }
+
+  const routeIds = favorites.map((favorite) => favorite.route_external_id);
+  const { rows } = await pool.query(
+    `select distinct on (r.route_external_id)
+            r.id as "runId",
+            r.route_external_id as "routeExternalId",
+            r.route_name as "routeName",
+            g.latitude::float as latitude,
+            g.longitude::float as longitude,
+            g.speed::float as speed,
+            g.recorded_at as "recordedAt",
+            extract(epoch from (now() - g.recorded_at))::int as "ageSeconds"
+     from daily_runs r
+     join gps_positions g
+       on g.route_external_id=r.route_external_id
+      and g.driver_id=r.driver_id
+      and g.recorded_at >= r.started_at
+     where r.service_date=current_date
+       and r.status in ('started','paused')
+       and r.route_external_id = any($1::text[])
+     order by r.route_external_id, g.recorded_at desc`,
+    [routeIds],
+  );
+
+  res.json({
+    premium: true,
+    positions: rows.map((row) => ({
+      ...row,
+      etaMinutes: row.ageSeconds <= 180 ? 8 : null,
+      approaching: row.ageSeconds <= 180,
     })),
   });
 });

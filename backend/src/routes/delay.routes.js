@@ -92,6 +92,7 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
         : undefined,
       category: alert.category,
       routeId: input.routeId,
+      excludeUserId: req.user.sub,
       message: visibleMessage,
     });
   } else {
@@ -99,6 +100,7 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
       alertId: rows[0].id,
       severity: alert.severity,
       category: alert.category,
+      excludeUserId: req.user.sub,
       message: visibleMessage,
     });
   }

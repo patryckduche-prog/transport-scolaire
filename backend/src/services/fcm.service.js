@@ -51,8 +51,11 @@ export async function sendDelayNotification(routeId, body, options = {}) {
      from users u
      join passenger_favorite_routes f on f.user_id=u.id and f.route_external_id=$1
      left join passenger_notification_settings s on s.user_id=u.id
-     where coalesce(s.enabled, true)=true and u.fcm_token is not null`,
-    [routeId],
+     where u.role in ('parent', 'student')
+       and coalesce(s.enabled, true)=true
+       and u.fcm_token is not null
+       and ($2::uuid is null or u.id <> $2::uuid)`,
+    [routeId, options.excludeUserId ?? null],
   );
   const tokens = rows.map((r) => r.fcm_token);
   if (!ready || tokens.length === 0) {
@@ -80,11 +83,16 @@ export async function sendDelayNotification(routeId, body, options = {}) {
 }
 
 export async function sendCriticalSafetyNotification(body, options = {}) {
+  const roles = options.includeDrivers === true
+    ? ['driver', 'parent', 'student']
+    : ['parent', 'student'];
   const { rows } = await pool.query(
     `select distinct fcm_token
      from users
-     where role in ('driver', 'parent', 'student')
-       and fcm_token is not null`,
+     where role = any($1::text[])
+       and fcm_token is not null
+       and ($2::uuid is null or id <> $2::uuid)`,
+    [roles, options.excludeUserId ?? null],
   );
   const tokens = rows.map((r) => r.fcm_token);
   if (!ready || tokens.length === 0) {

@@ -22,7 +22,7 @@ export function classifyTransportAlert(status, reason) {
     'circulation interdite',
   ];
   if (suspensionWords.some((word) => text.includes(word))) {
-    return { severity: 'critical', broadcastToAll: true, category: 'suspension', level: 'red' };
+    return { severity: 'critical', broadcastToAll: false, category: 'suspension', level: 'red' };
   }
 
   const criticalSafetyWords = ['chimique', 'nucleaire', 'orsec', 'evacuation', 'confinement', 'alerte rouge'];

@@ -56,9 +56,17 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
     return res.status(200).json({ ...duplicate.rows[0], duplicate: true });
   }
 
+  const officialSource = alert.category === 'suspension' ? 'manual_validated' : 'manual';
+  const officialText = `${input.status} - ${input.reason}`;
+  const officialZone = input.routeName ?? input.routeId;
   const { rows } = await pool.query(
-    `insert into delays(route_id, route_external_id, route_name, driver_id, status, reason, severity, broadcast_to_all, alert_category)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `insert into delays(
+       route_id, route_external_id, route_name, driver_id, status, reason,
+       severity, broadcast_to_all, alert_category,
+       official_source, official_date, official_text, official_zone,
+       affected_routes, validated_by, validated_at
+     )
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now(), $11, $12, $13::text[], $14, now())
      returning *`,
     [
       uuidRoute ? input.routeId : null,
@@ -70,6 +78,11 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
       alert.severity,
       alert.broadcastToAll,
       alert.category,
+      officialSource,
+      officialText,
+      officialZone,
+      [routeExternalId],
+      req.user.sub,
     ],
   );
   const body = alert.category === 'suspension'
@@ -92,6 +105,15 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
         : undefined,
       category: alert.category,
       routeId: input.routeId,
+      excludeUserId: req.user.sub,
+      message: visibleMessage,
+    });
+  } else if (alert.category === 'suspension') {
+    await sendDelayNotification(input.routeId, body, {
+      alertId: rows[0].id,
+      title: 'TRANSPORT SCOLAIRE SUSPENDU',
+      severity: alert.severity,
+      category: alert.category,
       excludeUserId: req.user.sub,
       message: visibleMessage,
     });

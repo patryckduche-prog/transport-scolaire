@@ -29,6 +29,14 @@ alter table delays add column if not exists route_name text;
 alter table delays add column if not exists severity text not null default 'warning';
 alter table delays add column if not exists broadcast_to_all boolean not null default false;
 alter table delays add column if not exists alert_category text not null default 'route';
+alter table delays add column if not exists official_source text not null default 'manual';
+alter table delays add column if not exists official_source_url text;
+alter table delays add column if not exists official_date timestamptz;
+alter table delays add column if not exists official_text text;
+alter table delays add column if not exists official_zone text;
+alter table delays add column if not exists affected_routes text[] not null default '{}';
+alter table delays add column if not exists validated_by uuid references users(id) on delete set null;
+alter table delays add column if not exists validated_at timestamptz;
 create table if not exists passenger_hidden_alerts (
   user_id uuid references users(id) on delete cascade,
   delay_id bigint references delays(id) on delete cascade,

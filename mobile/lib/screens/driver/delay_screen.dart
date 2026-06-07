@@ -11,8 +11,30 @@ class DelayScreen extends StatefulWidget {
 }
 
 class _DelayScreenState extends State<DelayScreen> {
-  final statuses = ['A l\'heure', 'Retard 5 minutes', 'Retard 10 minutes', 'Retard 15 minutes', 'Retard 30 minutes', 'Retard superieur a 30 minutes'];
-  final reasons = ['Neige', 'Verglas', 'Panne mecanique', 'Accident', 'Bouchon', 'Route barree', 'Conditions meteo', 'Autre'];
+  final statuses = [
+    'Information',
+    'Retard 5 minutes',
+    'Retard 10 minutes',
+    'Retard 15 minutes',
+    'Retard 30 minutes',
+    'Retard superieur a 30 minutes',
+    'Alerte importante',
+    'Transport interdit',
+  ];
+  final reasons = [
+    'Neige',
+    'Verglas',
+    'Tempete',
+    'Vent violent',
+    'Arrete prefectoral',
+    'Suspension transports scolaires',
+    'Panne mecanique',
+    'Accident',
+    'Bouchon',
+    'Route barree',
+    'Conditions meteo',
+    'Autre',
+  ];
   String status = 'Retard 15 minutes';
   String reason = 'Verglas';
   bool sending = false;
@@ -24,7 +46,7 @@ class _DelayScreenState extends State<DelayScreen> {
     try {
       await context.read<ApiService>().declareDelay(route.id, status, reason, routeName: '${route.shortName} - ${route.longName}');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Retard transmis aux familles et services.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Alerte transmise aux familles et services.')));
     } finally {
       if (mounted) setState(() => sending = false);
     }
@@ -34,7 +56,7 @@ class _DelayScreenState extends State<DelayScreen> {
   Widget build(BuildContext context) {
     final route = context.watch<AppState>().selectedDriverRoute;
     return Scaffold(
-      appBar: AppBar(title: const Text('Declaration de retard')),
+      appBar: AppBar(title: const Text('Declaration d alerte')),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         Card(
           child: ListTile(

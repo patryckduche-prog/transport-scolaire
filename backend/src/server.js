@@ -23,7 +23,7 @@ import { attachRealtime } from './services/realtime.service.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
 const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
-const appVersion = '1.0.25';
+const appVersion = '1.0.26';
 const app = express();
 app.set('trust proxy', true);
 app.use(helmet({

@@ -901,6 +901,26 @@ class _RouteProgressCard extends StatelessWidget {
           Row(children: [
             Expanded(
               child: _GpsMetric(
+                label: 'Vitesse',
+                value: last == null
+                    ? '-- km/h'
+                    : '${math.max(0, (last!.speed * 3.6).round())} km/h',
+                icon: Icons.speed,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _GpsMetric(
+                label: 'Limite estim.',
+                value: '${_estimatedSpeedLimitKmh(last)} km/h',
+                icon: Icons.traffic_outlined,
+              ),
+            ),
+          ]),
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(
+              child: _GpsMetric(
                 label: 'Envois',
                 value: sentCount.toString(),
                 icon: Icons.cloud_done_outlined,
@@ -915,6 +935,11 @@ class _RouteProgressCard extends StatelessWidget {
               ),
             ),
           ]),
+          const SizedBox(height: 6),
+          Text(
+            'Limitation estimee : toujours verifier les panneaux et consignes exploitation.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           if (last != null) ...[
             const SizedBox(height: 10),
             Text(
@@ -982,7 +1007,16 @@ class _MapStop {
   final LatLng point;
 }
 
-class _CoachMap extends StatelessWidget {
+int _estimatedSpeedLimitKmh(Position? position) {
+  if (position == null || !position.speed.isFinite || position.speed <= 0) {
+    return 80;
+  }
+  final speedKmh = position.speed * 3.6;
+  if (speedKmh < 48) return 50;
+  return 80;
+}
+
+class _CoachMap extends StatefulWidget {
   const _CoachMap({
     required this.geometry,
     required this.stops,
@@ -1003,8 +1037,17 @@ class _CoachMap extends StatelessWidget {
   final double coachHeading;
   final bool simulationActive;
 
+  @override
+  State<_CoachMap> createState() => _CoachMapState();
+}
+
+class _CoachMapState extends State<_CoachMap> {
+  final MapController mapController = MapController();
+  late double currentZoom = autoZoom;
+  bool followDriver = true;
+
   IconData get instructionIcon {
-    final lower = instruction.toLowerCase();
+    final lower = widget.instruction.toLowerCase();
     if (lower.contains('droite')) return Icons.turn_right;
     if (lower.contains('gauche')) return Icons.turn_left;
     if (lower.contains('rond-point') || lower.contains('rond point')) {
@@ -1014,39 +1057,69 @@ class _CoachMap extends StatelessWidget {
   }
 
   LatLng get mapCenter {
-    if (coachPoint != null) return coachPoint!;
-    if (geometry.isEmpty) return const LatLng(49.70, 1.65);
-    final middle = geometry[geometry.length ~/ 2];
+    if (widget.coachPoint != null) return widget.coachPoint!;
+    if (widget.geometry.isEmpty) return const LatLng(49.70, 1.65);
+    final middle = widget.geometry[widget.geometry.length ~/ 2];
     return middle;
   }
 
   LatLng get fallbackCoachPoint {
-    if (geometry.isEmpty) return mapCenter;
-    final index = ((geometry.length - 1) *
-            (stops.isEmpty
+    if (widget.geometry.isEmpty) return mapCenter;
+    final index = ((widget.geometry.length - 1) *
+            (widget.stops.isEmpty
                 ? .28
-                : (currentStop / math.max(1, stops.length - 1)).clamp(.08, .9)))
+                : (widget.currentStop / math.max(1, widget.stops.length - 1))
+                    .clamp(.08, .9)))
         .round()
-        .clamp(0, geometry.length - 1);
-    return geometry[index];
+        .clamp(0, widget.geometry.length - 1);
+    return widget.geometry[index];
   }
 
   double get fallbackCoachHeading {
-    if (geometry.length < 2) return 0;
+    if (widget.geometry.length < 2) return 0;
     final point = fallbackCoachPoint;
-    final index = geometry.indexOf(point).clamp(0, geometry.length - 1);
-    final nextIndex = math.min(index + 1, geometry.length - 1);
+    final index =
+        widget.geometry.indexOf(point).clamp(0, widget.geometry.length - 1);
+    final nextIndex = math.min(index + 1, widget.geometry.length - 1);
     return index == nextIndex
         ? 0
-        : _bearing(geometry[index], geometry[nextIndex]);
+        : _bearing(widget.geometry[index], widget.geometry[nextIndex]);
   }
 
-  double get autoZoom => coachPoint == null ? 14.4 : 16.2;
+  double get autoZoom => widget.coachPoint == null ? 14.8 : 17.1;
 
   double get mapHeading =>
-      coachPoint == null ? fallbackCoachHeading : coachHeading;
+      widget.coachPoint == null ? fallbackCoachHeading : widget.coachHeading;
 
   double get coachMarkerAngle => mapHeading - (math.pi / 2);
+
+  void zoomBy(double delta) {
+    final next = (currentZoom + delta).clamp(12.5, 18.4).toDouble();
+    setState(() {
+      currentZoom = next;
+      followDriver = false;
+    });
+    mapController.move(mapCenter, next);
+  }
+
+  void recenter() {
+    setState(() {
+      currentZoom = math.max(currentZoom, autoZoom);
+      followDriver = true;
+    });
+    mapController.move(mapCenter, currentZoom);
+  }
+
+  @override
+  void didUpdateWidget(covariant _CoachMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!followDriver) return;
+    currentZoom = math.max(currentZoom, autoZoom);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      mapController.move(mapCenter, currentZoom);
+    });
+  }
 
   double _bearing(LatLng from, LatLng to) {
     final lat1 = from.latitude * math.pi / 180;
@@ -1064,13 +1137,20 @@ class _CoachMap extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       child: Stack(children: [
         FlutterMap(
-          key: ValueKey(
-              '${mapCenter.latitude.toStringAsFixed(5)}-${mapCenter.longitude.toStringAsFixed(5)}-${autoZoom.toStringAsFixed(1)}-${mapHeading.toStringAsFixed(2)}'),
+          mapController: mapController,
           options: MapOptions(
             initialCenter: mapCenter,
-            initialZoom: autoZoom,
-            interactionOptions:
-                const InteractionOptions(flags: InteractiveFlag.none),
+            initialZoom: currentZoom,
+            onPositionChanged: (_, hasGesture) {
+              if (hasGesture && followDriver) {
+                setState(() => followDriver = false);
+              }
+            },
+            interactionOptions: const InteractionOptions(
+              flags: InteractiveFlag.drag |
+                  InteractiveFlag.pinchZoom |
+                  InteractiveFlag.doubleTapZoom,
+            ),
           ),
           children: [
             TileLayer(
@@ -1080,22 +1160,22 @@ class _CoachMap extends StatelessWidget {
             PolylineLayer(
               polylines: [
                 Polyline(
-                  points: geometry,
+                  points: widget.geometry,
                   strokeWidth: 18,
                   color: Colors.black.withValues(alpha: .20),
                 ),
                 Polyline(
-                  points: geometry,
+                  points: widget.geometry,
                   strokeWidth: 14,
                   color: Colors.white.withValues(alpha: .92),
                 ),
                 Polyline(
-                  points: geometry,
+                  points: widget.geometry,
                   strokeWidth: 10,
-                  color: primary.withValues(alpha: .96),
+                  color: widget.primary.withValues(alpha: .96),
                 ),
                 Polyline(
-                  points: geometry,
+                  points: widget.geometry,
                   strokeWidth: 3,
                   color: Colors.white.withValues(alpha: .86),
                 ),
@@ -1103,14 +1183,14 @@ class _CoachMap extends StatelessWidget {
             ),
             MarkerLayer(
               markers: [
-                ...stops.map(
+                ...widget.stops.map(
                   (stop) => Marker(
                     point: stop.point,
                     width: 34,
                     height: 34,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: stop.sequence <= currentStop + 1
+                        color: stop.sequence <= widget.currentStop + 1
                             ? Colors.green.shade700
                             : Colors.blueGrey.shade600,
                         shape: BoxShape.circle,
@@ -1134,7 +1214,7 @@ class _CoachMap extends StatelessWidget {
                   ),
                 ),
                 Marker(
-                  point: coachPoint ?? fallbackCoachPoint,
+                  point: widget.coachPoint ?? fallbackCoachPoint,
                   width: 156,
                   height: 104,
                   child: Transform.rotate(
@@ -1164,7 +1244,7 @@ class _CoachMap extends StatelessWidget {
                             width: 64,
                             height: 64,
                             decoration: BoxDecoration(
-                              color: primary,
+                              color: widget.primary,
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 4),
                               boxShadow: const [
@@ -1218,13 +1298,15 @@ class _CoachMap extends StatelessWidget {
               ],
             ),
             child: Text(
-              simulationActive
+              widget.simulationActive
                   ? 'Simulation GPS - zoom auto'
                   : 'Position conducteur - zoom auto',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
-                color: simulationActive ? Colors.orange.shade900 : primary,
+                color: widget.simulationActive
+                    ? Colors.orange.shade900
+                    : widget.primary,
               ),
             ),
           ),
@@ -1245,7 +1327,32 @@ class _CoachMap extends StatelessWidget {
                     offset: Offset(0, 4)),
               ],
             ),
-            child: Icon(instructionIcon, size: 38, color: primary),
+            child: Icon(instructionIcon, size: 38, color: widget.primary),
+          ),
+        ),
+        Positioned(
+          right: 12,
+          bottom: 50,
+          child: Column(
+            children: [
+              _MapRoundButton(
+                icon: Icons.add,
+                tooltip: 'Zoomer',
+                onPressed: () => zoomBy(.7),
+              ),
+              const SizedBox(height: 8),
+              _MapRoundButton(
+                icon: Icons.remove,
+                tooltip: 'Dezoomer',
+                onPressed: () => zoomBy(-.7),
+              ),
+              const SizedBox(height: 8),
+              _MapRoundButton(
+                icon: Icons.my_location,
+                tooltip: 'Recentrer',
+                onPressed: recenter,
+              ),
+            ],
           ),
         ),
         Positioned(
@@ -1264,6 +1371,33 @@ class _CoachMap extends StatelessWidget {
           ),
         ),
       ]),
+    );
+  }
+}
+
+class _MapRoundButton extends StatelessWidget {
+  const _MapRoundButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: .96),
+      shape: const CircleBorder(),
+      elevation: 4,
+      child: IconButton(
+        tooltip: tooltip,
+        icon: Icon(icon),
+        color: Theme.of(context).colorScheme.primary,
+        onPressed: onPressed,
+      ),
     );
   }
 }

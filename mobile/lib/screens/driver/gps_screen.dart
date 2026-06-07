@@ -8,9 +8,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/nomad_route.dart';
 import '../../services/api_service.dart';
 import '../../services/app_state.dart';
+import '../../services/offline_event_queue.dart';
 
 class GpsScreen extends StatefulWidget {
   const GpsScreen({super.key});
+
   @override
   State<GpsScreen> createState() => _GpsScreenState();
 }
@@ -19,26 +21,50 @@ class _GpsScreenState extends State<GpsScreen> {
   StreamSubscription<Position>? sub;
   Position? last;
   NomadRoute? fullRoute;
-  String status = 'GPS inactif';
+  String? runId;
+  String status = 'Chargement du circuit';
   String? routeError;
+  String? lastStopMatchName;
   int sentCount = 0;
+  int queuedCount = 0;
   int currentStop = 0;
+  bool autoStartRequested = false;
+  bool loadingRoute = true;
+
+  OfflineEventQueue queue(BuildContext context) =>
+      OfflineEventQueue(context.read<ApiService>());
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => loadFullRoute());
+    WidgetsBinding.instance.addPostFrameCallback((_) => prepareRouteAndGps());
   }
 
-  Future<void> loadFullRoute() async {
+  Future<void> prepareRouteAndGps() async {
     final route = context.read<AppState>().selectedDriverRoute;
-    if (route == null) return;
+    if (route == null) {
+      setState(() {
+        loadingRoute = false;
+        status = 'Choisissez une ligne avant le depart.';
+      });
+      return;
+    }
+
+    await loadFullRoute(route);
+    await ensureRun(route);
+    if (!mounted || autoStartRequested) return;
+    autoStartRequested = true;
+    await startTracking();
+  }
+
+  Future<void> loadFullRoute(NomadRoute route) async {
     try {
       final data = await context.read<ApiService>().getNomadRoute(route.id);
       if (!mounted) return;
       setState(() {
         fullRoute = NomadRoute.fromJson(data);
         routeError = null;
+        loadingRoute = false;
       });
     } catch (_) {
       if (!mounted) return;
@@ -46,7 +72,32 @@ class _GpsScreenState extends State<GpsScreen> {
         fullRoute = route;
         routeError =
             'Circuit complet indisponible, affichage de l apercu local.';
+        loadingRoute = false;
       });
+    }
+  }
+
+  Future<void> ensureRun(NomadRoute route) async {
+    try {
+      final api = context.read<ApiService>();
+      final current = await api.getCurrentRun();
+      final sameRoute = current?['route_external_id'] == route.id ||
+          current?['routeExternalId'] == route.id;
+      final run = sameRoute
+          ? current!
+          : await api.startRun(
+              routeId: route.id,
+              routeName: '${route.shortName} - ${route.longName}',
+            );
+      if (!mounted) return;
+      setState(() {
+        runId = run['id'] as String;
+        status = 'Tournee GPS ouverte';
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => status =
+          'Tournee serveur indisponible, suivi local en attente reseau.');
     }
   }
 
@@ -79,45 +130,116 @@ class _GpsScreenState extends State<GpsScreen> {
     return true;
   }
 
-  Future<void> startTrackingOnly() async {
+  Future<void> startTracking() async {
     final route = context.read<AppState>().selectedDriverRoute;
     if (route == null) return;
     if (!await ensureLocationReady()) return;
 
     await sub?.cancel();
-    setState(() => status = 'Suivi GPS actif');
+    setState(() => status = 'Suivi GPS actif automatiquement');
     sub = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.best, distanceFilter: 10),
-    ).listen((position) async {
-      if (!mounted) return;
-      setState(() => last = position);
-      try {
-        await context.read<ApiService>().sendGps(
-              route.id,
-              position.latitude,
-              position.longitude,
-              position.speed,
-              routeName: '${route.shortName} - ${route.longName}',
-            );
-        if (!mounted) return;
-        setState(() {
-          sentCount++;
-          status = 'Position envoyee au serveur';
-        });
-      } catch (_) {
-        if (mounted) {
-          setState(() => status =
-              'Position gardee sur le telephone, serveur indisponible');
-        }
+    ).listen((position) => sendPosition(route, position));
+  }
+
+  Future<void> sendPosition(NomadRoute route, Position position) async {
+    if (!mounted) return;
+    setState(() => last = position);
+
+    final id = runId;
+    final recordedAt = DateTime.now().toIso8601String();
+    final api = context.read<ApiService>();
+    final offlineQueue = queue(context);
+
+    try {
+      if (id == null) {
+        await api.sendGps(
+          route.id,
+          position.latitude,
+          position.longitude,
+          position.speed,
+          routeName: '${route.shortName} - ${route.longName}',
+        );
+      } else {
+        final result = await api.sendRunGps(
+          runId: id,
+          latitude: position.latitude,
+          longitude: position.longitude,
+          speed: position.speed,
+          recordedAt: recordedAt,
+        );
+        updateStopFromMatch(result['stopMatch']);
       }
+      final flushed = await offlineQueue.flush();
+      final pending = await offlineQueue.pendingCount();
+      if (!mounted) return;
+      setState(() {
+        sentCount++;
+        queuedCount = pending;
+        status = flushed > 0
+            ? '$flushed position(s) hors ligne synchronisee(s)'
+            : 'Position envoyee au serveur';
+      });
+    } catch (_) {
+      if (id != null) {
+        await offlineQueue.enqueue({
+          'type': 'runGps',
+          'runId': id,
+          'latitude': position.latitude,
+          'longitude': position.longitude,
+          'speed': position.speed,
+          'recordedAt': recordedAt,
+        });
+      }
+      final pending = await offlineQueue.pendingCount();
+      if (mounted) {
+        setState(() {
+          queuedCount = pending;
+          status = 'Position gardee sur le telephone, serveur indisponible';
+        });
+      }
+    }
+  }
+
+  void updateStopFromMatch(dynamic match) {
+    if (match is! Map<String, dynamic>) return;
+    final route = fullRoute ?? context.read<AppState>().selectedDriverRoute;
+    final stops = route?.stopsPreview ?? [];
+    if (stops.isEmpty) return;
+
+    final stopExternalId = match['stopExternalId'] as String? ?? '';
+    final stopName = match['stopName'] as String? ?? '';
+    var nextIndex = -1;
+    final sequence = int.tryParse(stopExternalId.split('-').last);
+    if (sequence != null) {
+      nextIndex = stops.indexWhere((stop) => stop.sequence == sequence);
+    }
+    if (nextIndex < 0 && stopName.isNotEmpty) {
+      final normalizedMatch = normalize(stopName);
+      nextIndex = stops.indexWhere(
+        (stop) =>
+            normalize(stop.name).contains(normalizedMatch) ||
+            normalizedMatch.contains(normalize(stop.name)),
+      );
+    }
+    if (nextIndex < 0) return;
+    setState(() {
+      currentStop = nextIndex;
+      lastStopMatchName = stopName;
     });
   }
+
+  String normalize(String value) => value
+      .toLowerCase()
+      .replaceAll(RegExp(r'\s*\([^)]*\)'), '')
+      .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
+      .trim();
 
   Future<void> openGoogleMapsGuidance() async {
     final route = fullRoute ?? context.read<AppState>().selectedDriverRoute;
     if (route == null) return;
-    if (sub == null) await startTrackingOnly();
+    if (sub == null) await startTracking();
 
     final stops = routeStops(route);
     if (stops.isEmpty) {
@@ -142,7 +264,7 @@ class _GpsScreenState extends State<GpsScreen> {
   Future<void> openWazeGuidance() async {
     final route = fullRoute ?? context.read<AppState>().selectedDriverRoute;
     if (route == null) return;
-    if (sub == null) await startTrackingOnly();
+    if (sub == null) await startTracking();
 
     final stops = routeStops(route);
     if (stops.isEmpty) {
@@ -198,6 +320,9 @@ class _GpsScreenState extends State<GpsScreen> {
     final guidance = route?.coachGuidance;
     final vehicle = guidance?.vehicleProfile;
     final tracking = sub != null;
+    final safeStopIndex =
+        stops.isEmpty ? 0 : currentStop.clamp(0, stops.length - 1).toInt();
+    final nextStop = stops.isEmpty ? null : stops[safeStopIndex];
     return Scaffold(
       appBar: AppBar(title: const Text('Suivi GPS')),
       body: ListView(
@@ -205,13 +330,17 @@ class _GpsScreenState extends State<GpsScreen> {
         children: [
           Card(
             child: ListTile(
-              leading: const Icon(Icons.route_outlined),
+              leading: Icon(tracking
+                  ? Icons.directions_bus_filled
+                  : Icons.directions_bus_filled_outlined),
               title: Text(route == null
                   ? 'Aucune ligne active'
                   : '${route.shortName} - ${route.longName}'),
               subtitle: Text(route == null
                   ? 'Choisissez une ligne avant le depart.'
-                  : '${stops.length} arrets charges - mode car scolaire'),
+                  : loadingRoute
+                      ? 'Chargement du circuit officiel'
+                      : '${stops.length} arrets charges - suivi automatique'),
             ),
           ),
           if (routeError != null)
@@ -226,40 +355,55 @@ class _GpsScreenState extends State<GpsScreen> {
               ),
             ),
           const SizedBox(height: 12),
-          FilledButton.icon(
-            onPressed: route == null || tracking ? null : startTrackingOnly,
-            icon: const Icon(Icons.directions_bus_filled_outlined),
-            label: const Text('Demarrer suivi car scolaire'),
+          _RouteProgressCard(
+            stops: stops,
+            currentStop: currentStop,
+            tracking: tracking,
+            status: status,
+            last: last,
+            sentCount: sentCount,
+            queuedCount: queuedCount,
+            lastStopMatchName: lastStopMatchName,
           ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: route == null ? null : openGoogleMapsGuidance,
-            icon: const Icon(Icons.navigation_outlined),
-            label: const Text('Google Maps secours voiture'),
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: route == null ? null : openWazeGuidance,
-            icon: const Icon(Icons.assistant_direction_outlined),
-            label: const Text('Waze secours destination'),
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: tracking ? stop : null,
-            icon: const Icon(Icons.stop_circle_outlined),
-            label: const Text('Arreter le suivi'),
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: ListTile(
-              leading: Icon(tracking
-                  ? Icons.satellite_alt_outlined
-                  : Icons.gps_not_fixed),
-              title: Text(status),
-              subtitle: Text(last == null
-                  ? 'Position en attente'
-                  : 'Lat ${last!.latitude.toStringAsFixed(6)}, Lon ${last!.longitude.toStringAsFixed(6)} - envois $sentCount'),
+          const SizedBox(height: 12),
+          if (nextStop != null)
+            Card(
+              child: ListTile(
+                leading:
+                    CircleAvatar(child: Text(nextStop.sequence.toString())),
+                title: const Text('Arret suivi automatiquement'),
+                subtitle: Text(nextStop.name),
+                trailing: Icon(
+                  tracking ? Icons.gps_fixed : Icons.gps_not_fixed,
+                  color: tracking ? Colors.green : null,
+                ),
+              ),
             ),
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: route == null ? null : openGoogleMapsGuidance,
+                icon: const Icon(Icons.navigation_outlined),
+                label: const Text('Google Maps'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: route == null ? null : openWazeGuidance,
+                icon: const Icon(Icons.assistant_direction_outlined),
+                label: const Text('Waze'),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: tracking ? stop : startTracking,
+            icon: Icon(tracking
+                ? Icons.stop_circle_outlined
+                : Icons.play_circle_outline),
+            label: Text(tracking ? 'Arreter le suivi' : 'Relancer le GPS'),
           ),
           const SizedBox(height: 12),
           Card(
@@ -307,7 +451,7 @@ class _GpsScreenState extends State<GpsScreen> {
                       : 'Google Maps et Waze restent des trajets voiture, a utiliser seulement en secours.'),
                   if ((guidance?.rules ?? []).isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    ...guidance!.rules.take(10).map(
+                    ...guidance!.rules.take(8).map(
                           (rule) => Padding(
                             padding: const EdgeInsets.only(bottom: 6),
                             child: Row(
@@ -329,7 +473,7 @@ class _GpsScreenState extends State<GpsScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          Text('Parcours de reference',
+          Text('Parcours officiel',
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
@@ -341,45 +485,248 @@ class _GpsScreenState extends State<GpsScreen> {
                     leading: Icon(Icons.info_outline),
                     title: Text('Aucun arret charge pour cette ligne')))
           else
-            Card(
-              child: ListTile(
-                leading: CircleAvatar(
-                    child: Text(stops[currentStop].sequence.toString())),
-                title: const Text('Prochain arret officiel'),
-                subtitle: Text(stops[currentStop].name),
-                trailing: FilledButton(
-                  onPressed: currentStop >= stops.length - 1
-                      ? null
-                      : () => setState(() => currentStop++),
-                  child: const Text('Suivant'),
-                ),
-              ),
-            ),
-          if (stops.isNotEmpty)
-            ...stops.map((stop) => Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: stops.indexOf(stop) == currentStop
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                      foregroundColor: stops.indexOf(stop) == currentStop
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : null,
-                      child: Text(stop.sequence.toString()),
-                    ),
-                    title: Text(stop.name),
-                    subtitle: stop.arrivalTime.isEmpty
-                        ? null
-                        : Text(stop.arrivalTime),
-                    trailing: stops.indexOf(stop) == currentStop
-                        ? const Icon(Icons.directions_bus_outlined)
-                        : null,
-                    onTap: () =>
-                        setState(() => currentStop = stops.indexOf(stop)),
+            ...stops.map((stop) {
+              final index = stops.indexOf(stop);
+              final active = index == currentStop;
+              final passed = index < currentStop;
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: active
+                        ? Theme.of(context).colorScheme.primary
+                        : passed
+                            ? Colors.green.shade700
+                            : null,
+                    foregroundColor: active || passed ? Colors.white : null,
+                    child: Text(stop.sequence.toString()),
                   ),
-                )),
+                  title: Text(stop.name),
+                  subtitle:
+                      stop.arrivalTime.isEmpty ? null : Text(stop.arrivalTime),
+                  trailing: active
+                      ? const Icon(Icons.directions_bus_outlined)
+                      : passed
+                          ? const Icon(Icons.check)
+                          : null,
+                ),
+              );
+            }),
         ],
       ),
     );
   }
+}
+
+class _RouteProgressCard extends StatelessWidget {
+  const _RouteProgressCard({
+    required this.stops,
+    required this.currentStop,
+    required this.tracking,
+    required this.status,
+    required this.last,
+    required this.sentCount,
+    required this.queuedCount,
+    required this.lastStopMatchName,
+  });
+
+  final List<NomadStop> stops;
+  final int currentStop;
+  final bool tracking;
+  final String status;
+  final Position? last;
+  final int sentCount;
+  final int queuedCount;
+  final String? lastStopMatchName;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Icon(tracking ? Icons.gps_fixed : Icons.gps_not_fixed,
+                color: tracking ? Colors.green.shade700 : null),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                tracking
+                    ? 'GPS actif automatiquement'
+                    : 'GPS en attente autorisation',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w800),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 8),
+          Text(status),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 170,
+            width: double.infinity,
+            child: CustomPaint(
+              painter: _RoutePainter(
+                stopCount: stops.length,
+                currentIndex: stops.isEmpty
+                    ? 0
+                    : currentStop.clamp(0, stops.length - 1).toInt(),
+                tracking: tracking,
+                primary: Theme.of(context).colorScheme.primary,
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.directions_bus_filled,
+                  size: 46,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(
+              child: _GpsMetric(
+                label: 'Envois',
+                value: sentCount.toString(),
+                icon: Icons.cloud_done_outlined,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _GpsMetric(
+                label: 'En attente',
+                value: queuedCount.toString(),
+                icon: Icons.cloud_off_outlined,
+              ),
+            ),
+          ]),
+          if (last != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              'Derniere position : ${last!.latitude.toStringAsFixed(6)}, ${last!.longitude.toStringAsFixed(6)}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+          if (lastStopMatchName != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Georepere detecte : $lastStopMatchName',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ]),
+      ),
+    );
+  }
+}
+
+class _GpsMetric extends StatelessWidget {
+  const _GpsMetric({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: 8),
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(value,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w900)),
+          Text(label, style: Theme.of(context).textTheme.bodySmall),
+        ]),
+      ]),
+    );
+  }
+}
+
+class _RoutePainter extends CustomPainter {
+  const _RoutePainter({
+    required this.stopCount,
+    required this.currentIndex,
+    required this.tracking,
+    required this.primary,
+  });
+
+  final int stopCount;
+  final int currentIndex;
+  final bool tracking;
+  final Color primary;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final road = Paint()
+      ..color = const Color(0xFFE6ECEE)
+      ..strokeWidth = 18
+      ..strokeCap = StrokeCap.round;
+    final progress = Paint()
+      ..color = primary
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round;
+    final path = Path()
+      ..moveTo(24, size.height - 28)
+      ..quadraticBezierTo(size.width * .35, 28, size.width * .62, 80)
+      ..quadraticBezierTo(size.width * .82, 118, size.width - 24, 34);
+    canvas.drawPath(path, road);
+    if (stopCount > 1) {
+      final progressEnd = currentIndex / (stopCount - 1);
+      final metric = path.computeMetrics().first;
+      final extract = metric.extractPath(0, metric.length * progressEnd);
+      canvas.drawPath(extract, progress);
+    }
+
+    final points = _samplePath(path, stopCount == 0 ? 5 : stopCount);
+    final dotPaint = Paint()..color = Colors.white;
+    final borderPaint = Paint()
+      ..color = const Color(0xFF607177)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+    final activePaint = Paint()..color = primary;
+    final donePaint = Paint()..color = Colors.green.shade700;
+    for (var index = 0; index < points.length; index++) {
+      final point = points[index];
+      canvas.drawCircle(point, 11, dotPaint);
+      if (index < currentIndex) {
+        canvas.drawCircle(point, 10, donePaint);
+      } else if (index == currentIndex && tracking) {
+        canvas.drawCircle(point, 12, activePaint);
+      } else {
+        canvas.drawCircle(point, 10, dotPaint);
+        canvas.drawCircle(point, 10, borderPaint);
+      }
+    }
+  }
+
+  List<Offset> _samplePath(Path path, int count) {
+    final metric = path.computeMetrics().first;
+    if (count <= 1) return [metric.getTangentForOffset(0)!.position];
+    return List<Offset>.generate(count, (index) {
+      final offset = metric.length * (index / (count - 1));
+      return metric.getTangentForOffset(offset)!.position;
+    });
+  }
+
+  @override
+  bool shouldRepaint(covariant _RoutePainter oldDelegate) =>
+      stopCount != oldDelegate.stopCount ||
+      currentIndex != oldDelegate.currentIndex ||
+      tracking != oldDelegate.tracking ||
+      primary != oldDelegate.primary;
 }

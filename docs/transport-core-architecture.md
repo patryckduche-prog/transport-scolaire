@@ -65,7 +65,7 @@ La classe Flutter `OfflineEventQueue` rejoue les evenements au retour reseau ou 
 ## Securite mineurs
 
 - Eleves identifies par UUID.
-- Trombinoscope affiche nom/prenom minimum, photo optionnelle.
+- Mode conduite anonyme : le conducteur voit les compteurs par arret, les absences et la checklist, sans afficher les noms ni les photos des eleves.
 - Acces API protege par JWT et role.
 - Donnees sensibles non exposees sur endpoints publics.
 - Les eleves n'ont aucune action obligatoire.

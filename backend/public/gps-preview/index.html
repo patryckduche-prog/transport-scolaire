@@ -11,6 +11,8 @@
         --brand: #0f6f78;
         --soft: #edf7f7;
         --line: #cadbde;
+        --road: #f9fbfb;
+        --green: #1f8b56;
         --warn: #b75b00;
         --danger: #9f2332;
       }
@@ -70,10 +72,120 @@
         background: var(--brand);
         color: white;
         font-weight: 800;
+        line-height: 1.05;
       }
       h1, h2, p { margin-top: 0; }
       h2 { font-size: 16px; margin-bottom: 8px; }
       p { color: var(--muted); line-height: 1.35; }
+      .map-card h2 { margin-bottom: 4px; }
+      .map-card .state {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--green);
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      .map {
+        height: 240px;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+        background:
+          linear-gradient(42deg, transparent 42%, rgba(15,111,120,.12) 43%, rgba(15,111,120,.12) 48%, transparent 49%),
+          linear-gradient(120deg, transparent 52%, rgba(60,120,80,.15) 53%, rgba(60,120,80,.15) 58%, transparent 59%),
+          #dfeeed;
+        border: 1px solid var(--line);
+      }
+      .road {
+        position: absolute;
+        left: 28px;
+        top: 170px;
+        width: 340px;
+        height: 18px;
+        background: var(--road);
+        border: 1px solid #bdc8ca;
+        transform-origin: left center;
+        transform: rotate(-25deg);
+        border-radius: 999px;
+        box-shadow: 0 0 0 7px rgba(255,255,255,.34);
+      }
+      .road.b {
+        left: 150px;
+        top: 106px;
+        width: 220px;
+        transform: rotate(24deg);
+      }
+      .route-line {
+        position: absolute;
+        left: 58px;
+        top: 160px;
+        width: 210px;
+        height: 6px;
+        background: var(--brand);
+        transform-origin: left center;
+        transform: rotate(-25deg);
+        border-radius: 999px;
+      }
+      .route-line.b {
+        left: 206px;
+        top: 96px;
+        width: 86px;
+        background: var(--brand);
+        transform: rotate(24deg);
+      }
+      .bus {
+        position: absolute;
+        left: 206px;
+        top: 92px;
+        width: 78px;
+        height: 40px;
+        border-radius: 8px 14px 12px 8px;
+        background: linear-gradient(#fff, #e9f2f3);
+        border: 3px solid var(--brand);
+        transform: rotate(-18deg);
+        box-shadow: 0 10px 18px rgba(0,0,0,.2);
+      }
+      .bus:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 7px;
+        width: 46px;
+        height: 10px;
+        background: #17343d;
+        border-radius: 5px;
+      }
+      .bus:after {
+        content: "";
+        position: absolute;
+        left: 12px;
+        bottom: -8px;
+        width: 50px;
+        height: 8px;
+        background: radial-gradient(circle at 7px 4px, #17262a 0 4px, transparent 5px),
+                    radial-gradient(circle at 40px 4px, #17262a 0 4px, transparent 5px);
+      }
+      .stop {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: white;
+        background: var(--brand);
+        font-size: 12px;
+        font-weight: 800;
+        border: 3px solid white;
+      }
+      .done { background: var(--green); }
+      .future { background: #7e9095; }
+      .s1 { left: 48px; top: 152px; }
+      .s2 { left: 106px; top: 126px; }
+      .s3 { left: 164px; top: 98px; }
+      .s4 { left: 238px; top: 92px; }
+      .s5 { left: 314px; top: 124px; }
       .status {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -85,95 +197,8 @@
         padding: 10px;
       }
       .metric strong { display: block; font-size: 20px; color: var(--brand); }
-      .map {
-        height: 250px;
-        border-radius: 8px;
-        position: relative;
-        overflow: hidden;
-        background:
-          linear-gradient(42deg, transparent 42%, rgba(15,111,120,.16) 43%, rgba(15,111,120,.16) 48%, transparent 49%),
-          linear-gradient(120deg, transparent 52%, rgba(60,120,80,.15) 53%, rgba(60,120,80,.15) 58%, transparent 59%),
-          #dfeeed;
-        border: 1px solid var(--line);
-      }
-      .road {
-        position: absolute;
-        left: -20px;
-        top: 136px;
-        width: 490px;
-        height: 28px;
-        background: #fefefe;
-        border: 1px solid #bdc8ca;
-        transform: rotate(-16deg);
-        box-shadow: 0 0 0 8px rgba(255,255,255,.38);
-      }
-      .route-line {
-        position: absolute;
-        left: 38px;
-        top: 168px;
-        width: 330px;
-        height: 6px;
-        background: var(--brand);
-        transform: rotate(-16deg);
-        border-radius: 999px;
-      }
-      .bus {
-        position: absolute;
-        left: 160px;
-        top: 112px;
-        width: 72px;
-        height: 38px;
-        border-radius: 8px 12px 10px 8px;
-        background: linear-gradient(#fff, #e9f2f3);
-        border: 3px solid var(--brand);
-        transform: rotate(-16deg);
-        box-shadow: 0 10px 18px rgba(0,0,0,.2);
-      }
-      .bus:before {
-        content: "";
-        position: absolute;
-        left: 10px;
-        top: 7px;
-        width: 42px;
-        height: 10px;
-        background: #17343d;
-        border-radius: 5px;
-      }
-      .bus:after {
-        content: "";
-        position: absolute;
-        left: 12px;
-        bottom: -8px;
-        width: 48px;
-        height: 8px;
-        background: radial-gradient(circle at 7px 4px, #17262a 0 4px, transparent 5px),
-                    radial-gradient(circle at 38px 4px, #17262a 0 4px, transparent 5px);
-      }
-      .stop {
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        display: grid;
-        place-items: center;
-        border-radius: 50%;
-        color: white;
-        background: var(--brand);
-        font-size: 12px;
-        font-weight: 800;
-        border: 3px solid white;
-      }
-      .s1 { left: 40px; top: 164px; }
-      .s2 { left: 98px; top: 148px; }
-      .s3 { left: 162px; top: 130px; background: #1d8b55; }
-      .s4 { left: 230px; top: 112px; }
-      .s5 { left: 306px; top: 92px; }
-      .next {
-        border-left: 4px solid var(--brand);
-      }
-      .rules {
-        display: grid;
-        gap: 8px;
-      }
+      .next { border-left: 4px solid var(--brand); }
+      .rules { display: grid; gap: 8px; }
       .rule {
         display: flex;
         gap: 8px;
@@ -189,10 +214,7 @@
       }
       .rule b { color: var(--warn); }
       .rule.danger b { color: var(--danger); }
-      .buttons {
-        display: grid;
-        gap: 8px;
-      }
+      .buttons { display: grid; gap: 8px; }
       button {
         min-height: 44px;
         border: 0;
@@ -219,59 +241,64 @@
     <main>
       <section class="phone" aria-label="Apercu mobile GPS car scolaire actif">
         <div class="appbar">
-          <span>◀</span>
-          <strong>Suivi GPS car scolaire</strong>
+          <span>&lt;</span>
+          <strong>Suivi GPS</strong>
         </div>
         <div class="content">
           <div class="card route">
             <div class="badge">5010<br>A0</div>
             <div>
-              <h1 style="font-size:18px;margin-bottom:4px;">Aumale → Forges-les-Eaux</h1>
-              <p style="margin-bottom:0;">9 arrêts chargés - mode car scolaire</p>
+              <h1 style="font-size:18px;margin-bottom:4px;">Aumale vers Forges-les-Eaux</h1>
+              <p style="margin-bottom:0;">9 arrets charges - suivi automatique</p>
             </div>
           </div>
 
-          <div class="map">
-            <div class="road"></div>
-            <div class="route-line"></div>
-            <div class="stop s1">1</div>
-            <div class="stop s2">3</div>
-            <div class="stop s3">6</div>
-            <div class="stop s4">8</div>
-            <div class="stop s5">9</div>
-            <div class="bus" title="Position GPS simulee"></div>
+          <div class="card map-card">
+            <div class="state">GPS actif automatiquement</div>
+            <p>Position envoyee au serveur. Le circuit avance avec les georeperes d'arrets.</p>
+            <div class="map">
+              <div class="road"></div>
+              <div class="road b"></div>
+              <div class="route-line"></div>
+              <div class="route-line b"></div>
+              <div class="stop done s1">1</div>
+              <div class="stop done s2">3</div>
+              <div class="stop done s3">6</div>
+              <div class="stop s4">8</div>
+              <div class="stop future s5">9</div>
+              <div class="bus" title="Position GPS simulee"></div>
+            </div>
           </div>
 
           <div class="status">
-            <div class="metric"><span>GPS</span><strong>Actif</strong></div>
-            <div class="metric"><span>Envois serveur</span><strong>18</strong></div>
+            <div class="metric"><span>Envois</span><strong>18</strong></div>
+            <div class="metric"><span>Hors ligne</span><strong>0</strong></div>
           </div>
 
           <div class="card next">
-            <h2>Prochain arrêt officiel</h2>
-            <p><strong>6 - Conteville - Les Défends</strong></p>
-            <p>Suivant : Ronchois - Centre</p>
+            <h2>Arret suivi automatiquement</h2>
+            <p><strong>6 - Conteville - Les Defends</strong></p>
+            <p>Le conducteur n'a pas besoin d'appuyer sur suivant.</p>
           </div>
 
           <div class="card">
             <h2>Mode car scolaire</h2>
             <p><strong>Autocar scolaire standard : 13,0 m x 2,55 m.</strong></p>
-            <p>Suivre le circuit officiel validé par l’exploitation. Google Maps et Waze restent du secours voiture.</p>
+            <p>Suivre le circuit officiel valide par l'exploitation. Google Maps et Waze restent du secours voiture.</p>
             <div class="rules">
-              <div class="rule danger"><span>⚠</span><p><b>D316 hauteur 3,0 m</b><br>Restriction OSM à vérifier avant passage car.</p></div>
-              <div class="rule"><span>⚠</span><p><b>D919 / Avenue des Sources 4,0 m</b><br>Contrôle panneau recommandé selon hauteur réelle du véhicule.</p></div>
-              <div class="rule"><span>✓</span><p><b>Couloir scolaire connu</b><br>Aumale, Haudricourt, Conteville, Ronchois, Forges-les-Eaux.</p></div>
+              <div class="rule danger"><span>!</span><p><b>D316 hauteur 3,0 m</b><br>Restriction a verifier avant passage car.</p></div>
+              <div class="rule"><span>!</span><p><b>D919 / Avenue des Sources 4,0 m</b><br>Controle panneau recommande selon hauteur reelle du vehicule.</p></div>
             </div>
           </div>
 
           <div class="buttons">
-            <button>Démarrer suivi car scolaire</button>
+            <button>Relancer le GPS</button>
             <button class="secondary">Google Maps secours voiture</button>
             <button class="secondary">Waze secours destination</button>
           </div>
         </div>
       </section>
-      <p class="caption">Aperçu test statique : le vrai écran mobile utilise la position GPS du téléphone et le circuit sélectionné par le conducteur.</p>
+      <p class="caption">Apercu test statique : le vrai ecran mobile utilise la position GPS du telephone et le circuit selectionne par le conducteur.</p>
     </main>
   </body>
 </html>

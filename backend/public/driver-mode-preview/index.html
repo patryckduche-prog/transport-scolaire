@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mode conduite - Apercu test</title>
+    <style>
+      :root {
+        --ink: #f4fbfb;
+        --muted: #b9c9cd;
+        --brand: #0f6f78;
+        --panel: #17262a;
+        --card: #203338;
+        --line: #31494f;
+        --danger: #b32635;
+        --green: #2c9a62;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #dfe8e9;
+        color: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      main {
+        width: min(1120px, 100%);
+        margin: 0 auto;
+        padding: 18px;
+      }
+      .phone {
+        width: min(430px, 100%);
+        margin: 0 auto;
+        background: #101b1f;
+        border: 8px solid #17262a;
+        border-radius: 34px;
+        overflow: hidden;
+        box-shadow: 0 18px 48px rgba(0,0,0,.22);
+      }
+      .appbar {
+        padding: 16px;
+        background: var(--panel);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .content {
+        padding: 14px;
+        display: grid;
+        gap: 12px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+      }
+      h1, h2, p { margin-top: 0; }
+      h1 { font-size: 18px; margin-bottom: 6px; }
+      h2 { font-size: 16px; margin-bottom: 8px; }
+      p { color: var(--muted); line-height: 1.35; }
+      .sos {
+        min-height: 64px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--danger);
+        color: white;
+        font-weight: 900;
+        font-size: 18px;
+      }
+      .privacy {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .shield {
+        min-width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(15,111,120,.28);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .metric {
+        border-radius: 8px;
+        background: #102226;
+        padding: 12px;
+      }
+      .metric span {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .metric strong {
+        display: block;
+        font-size: 28px;
+        margin-top: 4px;
+      }
+      .stop {
+        display: grid;
+        grid-template-columns: 44px 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #13252a;
+      }
+      .bubble {
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--brand);
+        font-weight: 900;
+      }
+      .ok { color: var(--green); font-weight: 900; }
+      .switch {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+      .pill {
+        width: 54px;
+        height: 30px;
+        border-radius: 999px;
+        background: var(--green);
+        padding: 4px;
+      }
+      .pill:after {
+        content: "";
+        display: block;
+        width: 22px;
+        height: 22px;
+        margin-left: 24px;
+        border-radius: 50%;
+        background: white;
+      }
+      .finish {
+        min-height: 52px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--brand);
+        color: white;
+        font-weight: 900;
+        font-size: 15px;
+      }
+      .caption {
+        text-align: center;
+        color: #607177;
+        margin: 14px auto 0;
+        width: min(520px, 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="phone" aria-label="Apercu mobile mode conduite">
+        <div class="appbar">
+          <strong>Mode conduite</strong>
+          <span>Sync</span>
+        </div>
+        <div class="content">
+          <div class="card">
+            <h1>5010A0 - Aumale vers Forges-les-Eaux</h1>
+            <p style="margin-bottom:0;">Tournee active - donnees anonymisees</p>
+          </div>
+
+          <button class="sos">SOS / Incident regulation</button>
+
+          <div class="card privacy">
+            <div class="shield">OK</div>
+            <div>
+              <h2>Suivi anonyme</h2>
+              <p>Aucun nom, aucune photo et aucun badgeage eleve dans le poste conducteur. Les absences parent/eleve se synchronisent automatiquement.</p>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="metric"><span>Prevus</span><strong>42</strong></div>
+            <div class="metric"><span>Absents</span><strong>3</strong></div>
+            <div class="metric"><span>Confirmes</span><strong>18</strong></div>
+            <div class="metric"><span>A surveiller</span><strong>21</strong></div>
+          </div>
+
+          <div class="card">
+            <h2>Charge par arret</h2>
+            <div class="stop">
+              <div class="bubble">8</div>
+              <div>
+                <strong>Aumale - Place de la Liberation</strong>
+                <p style="margin-bottom:0;">2 absences declarees</p>
+              </div>
+              <span class="ok">OK</span>
+            </div>
+            <div style="height:8px"></div>
+            <div class="stop">
+              <div class="bubble">5</div>
+              <div>
+                <strong>Conteville - Les Defends</strong>
+                <p style="margin-bottom:0;">5 a verifier</p>
+              </div>
+              <span>...</span>
+            </div>
+          </div>
+
+          <div class="card switch">
+            <div>
+              <strong>Bus vide confirme</strong>
+              <p style="margin-bottom:0;">Verification fin de service sans affichage nominatif</p>
+            </div>
+            <div class="pill"></div>
+          </div>
+          <button class="finish">Cloturer la tournee en securite</button>
+        </div>
+      </section>
+      <p class="caption">Apercu test statique : l'ecran mobile reel garde les donnees nominatives hors du poste conducteur.</p>
+    </main>
+  </body>
+</html>

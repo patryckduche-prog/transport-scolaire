@@ -106,8 +106,8 @@ class DriverDashboardScreen extends StatelessWidget {
           OutlinedButton.icon(
               onPressed: () =>
                   requireRoute(context, const DriverAssistantScreen()),
-              icon: const Icon(Icons.dashboard_customize_outlined),
-              label: const Text('Assistant conduite')),
+              icon: const Icon(Icons.shield_outlined),
+              label: const Text('Mode conduite')),
           OutlinedButton.icon(
               onPressed: () => requireRoute(context, const GpsScreen()),
               icon: const Icon(Icons.map_outlined),

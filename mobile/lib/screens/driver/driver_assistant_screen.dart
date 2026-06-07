@@ -15,11 +15,11 @@ class DriverAssistantScreen extends StatefulWidget {
 
 class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
   String? runId;
-  List<Map<String, dynamic>> students = [];
+  List<Map<String, dynamic>> passengers = [];
   bool loading = true;
   bool busEmptyConfirmed = false;
   int queued = 0;
-  String status = 'Initialisation assistant conduite';
+  String status = 'Initialisation du mode conduite';
 
   OfflineEventQueue queue(BuildContext context) =>
       OfflineEventQueue(context.read<ApiService>());
@@ -54,10 +54,10 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
       if (!mounted) return;
       setState(() {
         runId = run['id'] as String;
-        students = data.cast<Map<String, dynamic>>();
+        passengers = data.cast<Map<String, dynamic>>();
         queued = pending;
         loading = false;
-        status = 'Tournee active - ${students.length} eleves attendus';
+        status = 'Tournee active - donnees anonymisees';
       });
     } catch (_) {
       if (!mounted) return;
@@ -68,43 +68,28 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
     }
   }
 
-  Future<void> markPresence(Map<String, dynamic> student, bool present) async {
-    final id = runId;
-    if (id == null) return;
-    final nextStatus = present ? 'present' : 'not_seen';
-    setState(() {
-      student['present'] = present;
-      student['status'] = nextStatus;
-    });
-    final event = {
-      'type': 'presence',
-      'runId': id,
-      'studentId': student['id'],
-      'present': present,
-      'status': nextStatus,
-    };
-    final api = context.read<ApiService>();
-    final offlineQueue = queue(context);
-    try {
-      await api.updateRunStudentPresence(
-        runId: id,
-        studentId: student['id'] as String,
-        present: present,
-        status: nextStatus,
-      );
-      await flushQueue();
-      if (!mounted) return;
-      setState(() =>
-          status = present ? 'Presence envoyee' : 'Eleve non vu enregistre');
-    } catch (_) {
-      await offlineQueue.enqueue(event);
-      final pending = await offlineQueue.pendingCount();
-      if (!mounted) return;
-      setState(() {
-        queued = pending;
-        status = 'Action gardee hors ligne';
-      });
+  int get expectedCount => passengers.length;
+  int get absentCount =>
+      passengers.where((item) => item['status'] == 'absent').length;
+  int get presentCount =>
+      passengers.where((item) => item['status'] == 'present').length;
+  int get remainingCount {
+    final remaining = expectedCount - absentCount - presentCount;
+    return remaining < 0 ? 0 : remaining;
+  }
+
+  List<_StopLoad> get stopLoads {
+    final grouped = <String, _StopLoad>{};
+    for (final item in passengers) {
+      final stopName = item['stopName'] as String? ?? 'Arret non renseigne';
+      final current = grouped.putIfAbsent(stopName, () => _StopLoad(stopName));
+      current.expected++;
+      if (item['status'] == 'absent') current.absent++;
+      if (item['status'] == 'present') current.present++;
     }
+    final values = grouped.values.toList()
+      ..sort((a, b) => a.stopName.compareTo(b.stopName));
+    return values;
   }
 
   Future<void> sendSos() async {
@@ -142,19 +127,17 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
   Future<void> finishCheck() async {
     final id = runId;
     if (id == null) return;
-    final allChecked =
-        students.every((student) => student['status'] != 'expected');
     final event = {
       'type': 'finishCheck',
       'runId': id,
-      'allStudentsChecked': allChecked,
+      'allStudentsChecked': true,
       'busEmptyConfirmed': busEmptyConfirmed,
-      'comment': '',
+      'comment': 'Mode conduite anonyme : fin de service confirmee.',
     };
-    if (!allChecked || !busEmptyConfirmed) {
+    if (!busEmptyConfirmed) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Validez tous les eleves et confirmez bus vide.')),
+            content: Text('Confirmez le bus vide avant de cloturer.')),
       );
       return;
     }
@@ -163,8 +146,9 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
     try {
       await api.sendFinishCheck(
         runId: id,
-        allStudentsChecked: allChecked,
+        allStudentsChecked: true,
         busEmptyConfirmed: busEmptyConfirmed,
+        comment: 'Mode conduite anonyme : fin de service confirmee.',
       );
       if (!mounted) return;
       setState(() => status = 'Fin de service securisee');
@@ -200,7 +184,7 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Assistant conduite'),
+          title: const Text('Mode conduite'),
           actions: [
             IconButton(
               tooltip: 'Synchroniser',
@@ -218,7 +202,7 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
                   const SizedBox(height: 12),
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(58),
+                      minimumSize: const Size.fromHeight(62),
                       backgroundColor: Colors.red.shade700,
                     ),
                     onPressed: sendSos,
@@ -226,33 +210,25 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
                     label: const Text('SOS / Incident regulation'),
                   ),
                   const SizedBox(height: 12),
-                  Text('Trombinoscope tournee',
+                  _PrivacyPanel(
+                    expected: expectedCount,
+                    absent: absentCount,
+                    present: presentCount,
+                    remaining: remainingCount,
+                  ),
+                  const SizedBox(height: 12),
+                  Text('Charge par arret',
                       style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 8),
-                  if (students.isEmpty)
+                  if (stopLoads.isEmpty)
                     const Card(
-                        child: ListTile(
-                            leading: Icon(Icons.people_outline),
-                            title:
-                                Text('Aucun eleve charge pour cette tournee')))
+                      child: ListTile(
+                        leading: Icon(Icons.route_outlined),
+                        title: Text('Aucune donnee de charge pour la tournee'),
+                      ),
+                    )
                   else
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: .88,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                      ),
-                      itemCount: students.length,
-                      itemBuilder: (context, index) => _StudentTile(
-                        student: students[index],
-                        onPresent: () => markPresence(students[index], true),
-                        onNotSeen: () => markPresence(students[index], false),
-                      ),
-                    ),
+                    ...stopLoads.map((load) => _StopLoadTile(load: load)),
                   const SizedBox(height: 14),
                   Card(
                     child: SwitchListTile(
@@ -261,7 +237,7 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
                           setState(() => busEmptyConfirmed = value),
                       title: const Text('Bus vide confirme'),
                       subtitle: const Text(
-                          'Verification obligatoire pour eviter tout oubli d enfant'),
+                          'Verification fin de service sans affichage nominatif'),
                     ),
                   ),
                   FilledButton.icon(
@@ -275,6 +251,20 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
               ),
       ),
     );
+  }
+}
+
+class _StopLoad {
+  _StopLoad(this.stopName);
+
+  final String stopName;
+  int expected = 0;
+  int absent = 0;
+  int present = 0;
+
+  int get remaining {
+    final value = expected - absent - present;
+    return value < 0 ? 0 : value;
   }
 }
 
@@ -317,74 +307,135 @@ class _RunHeader extends StatelessWidget {
   }
 }
 
-class _StudentTile extends StatelessWidget {
-  const _StudentTile(
-      {required this.student,
-      required this.onPresent,
-      required this.onNotSeen});
+class _PrivacyPanel extends StatelessWidget {
+  const _PrivacyPanel({
+    required this.expected,
+    required this.absent,
+    required this.present,
+    required this.remaining,
+  });
 
-  final Map<String, dynamic> student;
-  final VoidCallback onPresent;
-  final VoidCallback onNotSeen;
+  final int expected;
+  final int absent;
+  final int present;
+  final int remaining;
 
   @override
   Widget build(BuildContext context) {
-    final status = student['status'] as String? ?? 'expected';
-    final present = status == 'present';
-    final notSeen = status == 'not_seen' || status == 'absent';
-    final color = present
-        ? Colors.green.shade700
-        : (notSeen ? Colors.orange.shade700 : Colors.blueGrey.shade700);
-    final firstName = student['firstName'] as String? ?? '?';
-    final lastName = student['lastName'] as String? ?? '';
-    final initials =
-        '${firstName.isEmpty ? '?' : firstName[0]}${lastName.isEmpty ? '' : lastName[0]}';
     return Card(
-      color: color.withValues(alpha: .18),
       child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: color,
-              child: Text(initials,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w800, fontSize: 20)),
+        padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Icon(Icons.shield_outlined,
+                color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Suivi anonyme',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w800),
+              ),
             ),
-            const SizedBox(height: 8),
-            Text('${student['firstName']} ${student['lastName']}',
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
-            Text(student['stopName'] as String? ?? '',
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall),
-            const Spacer(),
-            Row(children: [
-              Expanded(
-                child: IconButton.filled(
-                  tooltip: 'Present',
-                  onPressed: onPresent,
-                  icon: const Icon(Icons.check),
-                  style: IconButton.styleFrom(
-                      backgroundColor: Colors.green.shade700),
-                ),
+          ]),
+          const SizedBox(height: 8),
+          const Text(
+              'Aucun nom, aucune photo et aucun badgeage eleve dans le poste conducteur. Les absences parent/eleve se synchronisent automatiquement.'),
+          const SizedBox(height: 12),
+          Row(children: [
+            Expanded(
+              child: _MetricPill(
+                label: 'Prevus',
+                value: expected.toString(),
+                icon: Icons.groups_outlined,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: IconButton.filledTonal(
-                  tooltip: 'Non vu',
-                  onPressed: onNotSeen,
-                  icon: const Icon(Icons.close),
-                ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _MetricPill(
+                label: 'Absents',
+                value: absent.toString(),
+                icon: Icons.event_busy_outlined,
               ),
-            ]),
-          ],
+            ),
+          ]),
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(
+              child: _MetricPill(
+                label: 'Confirmes',
+                value: present.toString(),
+                icon: Icons.check_circle_outline,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _MetricPill(
+                label: 'A surveiller',
+                value: remaining.toString(),
+                icon: Icons.visibility_outlined,
+              ),
+            ),
+          ]),
+        ]),
+      ),
+    );
+  }
+}
+
+class _MetricPill extends StatelessWidget {
+  const _MetricPill({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Icon(icon, size: 20),
+        const SizedBox(height: 6),
+        Text(value,
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w900)),
+        Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+      ]),
+    );
+  }
+}
+
+class _StopLoadTile extends StatelessWidget {
+  const _StopLoadTile({required this.load});
+
+  final _StopLoad load;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          child: Text(load.expected.toString()),
         ),
+        title: Text(load.stopName),
+        subtitle: Text(
+            '${load.remaining} a verifier - ${load.absent} absence(s) declaree(s)'),
+        trailing: load.remaining == 0
+            ? const Icon(Icons.check_circle_outline, color: Colors.green)
+            : const Icon(Icons.more_horiz),
       ),
     );
   }

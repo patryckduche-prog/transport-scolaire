@@ -51,6 +51,7 @@ app.use('/code-generator', express.static(path.join(publicDir, 'code-generator')
 app.use('/driver-mode-preview', express.static(path.join(publicDir, 'driver-mode-preview')));
 app.use('/gps-preview', express.static(path.join(publicDir, 'gps-preview')));
 app.use('/parent-preview', express.static(path.join(publicDir, 'parent-preview')));
+app.use('/sales-screenshots', express.static(path.join(publicDir, 'sales-screenshots')));
 app.get('/download/bus-scolaire-connect.apk', (_, res) => {
   res.setHeader('Content-Type', 'application/vnd.android.package-archive');
   res.setHeader('Content-Disposition', 'attachment; filename="bus-scolaire-connect.apk"');

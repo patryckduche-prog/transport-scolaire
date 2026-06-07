@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bus Scolaire Connect - Captures commerciales</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #13252b;
+      --muted: #607177;
+      --line: #d8e2e5;
+      --panel: #f6fbfb;
+      --teal: #0f6f78;
+      --teal-dark: #0a4d55;
+      --green: #2f7d43;
+      --orange: #d96f1c;
+      --red: #bd1f2d;
+      --blue: #1d5f96;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e8eef0;
+      color: var(--ink);
+    }
+    .deck {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+    .screen {
+      width: min(100%, 430px);
+      min-height: 920px;
+      background: #f7fafb;
+      border-radius: 34px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 24px 70px rgba(11, 30, 36, .24);
+    }
+    @media (min-width: 900px) {
+      .screen.tablet {
+        width: 1180px;
+        min-height: 760px;
+        border-radius: 28px;
+      }
+      .tablet .content { display: grid; grid-template-columns: 1.05fr .95fr; gap: 20px; }
+      .tablet .hero { height: 280px; }
+      .tablet .map { height: 450px; }
+      .tablet .phone-only { display: none; }
+    }
+    .status {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 26px;
+      font-weight: 700;
+      color: #213238;
+    }
+    .appbar {
+      height: 76px;
+      background: #e4eef1;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 22px;
+      font-size: 30px;
+      letter-spacing: 0;
+    }
+    .appbar small {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 3px;
+    }
+    .icon { width: 32px; text-align: center; }
+    .body { padding: 18px; }
+    .content { display: block; }
+    .hero {
+      height: 250px;
+      border-radius: 14px;
+      overflow: hidden;
+      padding: 22px;
+      position: relative;
+      color: white;
+      background:
+        linear-gradient(90deg, rgba(9,30,39,.88), rgba(9,30,39,.32) 58%, rgba(9,30,39,.10)),
+        radial-gradient(circle at 82% 52%, #f7f9f8 0 4%, #0f6f78 4.5% 5.7%, transparent 6%),
+        linear-gradient(160deg, #69a6c8 0 28%, #e7c26b 28% 45%, #5d9b61 45% 62%, #cad6c9 62%);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: 20px;
+      bottom: 24px;
+      width: 188px;
+      height: 82px;
+      border-radius: 24px 34px 14px 14px;
+      background: linear-gradient(#f7f8f8, #dce4e6);
+      box-shadow: inset 0 -7px 0 #0f6f78, 0 16px 24px rgba(0,0,0,.28);
+      transform: skewX(-8deg);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      right: 58px;
+      bottom: 91px;
+      width: 118px;
+      height: 30px;
+      border-radius: 16px 28px 4px 6px;
+      background: #19383f;
+      box-shadow: -48px 58px 0 -50px #111, 82px 58px 0 -50px #111;
+      z-index: 2;
+    }
+    h1 { position: relative; z-index: 3; font-size: 42px; line-height: 1.03; margin: 0 0 18px; }
+    h2 { font-size: 24px; margin: 0 0 12px; }
+    h3 { font-size: 18px; margin: 0 0 6px; }
+    p { margin: 0; color: var(--muted); line-height: 1.35; }
+    .hero p { color: white; font-size: 20px; position: relative; z-index: 3; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 22px; padding: 12px 16px;
+      background: rgba(255,255,255,.20);
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 10px;
+      color: white;
+      font-weight: 800;
+      position: relative;
+      z-index: 3;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .row { display: flex; gap: 12px; align-items: center; }
+    .between { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .grow { flex: 1; }
+    .muted { color: var(--muted); }
+    .big { font-size: 26px; font-weight: 900; }
+    .btn {
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border-radius: 30px;
+      border: 0;
+      color: white;
+      background: var(--teal);
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 16px;
+    }
+    .btn.secondary { background: white; color: var(--teal); border: 2px solid var(--teal); }
+    .btn.disabled { background: #c5ced1; color: #607177; }
+    .alert { border-left: 8px solid var(--orange); background: #fff8ef; }
+    .alert.red { border-left-color: var(--red); background: #fff1f2; }
+    .alert.yellow { border-left-color: #e5b329; background: #fffbea; }
+    .tag { display: inline-flex; padding: 6px 10px; border-radius: 99px; font-weight: 800; font-size: 12px; background: #e2eff1; color: var(--teal-dark); }
+    .tag.red { background: #f9d8dc; color: #8f0f1d; }
+    .tag.green { background: #dff1e4; color: #1e6532; }
+    .tag.orange { background: #ffe2c8; color: #91410b; }
+    .map {
+      height: 360px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      background:
+        linear-gradient(35deg, transparent 47%, rgba(255,255,255,.92) 48% 55%, transparent 56%),
+        linear-gradient(138deg, transparent 41%, rgba(255,255,255,.92) 42% 48%, transparent 49%),
+        radial-gradient(circle at 76% 18%, #dbead0 0 13%, transparent 14%),
+        radial-gradient(circle at 28% 68%, #cfe5c8 0 18%, transparent 19%),
+        #e7efdd;
+      border: 1px solid #d5ded7;
+    }
+    .route {
+      position: absolute;
+      left: 34px;
+      bottom: 22px;
+      width: 88%;
+      height: 70%;
+      border: 12px solid white;
+      border-top-color: transparent;
+      border-right-color: var(--teal);
+      border-bottom-color: var(--teal);
+      border-radius: 42% 58% 52% 48%;
+      transform: rotate(-14deg);
+      box-shadow: 0 0 0 4px rgba(15,111,120,.25);
+    }
+    .coach {
+      position: absolute;
+      width: 122px;
+      height: 54px;
+      right: 82px;
+      top: 150px;
+      border-radius: 18px 26px 8px 8px;
+      background: linear-gradient(#fbfcfc, #dfe8ea);
+      border: 2px solid rgba(13,50,59,.28);
+      box-shadow: inset 0 -7px 0 var(--teal), 0 14px 22px rgba(0,0,0,.28);
+      transform: rotate(68deg);
+    }
+    .coach::before {
+      content: "";
+      position: absolute;
+      left: 18px; top: 8px;
+      width: 74px; height: 16px;
+      border-radius: 10px;
+      background: #18343a;
+      box-shadow: 80px 26px 0 -28px #17262a, -10px 36px 0 -28px #17262a;
+    }
+    .stop {
+      position: absolute;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      background: #577078;
+      color: white;
+      font-weight: 900;
+      border: 4px solid white;
+      box-shadow: 0 3px 8px rgba(0,0,0,.22);
+    }
+    .stop.green { background: var(--green); }
+    .stop.one { left: 186px; top: 145px; }
+    .stop.two { left: 155px; top: 220px; }
+    .stop.three { left: 92px; top: 298px; }
+    .floating {
+      position: absolute;
+      background: rgba(255,255,255,.95);
+      padding: 9px 12px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,.16);
+      font-weight: 900;
+      color: var(--teal-dark);
+    }
+    .nav {
+      background: var(--teal);
+      color: white;
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .nav .arrow {
+      width: 70px; height: 70px;
+      border-radius: 10px;
+      background: white;
+      color: var(--teal);
+      display: grid; place-items: center;
+      font-size: 46px;
+      font-weight: 900;
+    }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    .metric { background: #e3eaec; border-radius: 12px; padding: 16px; }
+    .list { display: grid; gap: 10px; }
+    .shot-title {
+      position: absolute;
+      right: 18px;
+      bottom: 14px;
+      color: rgba(19,37,43,.48);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .red-band {
+      background: var(--red);
+      color: white;
+      border-radius: 10px;
+      padding: 14px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 10px;
+      background: white;
+    }
+    .table th, .table td { text-align: left; padding: 12px; border-bottom: 1px solid var(--line); }
+    .table th { background: #e5eff1; color: var(--teal-dark); }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section id="screen" class="screen">
+      <div class="status"><span>18:47</span><span>📍 6E ▰▰▰ 46%</span></div>
+      <div id="page"></div>
+      <div class="shot-title" id="shotLabel"></div>
+    </section>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const shot = params.get('shot') || 'home';
+    const device = params.get('device') || 'phone';
+    const screen = document.getElementById('screen');
+    if (device === 'tablet') screen.classList.add('tablet');
+    const page = document.getElementById('page');
+    document.getElementById('shotLabel').textContent = `Bus Scolaire Connect · ${shot}`;
+
+    const appbar = (title, sub = '') => `<div class="appbar"><div class="icon">←</div><div>${title}${sub ? `<small>${sub}</small>` : ''}</div></div>`;
+    const route = '5010A0 - Aumale / Haudricourt / Conteville / Ronchois > Forges-les-Eaux';
+    const map = (premium = false) => `
+      <div class="map">
+        <div class="route"></div>
+        <div class="floating" style="left:14px;top:14px">${premium ? 'Position du car - Premium' : 'Position conducteur'}</div>
+        <div class="floating" style="right:14px;top:16px;font-size:32px">↱</div>
+        <div class="coach"></div>
+        <div class="stop green one">1</div><div class="stop two">2</div><div class="stop three">3</div>
+        <div class="floating" style="left:14px;bottom:14px">© OpenStreetMap</div>
+      </div>`;
+
+    const pages = {
+      home: () => `
+        <div class="body">
+          <div class="hero">
+            <h1>Bus Scolaire Connect</h1>
+            <p>Suivi des lignes, retards et alertes scolaires</p>
+            <div class="pill">☀ Été sur les lignes</div>
+          </div>
+          <div class="card">
+            <h2>Alertes en cours</h2>
+            <div class="list">
+              <div class="row"><div>🌡</div><p><b>${route}</b><br>Retard 15 minutes suite à Accident.</p></div>
+              <div class="row"><div>🚫</div><p><b>AUMALE / FORGES</b><br>Transport interdit sur ligne favorite.</p></div>
+            </div>
+          </div>
+          <div class="btn">👨‍👩‍👧 Accès direct parent / élève</div>
+          <div class="card"><h2>Conducteur</h2><p>Code conducteur</p><div class="big">AUMALE-2026</div></div>
+        </div>`,
+      prefecture: () => appbar('Alerte Préfecture', 'validation responsable') + `
+        <div class="body content">
+          <div>
+            <div class="card alert red">
+              <div class="between"><h2>🚫 TRANSPORT SCOLAIRE SUSPENDU</h2><span class="tag red">Niveau rouge</span></div>
+              <p><b>Secteur : Aumale / Blangy / Forges-les-Eaux</b><br>Suite à un arrêté préfectoral, la circulation des transports scolaires est interdite aujourd'hui.</p>
+            </div>
+            <div class="card">
+              <h2>Journal officiel</h2>
+              <table class="table">
+                <tr><th>Source</th><td>Préfecture / saisie responsable</td></tr>
+                <tr><th>Date</th><td>07/06/2026 - 18:47</td></tr>
+                <tr><th>Zone</th><td>Secteur Aumale</td></tr>
+                <tr><th>Validation</th><td>Responsable exploitation</td></tr>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div class="card"><h2>Lignes bloquées</h2><div class="red-band">🚫 AUMALE → BLANGY<br>TRANSPORTS INTERDITS<br>Arrêté préfectoral</div><div class="btn disabled">Démarrer la ligne désactivé</div></div>
+          </div>
+        </div>`,
+      driverGps: () => appbar('Suivi GPS', route) + `
+        <div class="body content">
+          <div>
+            <div class="nav"><div class="arrow">↱</div><div><h2>Dans 85 m</h2><p style="color:white">Tournez à droite sur Rue Saint-Lazare</p></div></div>
+            <div class="card"><h2>GPS actif automatiquement</h2><p>Position envoyée au serveur</p>${map(false)}
+              <div class="metrics"><div class="metric"><div class="big">42 km/h</div><p>Vitesse</p></div><div class="metric"><div class="big">80 km/h</div><p>Limite estimée</p></div></div>
+            </div>
+          </div>
+          <div>
+            <div class="card"><h2>Assistant conduite</h2><p>Itinéraire car scolaire, consignes vocales, suivi des arrêts et envoi GPS automatique.</p></div>
+            <div class="card"><h2>Prochain arrêt</h2><div class="big">Forges-les-Eaux Lycée</div><p>Arrivée estimée dans 8 minutes</p></div>
+          </div>
+        </div>`,
+      parentFree: () => appbar('Parent / Élève', 'version gratuite') + `
+        <div class="body">
+          <div class="card"><div class="between"><h2>Mes lignes favorites</h2><span class="tag green">Notifications actives</span></div><p><b>${route}</b><br>Prochain passage théorique : 07:45 - Forges-les-Eaux</p></div>
+          <div class="card alert"><h2>Alertes sur mes favoris</h2><p><b>RETARD : 15 min</b><br>Motif : Accident</p></div>
+          <div class="card"><h2>Absence enfant</h2><p>Déclaration sans nom d'élève, rattachée à cette ligne favorite.</p><div class="btn secondary">Déclarer absent aujourd'hui</div></div>
+          <div class="card"><h2>Suivi GPS du car disponible avec Premium</h2><p>En gratuit : horaires, favoris, absence et alertes importantes.</p></div>
+        </div>`,
+      parentPremium: () => appbar('Parent / Élève Premium', 'GPS ligne favorite') + `
+        <div class="body content">
+          <div class="card"><div class="between"><h2>${route}</h2><span class="tag green">Premium actif</span></div><p>Car en approche · dernier signal il y a 30 secondes</p>${map(true)}</div>
+          <div>
+            <div class="card"><h2>Estimation d’arrivée</h2><div class="big">8 min</div><p>ETA calculée sur la dernière position reçue.</p></div>
+            <div class="card"><h2>Dernière position</h2><p>49.770093, 1.749323<br>Vitesse : 42 km/h</p></div>
+          </div>
+        </div>`,
+      driverRoutes: () => appbar('Circuits Nomad', 'secteur Aumale') + `
+        <div class="body">
+          <div class="card"><h2>Circuits limités par votre code</h2><p>Aumale - lignes autorisées uniquement</p></div>
+          <div class="card alert red"><div class="between"><h2>5010A0 - Aumale / Forges</h2><span class="tag red">Bloquée</span></div><p>TRANSPORTS INTERDITS - Arrêté préfectoral</p><div class="btn disabled">Choisir et lancer le GPS vocal</div></div>
+          <div class="card"><div class="between"><h2>5002A0 - Aumale / Neufchâtel</h2><span class="tag green">Autorisé</span></div><p>14 arrêts - 2 trajets</p><div class="btn secondary">Choisir cette ligne</div></div>
+          <div class="card"><h2>5010A4 - Conteville / Forges</h2><p>9 arrêts - trajet scolaire</p></div>
+        </div>`,
+      stats: () => appbar('Tableau de bord Région', 'fréquentation et incidents') + `
+        <div class="body content">
+          <div>
+            <div class="metrics"><div class="metric"><div class="big">428</div><p>Élèves présents</p></div><div class="metric"><div class="big">17</div><p>Absences déclarées</p></div></div>
+            <div class="card"><h2>Lignes saturées</h2><p>5002A0 · 94% capacité<br>5010A0 · 82% capacité</p></div>
+            <div class="card"><h2>Arrêts peu fréquentés</h2><p>3 arrêts à surveiller sur le mois.</p></div>
+          </div>
+          <div class="card"><h2>Analyse annuelle</h2><div style="height:280px;display:flex;align-items:end;gap:14px;padding:20px;background:white;border-radius:10px">${[62,78,71,84,69,91,88].map(v=>`<div style="height:${v}%;width:42px;background:#0f6f78;border-radius:8px 8px 0 0"></div>`).join('')}</div></div>
+        </div>`,
+      download: () => appbar('Tester l’application', 'Android aujourd’hui, iPhone plus tard') + `
+        <div class="body content">
+          <div class="card"><h2>Version Android</h2><p>APK de test connecté au serveur Render et Firebase.</p><div class="btn">Télécharger l’application</div></div>
+          <div class="card"><h2>QR Code test</h2><div style="width:220px;height:220px;background:repeating-linear-gradient(45deg,#111 0 8px,#fff 8px 16px);border:14px solid white;box-shadow:0 0 0 1px #ddd"></div><p style="margin-top:12px">Lien direct partageable aux collègues testeurs.</p></div>
+        </div>`
+    };
+    page.innerHTML = (pages[shot] || pages.home)();
+  </script>
+</body>
+</html>

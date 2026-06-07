@@ -42,8 +42,8 @@ export function fcmStatus() {
   };
 }
 
-const visibleAlertTitle = '🚨 ALERTE BUS SCOLAIRE';
-const criticalAlertTitle = '🚨 ALERTE SECURITE TRANSPORT';
+const visibleAlertTitle = '\u{1F6A8} ALERTE BUS SCOLAIRE';
+const criticalAlertTitle = '\u{1F6A8} ALERTE SECURITE TRANSPORT';
 
 export async function sendDelayNotification(routeId, body, options = {}) {
   const { rows } = await pool.query(
@@ -63,7 +63,6 @@ export async function sendDelayNotification(routeId, body, options = {}) {
   const message = options.message ?? body;
   await admin.messaging().sendEachForMulticast({
     tokens,
-    notification: { title, body: message },
     data: {
       alertId: String(options.alertId ?? ''),
       severity: 'warning',
@@ -76,18 +75,6 @@ export async function sendDelayNotification(routeId, body, options = {}) {
       priority: 'high',
       collapseKey: `route-${routeId}`,
       ttl: 1000 * 60 * 60,
-      notification: {
-        title,
-        body: message,
-        sound: 'default',
-        channelId: 'favorite_route_alerts_v3',
-        tag: `route-alert-${options.alertId ?? routeId}`,
-        priority: 'max',
-        visibility: 'public',
-        defaultSound: true,
-        defaultVibrateTimings: true,
-        vibrateTimingsMillis: [0, 900, 250, 900, 250, 900],
-      },
     },
   });
 }
@@ -108,7 +95,6 @@ export async function sendCriticalSafetyNotification(body, options = {}) {
   const message = options.message ?? body;
   await admin.messaging().sendEachForMulticast({
     tokens,
-    notification: { title, body: message },
     data: {
       alertId: String(options.alertId ?? ''),
       severity: 'critical',
@@ -120,18 +106,6 @@ export async function sendCriticalSafetyNotification(body, options = {}) {
       priority: 'high',
       collapseKey: 'critical-transport-safety',
       ttl: 1000 * 60 * 60,
-      notification: {
-        title,
-        body: message,
-        sound: 'default',
-        channelId: 'critical_transport_safety_v2',
-        tag: `critical-alert-${options.alertId ?? 'latest'}`,
-        priority: 'max',
-        visibility: 'public',
-        defaultSound: true,
-        defaultVibrateTimings: true,
-        vibrateTimingsMillis: [0, 1000, 200, 1000, 200, 1000],
-      },
     },
   });
 }

@@ -1,11 +1,36 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-const favoriteRouteChannelId = 'favorite_route_alerts_v3';
-const criticalSafetyChannelId = 'critical_transport_safety_v2';
+const favoriteRouteChannelId = 'favorite_route_alerts_v4';
+const criticalSafetyChannelId = 'critical_transport_safety_v3';
+const alertRed = Color(0xFFB00020);
+
+int _stableId(String value) {
+  final digits = int.tryParse(value);
+  if (digits != null) return digits.remainder(2147483647);
+  var hash = 0;
+  for (final code in value.codeUnits) {
+    hash = (hash * 31 + code) & 0x7fffffff;
+  }
+  return hash == 0 ? 1001 : hash;
+}
+
+Future<bool> _shouldShowOnce(String key) async {
+  final safeKey = 'shown_alert_${_stableId(key)}';
+  final prefs = await SharedPreferences.getInstance();
+  final now = DateTime.now().millisecondsSinceEpoch;
+  final last = prefs.getInt(safeKey) ?? 0;
+  if (now - last < const Duration(hours: 2).inMilliseconds) {
+    return false;
+  }
+  await prefs.setInt(safeKey, now);
+  return true;
+}
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -20,16 +45,21 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     await _createAndroidChannels(local);
     final title = message.notification?.title ??
         message.data['title'] as String? ??
-        'Alerte bus scolaire';
+        '\u{1F6A8} ALERTE BUS SCOLAIRE';
     final body = message.notification?.body ??
         message.data['body'] as String? ??
         'Nouvelle alerte sur une ligne favorite.';
     final critical = message.data['severity'] == 'critical';
+    final alertId = (message.data['alertId'] ?? '').toString();
+    final key = alertId.isNotEmpty ? alertId : '$title|$body';
+    if (!await _shouldShowOnce(key)) return;
     await _showAndroidAlert(
       local: local,
       title: title,
       body: body,
       critical: critical,
+      id: _stableId(key),
+      tag: critical ? 'critical-alert-$key' : 'route-alert-$key',
     );
   } catch (_) {}
 }
@@ -42,7 +72,7 @@ Future<void> _createAndroidChannels(
   await android.createNotificationChannel(
     AndroidNotificationChannel(
       favoriteRouteChannelId,
-      '🚨 Alertes bus scolaire',
+      '\u{1F6A8} Alertes bus scolaire',
       description: 'Alertes visibles avec sonnerie et vibration forte',
       importance: Importance.max,
       playSound: true,
@@ -53,7 +83,7 @@ Future<void> _createAndroidChannels(
   await android.createNotificationChannel(
     AndroidNotificationChannel(
       criticalSafetyChannelId,
-      '🚨 Alertes securite transport',
+      '\u{1F6A8} Alertes securite transport',
       description: 'Alertes prioritaires securite, prefecture et circulation',
       importance: Importance.max,
       playSound: true,
@@ -69,6 +99,7 @@ Future<void> _showAndroidAlert({
   required String body,
   required bool critical,
   int? id,
+  String? tag,
 }) async {
   await local.show(
     id ?? DateTime.now().millisecondsSinceEpoch.remainder(100000),
@@ -77,7 +108,9 @@ Future<void> _showAndroidAlert({
     NotificationDetails(
       android: AndroidNotificationDetails(
         critical ? criticalSafetyChannelId : favoriteRouteChannelId,
-        critical ? '🚨 Alertes securite transport' : '🚨 Alertes bus scolaire',
+        critical
+            ? '\u{1F6A8} Alertes securite transport'
+            : '\u{1F6A8} Alertes bus scolaire',
         channelDescription: critical
             ? 'Alertes prioritaires securite, prefecture et circulation'
             : 'Alertes visibles avec sonnerie et vibration forte',
@@ -96,6 +129,14 @@ Future<void> _showAndroidAlert({
         ticker: title,
         category: AndroidNotificationCategory.alarm,
         visibility: NotificationVisibility.public,
+        fullScreenIntent: true,
+        tag: tag,
+        color: alertRed,
+        colorized: true,
+        ledColor: alertRed,
+        enableLights: true,
+        ledOnMs: 1000,
+        ledOffMs: 500,
       ),
     ),
   );
@@ -119,16 +160,29 @@ class NotificationService {
           .setForegroundNotificationPresentationOptions(
               alert: true, badge: true, sound: true);
       FirebaseMessaging.onMessage.listen((message) {
-        final title = message.notification?.title ?? 'Alerte bus scolaire';
+        final title =
+            message.notification?.title ?? '\u{1F6A8} ALERTE BUS SCOLAIRE';
         final body = message.notification?.body ??
             message.data['body'] as String? ??
             'Nouvelle alerte sur une ligne favorite.';
         final id = int.tryParse((message.data['alertId'] ?? '').toString());
-        if (message.data['severity'] == 'critical') {
-          showCriticalSafetyAlert(title: title, body: body, id: id);
-        } else {
-          showBusAlert(title: title, body: body, id: id);
-        }
+        final key = (message.data['alertId'] ?? '$title|$body').toString();
+        _shouldShowOnce(key).then((show) {
+          if (!show) return;
+          if (message.data['severity'] == 'critical') {
+            showCriticalSafetyAlert(
+                title: title,
+                body: body,
+                id: id ?? _stableId(key),
+                tag: 'critical-alert-$key');
+          } else {
+            showBusAlert(
+                title: title,
+                body: body,
+                id: id ?? _stableId(key),
+                tag: 'route-alert-$key');
+          }
+        });
       });
     } catch (_) {}
   }
@@ -157,24 +211,32 @@ class NotificationService {
   }
 
   Future<void> showBusAlert(
-      {required String title, required String body, int? id}) async {
+      {required String title,
+      required String body,
+      int? id,
+      String? tag}) async {
     await _showAndroidAlert(
       local: _local,
       title: title,
       body: body,
       critical: false,
       id: id,
+      tag: tag,
     );
   }
 
   Future<void> showCriticalSafetyAlert(
-      {required String title, required String body, int? id}) async {
+      {required String title,
+      required String body,
+      int? id,
+      String? tag}) async {
     await _showAndroidAlert(
       local: _local,
       title: title,
       body: body,
       critical: true,
       id: id,
+      tag: tag,
     );
   }
 }

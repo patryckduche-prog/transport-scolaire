@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../../models/nomad_route.dart';
 import '../../services/api_service.dart';
 import '../../services/app_state.dart';
-import '../../services/notification_service.dart';
 import '../../widgets/root_back_guard.dart';
 import '../login_screen.dart';
 
@@ -37,6 +36,23 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   Timer? alertTimer;
   Timer? liveTimer;
   final seenAlertIds = <String>{};
+
+  List<dynamic> dedupeAlerts(List<dynamic> rawAlerts) {
+    final keys = <String>{};
+    final unique = <dynamic>[];
+    for (final item in rawAlerts) {
+      final alert = item as Map<String, dynamic>;
+      final key = [
+        alert['routeExternalId'] ?? '',
+        alert['status'] ?? '',
+        alert['reason'] ?? '',
+        alert['severity'] ?? '',
+        alert['broadcastToAll'] ?? '',
+      ].join('|');
+      if (keys.add(key)) unique.add(alert);
+    }
+    return unique;
+  }
 
   void returnToLogin() {
     context.read<AppState>().logout();
@@ -94,7 +110,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
         premiumEnabled = settings['premiumEnabled'] as bool? ?? false;
         favorites = favoriteData.cast<Map<String, dynamic>>();
         favoriteDetails = details;
-        alerts = alertData;
+        alerts = dedupeAlerts(alertData);
         absences = absenceData;
         livePositions = (liveData['positions'] as List?) ?? [];
         seenAlertIds.addAll(alertData
@@ -132,35 +148,14 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
       final alertData = await context.read<ApiService>().getPassengerAlerts();
       if (!mounted) return;
 
-      final newAlerts = <Map<String, dynamic>>[];
       for (final item in alertData) {
         final alert = item as Map<String, dynamic>;
         final id = (alert['id'] ?? '').toString();
         if (id.isEmpty || seenAlertIds.contains(id)) continue;
         seenAlertIds.add(id);
-        newAlerts.add(alert);
       }
 
-      setState(() => alerts = alertData);
-      for (final alert in newAlerts.reversed) {
-        final critical =
-            alert['severity'] == 'critical' || alert['broadcastToAll'] == true;
-        final title = critical
-            ? 'Alerte securite transport'
-            : alert['routeName'] as String? ?? 'Alerte bus scolaire';
-        final body = alert['message'] as String? ??
-            (critical
-                ? 'Alerte prioritaire transport scolaire.'
-                : 'Nouvelle alerte sur une ligne favorite.');
-        final id = int.tryParse((alert['id'] ?? '').toString());
-        if (critical) {
-          await NotificationService.instance
-              .showCriticalSafetyAlert(title: title, body: body, id: id);
-        } else {
-          await NotificationService.instance
-              .showBusAlert(title: title, body: body, id: id);
-        }
-      }
+      setState(() => alerts = dedupeAlerts(alertData));
     } catch (_) {}
   }
 

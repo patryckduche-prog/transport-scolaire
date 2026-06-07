@@ -36,13 +36,30 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
   const input = schema.parse(req.body);
   const uuidRoute = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.routeId);
   const alert = classifyAlert(input.status, input.reason);
+  const routeExternalId = uuidRoute ? input.routeId : input.routeId;
+  const duplicate = await pool.query(
+    `select *
+     from delays
+     where driver_id=$1
+       and coalesce(route_external_id, route_id::text)=$2
+       and lower(status)=lower($3)
+       and lower(reason)=lower($4)
+       and created_at > now() - interval '10 minutes'
+     order by created_at desc
+     limit 1`,
+    [req.user.sub, routeExternalId, input.status, input.reason],
+  );
+  if (duplicate.rows.length > 0) {
+    return res.status(200).json({ ...duplicate.rows[0], duplicate: true });
+  }
+
   const { rows } = await pool.query(
     `insert into delays(route_id, route_external_id, route_name, driver_id, status, reason, severity, broadcast_to_all, alert_category)
      values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
      returning *`,
     [
       uuidRoute ? input.routeId : null,
-      uuidRoute ? input.routeId : input.routeId,
+      routeExternalId,
       input.routeName ?? null,
       req.user.sub,
       input.status,
@@ -56,9 +73,9 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
     ? `Alerte prioritaire transport scolaire : ${input.status} - ${input.reason}.`
     : `Bus ${input.routeName ?? input.routeId} : ${input.status} suite a ${input.reason}.`;
   if (alert.broadcastToAll) {
-    await sendCriticalSafetyNotification(body);
+    await sendCriticalSafetyNotification(body, { alertId: rows[0].id });
   } else {
-    await sendDelayNotification(input.routeId, body);
+    await sendDelayNotification(input.routeId, body, { alertId: rows[0].id });
   }
   res.status(201).json(rows[0]);
 });

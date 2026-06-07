@@ -42,7 +42,7 @@ export function fcmStatus() {
   };
 }
 
-export async function sendDelayNotification(routeId, body) {
+export async function sendDelayNotification(routeId, body, options = {}) {
   const { rows } = await pool.query(
     `select distinct u.fcm_token
      from users u
@@ -60,6 +60,7 @@ export async function sendDelayNotification(routeId, body) {
     tokens,
     notification: { title: 'Alerte bus scolaire', body },
     data: {
+      alertId: String(options.alertId ?? ''),
       severity: 'warning',
       category: 'favorite_route',
       routeId: String(routeId),
@@ -68,9 +69,11 @@ export async function sendDelayNotification(routeId, body) {
     },
     android: {
       priority: 'high',
+      collapseKey: `route-${routeId}`,
       notification: {
         sound: 'default',
         channelId: 'favorite_route_alerts_v2',
+        tag: `route-alert-${options.alertId ?? routeId}`,
         defaultSound: true,
         defaultVibrateTimings: true,
       },
@@ -78,7 +81,7 @@ export async function sendDelayNotification(routeId, body) {
   });
 }
 
-export async function sendCriticalSafetyNotification(body) {
+export async function sendCriticalSafetyNotification(body, options = {}) {
   const { rows } = await pool.query(
     `select distinct fcm_token
      from users
@@ -94,6 +97,7 @@ export async function sendCriticalSafetyNotification(body) {
     tokens,
     notification: { title: 'Alerte securite transport', body },
     data: {
+      alertId: String(options.alertId ?? ''),
       severity: 'critical',
       category: 'safety',
       title: 'Alerte securite transport',
@@ -101,9 +105,11 @@ export async function sendCriticalSafetyNotification(body) {
     },
     android: {
       priority: 'high',
+      collapseKey: 'critical-transport-safety',
       notification: {
         sound: 'default',
         channelId: 'critical_transport_safety_v1',
+        tag: `critical-alert-${options.alertId ?? 'latest'}`,
         defaultSound: true,
         defaultVibrateTimings: true,
       },

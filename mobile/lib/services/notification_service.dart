@@ -11,6 +11,9 @@ const criticalSafetyChannelId = 'critical_transport_safety_v1';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   try {
     await Firebase.initializeApp();
+    if (message.notification != null) {
+      return;
+    }
     final local = FlutterLocalNotificationsPlugin();
     const android = AndroidInitializationSettings('@drawable/ic_launcher');
     await local.initialize(const InitializationSettings(android: android));
@@ -112,10 +115,11 @@ class NotificationService {
         final body = message.notification?.body ??
             message.data['body'] as String? ??
             'Nouvelle alerte sur une ligne favorite.';
+        final id = int.tryParse((message.data['alertId'] ?? '').toString());
         if (message.data['severity'] == 'critical') {
-          showCriticalSafetyAlert(title: title, body: body);
+          showCriticalSafetyAlert(title: title, body: body, id: id);
         } else {
-          showBusAlert(title: title, body: body);
+          showBusAlert(title: title, body: body, id: id);
         }
       });
     } catch (_) {}

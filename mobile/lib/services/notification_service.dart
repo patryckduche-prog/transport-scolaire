@@ -6,8 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const favoriteRouteChannelId = 'favorite_route_alerts_v4';
-const criticalSafetyChannelId = 'critical_transport_safety_v3';
+const favoriteRouteChannelId = 'favorite_route_alerts_v5';
+const criticalSafetyChannelId = 'critical_transport_safety_v4';
 const alertRed = Color(0xFFB00020);
 
 int _stableId(String value) {
@@ -45,7 +45,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     await _createAndroidChannels(local);
     final title = message.notification?.title ??
         message.data['title'] as String? ??
-        '\u{1F6A8} ALERTE BUS SCOLAIRE';
+        'ALERTE BUS SCOLAIRE';
     final body = message.notification?.body ??
         message.data['body'] as String? ??
         'Nouvelle alerte sur une ligne favorite.';
@@ -72,7 +72,7 @@ Future<void> _createAndroidChannels(
   await android.createNotificationChannel(
     AndroidNotificationChannel(
       favoriteRouteChannelId,
-      '\u{1F6A8} Alertes bus scolaire',
+      'Alertes bus scolaire prioritaires',
       description: 'Alertes visibles avec sonnerie et vibration forte',
       importance: Importance.max,
       playSound: true,
@@ -83,7 +83,7 @@ Future<void> _createAndroidChannels(
   await android.createNotificationChannel(
     AndroidNotificationChannel(
       criticalSafetyChannelId,
-      '\u{1F6A8} Alertes securite transport',
+      'Alertes securite transport prioritaires',
       description: 'Alertes prioritaires securite, prefecture et circulation',
       importance: Importance.max,
       playSound: true,
@@ -109,8 +109,8 @@ Future<void> _showAndroidAlert({
       android: AndroidNotificationDetails(
         critical ? criticalSafetyChannelId : favoriteRouteChannelId,
         critical
-            ? '\u{1F6A8} Alertes securite transport'
-            : '\u{1F6A8} Alertes bus scolaire',
+            ? 'Alertes securite transport prioritaires'
+            : 'Alertes bus scolaire prioritaires',
         channelDescription: critical
             ? 'Alertes prioritaires securite, prefecture et circulation'
             : 'Alertes visibles avec sonnerie et vibration forte',
@@ -162,7 +162,7 @@ class NotificationService {
               alert: true, badge: true, sound: true);
       FirebaseMessaging.onMessage.listen((message) {
         final title =
-            message.notification?.title ?? '\u{1F6A8} ALERTE BUS SCOLAIRE';
+            message.notification?.title ?? 'ALERTE BUS SCOLAIRE';
         final body = message.notification?.body ??
             message.data['body'] as String? ??
             'Nouvelle alerte sur une ligne favorite.';

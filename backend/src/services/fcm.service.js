@@ -42,8 +42,8 @@ export function fcmStatus() {
   };
 }
 
-const visibleAlertTitle = '\u{1F6A8} ALERTE BUS SCOLAIRE';
-const criticalAlertTitle = '\u{1F6A8} ALERTE SECURITE TRANSPORT';
+const visibleAlertTitle = 'ALERTE BUS SCOLAIRE';
+const criticalAlertTitle = 'ALERTE SECURITE TRANSPORT';
 
 export async function sendDelayNotification(routeId, body, options = {}) {
   const { rows } = await pool.query(

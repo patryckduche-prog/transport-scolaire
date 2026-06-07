@@ -559,6 +559,13 @@ class _FavoriteRouteCard extends StatelessWidget {
         .take(4)
         .map((stop) => '${stop.arrivalTime} ${stop.name}')
         .join('\n');
+    String? nextPassage;
+    for (final stop in stops) {
+      if (stop.arrivalTime.isNotEmpty) {
+        nextPassage = '${stop.arrivalTime} - ${stop.name}';
+        break;
+      }
+    }
     return Card(
       child: ExpansionTile(
         leading: const Icon(Icons.star, color: Colors.orange),
@@ -578,8 +585,15 @@ class _FavoriteRouteCard extends StatelessWidget {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.access_time),
+            title: const Text('Prochain passage theorique'),
+            subtitle: Text(nextPassage ??
+                'Horaire theorique indisponible pour cette ligne.'),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.schedule_outlined),
-            title: const Text('Horaires'),
+            title: const Text('Horaires de la ligne'),
             subtitle: Text(nextTimes.isEmpty
                 ? 'Horaires detailles en cours de chargement.'
                 : nextTimes),

@@ -6,6 +6,7 @@ const router = Router();
 const dataUrl = new URL('../../data/nomad_routes.json', import.meta.url);
 const schoolDataUrl = new URL('../../data/school_sector_routes.json', import.meta.url);
 const generatedSchoolDataUrl = new URL('../../data/school_sector_routes.generated.json', import.meta.url);
+const coachRulesUrl = new URL('../../data/coach_route_rules.json', import.meta.url);
 
 function readNomadData() {
   return JSON.parse(fs.readFileSync(dataUrl, 'utf8'));
@@ -22,6 +23,26 @@ function readSchoolData() {
   return {
     source: `${manual.source} + ${generated.source ?? 'import PDF'}`,
     routes: [...routesById.values()],
+  };
+}
+
+function readCoachRules() {
+  if (!fs.existsSync(coachRulesUrl)) return { default: null, routes: {} };
+  return JSON.parse(fs.readFileSync(coachRulesUrl, 'utf8'));
+}
+
+function coachGuidanceFor(routeId) {
+  const data = readCoachRules();
+  const defaults = data.default ?? {};
+  const routeRules = data.routes?.[routeId] ?? {};
+  return {
+    ...defaults,
+    ...routeRules,
+    vehicleProfile: {
+      ...(defaults.vehicleProfile ?? {}),
+      ...(routeRules.vehicleProfile ?? {}),
+    },
+    rules: [...(defaults.rules ?? []), ...(routeRules.rules ?? [])],
   };
 }
 
@@ -50,6 +71,7 @@ function toNomadShape(route) {
       departureTime: '',
       sequence: index + 1,
     })),
+    coachGuidance: coachGuidanceFor(route.id),
   };
 }
 
@@ -113,6 +135,7 @@ router.get('/routes', (req, res) => {
       tripCount: route.tripCount,
       highlighted: route.highlighted,
       sectorName: sector?.name,
+      coachGuidance: route.coachGuidance ?? coachGuidanceFor(route.id),
       stopsPreview: route.stops.slice(0, 6),
     })),
     sector: sector ? { name: sector.name, keywords: sectorKeywords } : null,
@@ -136,6 +159,7 @@ router.get('/routes/:id', (req, res) => {
     stopCount: route.stopCount,
     tripCount: route.tripCount,
     highlighted: route.highlighted,
+    coachGuidance: route.coachGuidance ?? coachGuidanceFor(route.id),
     stopsPreview: route.stops,
     stops: route.stops,
   });

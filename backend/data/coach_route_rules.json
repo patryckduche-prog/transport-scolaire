@@ -1,0 +1,45 @@
+{
+  "default": {
+    "vehicleProfile": {
+      "label": "Autocar scolaire standard",
+      "lengthMeters": 13.0,
+      "widthMeters": 2.55,
+      "heightMeters": null,
+      "grossWeightTons": null
+    },
+    "status": "a_verifier",
+    "safetyNotice": "Google Maps et Waze calculent un trajet voiture. Pour un car scolaire, suivre le circuit valide par l'entreprise, la region et les arretes locaux.",
+    "externalNavigationNotice": "Guidage externe a utiliser uniquement en secours visuel. Il ne garantit pas les interdictions poids lourds, gabarits, ponts, demi-tours ou arretes car scolaire.",
+    "rules": [
+      {
+        "type": "official_route",
+        "label": "Parcours officiel",
+        "description": "Le conducteur doit suivre les arrets du circuit scolaire dans l'ordre affiche."
+      },
+      {
+        "type": "manual_validation_required",
+        "label": "Validation exploitation requise",
+        "description": "Les routes autorisees/interdites car doivent etre confirmees avec l'entreprise, la region, les mairies ou les arretes prefectoraux."
+      }
+    ]
+  },
+  "routes": {
+    "SCHOOL-5010A0": {
+      "status": "brouillon_exploitation",
+      "corridor": "Aumale - Haudricourt - Conteville - Ronchois - Forges-les-Eaux",
+      "safetyNotice": "Circuit Aumale vers Forges-les-Eaux a valider avec l'exploitation avant utilisation comme guidage car.",
+      "rules": [
+        {
+          "type": "known_school_corridor",
+          "label": "Couloir scolaire connu",
+          "description": "Passage declare par Aumale Place de la Liberation, Haudricourt, Conteville, Ronchois puis Forges-les-Eaux."
+        },
+        {
+          "type": "municipal_order_possible",
+          "label": "Arretes locaux possibles",
+          "description": "Certaines routes interdites poids lourds peuvent rester autorisees aux cars scolaires par arrete municipal ou prefectoral. Verification documentaire necessaire."
+        }
+      ]
+    }
+  }
+}

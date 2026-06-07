@@ -1122,9 +1122,47 @@ class _CoachMap extends StatelessWidget {
                     angle: coachPoint == null
                         ? fallbackCoachHeading
                         : coachHeading,
-                    child: Image.asset(
-                      'assets/navigation/coach-marker.png',
-                      fit: BoxFit.contain,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: .92),
+                            boxShadow: const [
+                              BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4)),
+                            ],
+                          ),
+                          child: const SizedBox(width: 46, height: 46),
+                        ),
+                        Image.asset(
+                          'assets/navigation/coach-marker.png',
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.high,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              color: primary,
+                              shape: BoxShape.circle,
+                              border:
+                                  Border.all(color: Colors.white, width: 4),
+                              boxShadow: const [
+                                BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 4)),
+                              ],
+                            ),
+                            child: const Icon(Icons.directions_bus_filled,
+                                color: Colors.white, size: 34),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

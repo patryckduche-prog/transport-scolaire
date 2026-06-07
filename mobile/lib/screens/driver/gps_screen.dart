@@ -31,7 +31,6 @@ class _GpsScreenState extends State<GpsScreen> {
   int queuedCount = 0;
   int currentStop = 0;
   bool autoStartRequested = false;
-  bool voiceNavigationOpened = false;
   bool loadingRoute = true;
   final FlutterTts tts = FlutterTts();
 
@@ -136,6 +135,19 @@ class _GpsScreenState extends State<GpsScreen> {
       .where((name) => name.trim().isNotEmpty)
       .toList();
 
+  List<String> coordinateStops() {
+    final rawStops = coachNavigation?['stops'];
+    if (rawStops is! List) return [];
+    return rawStops
+        .whereType<Map<String, dynamic>>()
+        .where((stop) => stop['latitude'] is num && stop['longitude'] is num)
+        .map((stop) {
+      final latitude = (stop['latitude'] as num).toDouble();
+      final longitude = (stop['longitude'] as num).toDouble();
+      return '$latitude,$longitude';
+    }).toList();
+  }
+
   Future<bool> ensureLocationReady() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -167,7 +179,6 @@ class _GpsScreenState extends State<GpsScreen> {
       locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.best, distanceFilter: 10),
     ).listen((position) => sendPosition(route, position));
-    await openGoogleMapsGuidance(auto: true);
   }
 
   Future<void> speakCoachPrompt() async {
@@ -279,35 +290,38 @@ class _GpsScreenState extends State<GpsScreen> {
       .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
       .trim();
 
-  Future<void> openGoogleMapsGuidance({bool auto = false}) async {
+  Future<void> openGoogleMapsGuidance() async {
     final route = fullRoute ?? context.read<AppState>().selectedDriverRoute;
     if (route == null) return;
-    if (auto && voiceNavigationOpened) return;
-    if (!auto && sub == null) await startTracking();
+    if (sub == null) await startTracking();
 
-    final stops = routeStops(route);
+    final coordinateRouteStops = coordinateStops();
+    final stops = coordinateRouteStops.isNotEmpty
+        ? coordinateRouteStops
+        : routeStops(route);
     if (stops.isEmpty) {
       setState(() => status = 'Aucun arret disponible pour ouvrir le guidage.');
       return;
     }
 
+    final origin = stops.first;
     final destination = stops.last;
     final waypoints = stops.length <= 2
         ? <String>[]
-        : stops.sublist(0, stops.length - 1).take(8).toList();
+        : stops.sublist(1, stops.length - 1).take(8).toList();
     final params = <String, String>{
       'api': '1',
       'travelmode': 'driving',
+      'origin': origin,
       'destination': destination,
       if (waypoints.isNotEmpty) 'waypoints': waypoints.join('|'),
     };
     final uri = Uri.https('www.google.com', '/maps/dir/', params);
-    voiceNavigationOpened = true;
     await launchExternal(
       uri,
-      auto
-          ? 'Navigation vocale Google Maps ouverte avec les arrets du circuit.'
-          : 'Google Maps ouvert avec les arrets du circuit.',
+      coordinateRouteStops.isNotEmpty
+          ? 'Google Maps ouvert avec les coordonnees des arrets du circuit.'
+          : 'Google Maps ouvert avec les noms des arrets du circuit.',
     );
   }
 
@@ -457,7 +471,7 @@ class _GpsScreenState extends State<GpsScreen> {
               child: OutlinedButton.icon(
                 onPressed: route == null ? null : openGoogleMapsGuidance,
                 icon: const Icon(Icons.navigation_outlined),
-                label: const Text('GPS vocal'),
+                label: const Text('Maps option'),
               ),
             ),
             const SizedBox(width: 8),

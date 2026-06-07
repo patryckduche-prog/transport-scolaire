@@ -258,10 +258,31 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
 
   Future<void> dismissAllAlerts() async {
     if (alerts.isEmpty) return;
+    final api = context.read<ApiService>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Effacer les alertes ?'),
+        content: const Text(
+            'Les alertes seront masquees dans votre historique parent / eleve. Les prochaines nouvelles alertes continueront d arriver.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            icon: const Icon(Icons.delete_sweep_outlined),
+            label: const Text('Effacer'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
     final previousAlerts = List<dynamic>.from(alerts);
     setState(() => alerts = []);
     try {
-      await context.read<ApiService>().dismissAllPassengerAlerts();
+      await api.dismissAllPassengerAlerts();
     } catch (_) {
       if (!mounted) return;
       setState(() => alerts = previousAlerts);
@@ -603,6 +624,13 @@ class _PremiumLiveCard extends StatelessWidget {
     final routeName = position['routeName'] as String? ?? 'Ligne favorite';
     final recordedAt = position['recordedAt']?.toString() ?? '';
     final eta = position['etaMinutes'] as int?;
+    final ageSeconds = (position['ageSeconds'] as num?)?.toInt();
+    final fresh = ageSeconds == null || ageSeconds <= 180;
+    final signalLabel = fresh
+        ? 'Signal GPS recent'
+        : 'Dernier signal il y a ${(ageSeconds / 60).round()} min';
+    final signalColor =
+        fresh ? Colors.green.shade700 : Colors.orange.shade800;
     if (latitude == null || longitude == null) {
       return const SizedBox.shrink();
     }
@@ -626,9 +654,33 @@ class _PremiumLiveCard extends StatelessWidget {
             ),
           ]),
           const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              Chip(
+                avatar: Icon(fresh ? Icons.gps_fixed : Icons.gps_not_fixed,
+                    size: 16, color: signalColor),
+                label: Text(signalLabel),
+                visualDensity: VisualDensity.compact,
+              ),
+              Chip(
+                avatar: const Icon(Icons.speed, size: 16),
+                label: Text('${speed.round()} km/h'),
+                visualDensity: VisualDensity.compact,
+              ),
+              if (eta != null)
+                Chip(
+                  avatar: const Icon(Icons.schedule_outlined, size: 16),
+                  label: Text('ETA $eta min'),
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
           Text(eta == null
-              ? 'Derniere position recue - vitesse ${speed.round()} km/h'
-              : 'Car en approche - ETA estimee $eta min - vitesse ${speed.round()} km/h'),
+              ? 'Derniere position du car recue pour cette ligne favorite.'
+              : 'Car en approche sur votre ligne favorite.'),
           const SizedBox(height: 10),
           SizedBox(
             height: 220,

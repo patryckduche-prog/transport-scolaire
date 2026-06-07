@@ -40,7 +40,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       return;
     }
     final local = FlutterLocalNotificationsPlugin();
-    const android = AndroidInitializationSettings('@drawable/ic_launcher');
+    const android = AndroidInitializationSettings('@drawable/ic_stat_bus_alert');
     await local.initialize(const InitializationSettings(android: android));
     await _createAndroidChannels(local);
     final title = message.notification?.title ??
@@ -115,6 +115,7 @@ Future<void> _showAndroidAlert({
             ? 'Alertes prioritaires securite, prefecture et circulation'
             : 'Alertes visibles avec sonnerie et vibration forte',
         importance: Importance.max,
+        icon: 'ic_stat_bus_alert',
         priority: Priority.max,
         playSound: true,
         enableVibration: true,
@@ -148,7 +149,7 @@ class NotificationService {
   final _local = FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    const android = AndroidInitializationSettings('@drawable/ic_launcher');
+    const android = AndroidInitializationSettings('@drawable/ic_stat_bus_alert');
     await _local.initialize(const InitializationSettings(android: android));
     await _createAndroidChannels(_local);
     try {
@@ -203,6 +204,7 @@ class NotificationService {
       const NotificationDetails(
           android: AndroidNotificationDetails(
               'school_bus_alerts', 'Alertes bus scolaire',
+              icon: 'ic_stat_bus_alert',
               importance: Importance.high,
               priority: Priority.high,
               playSound: true,

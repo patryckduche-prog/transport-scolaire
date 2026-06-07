@@ -15,6 +15,7 @@ import reportRoutes from './routes/report.routes.js';
 import routeRoutes from './routes/route.routes.js';
 import vehicleRoutes from './routes/vehicle.routes.js';
 import nomadRoutes from './routes/nomad.routes.js';
+import navigationRoutes from './routes/navigation.routes.js';
 import passengerRoutes from './routes/passenger.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import runRoutes from './routes/run.routes.js';
@@ -22,7 +23,7 @@ import { attachRealtime } from './services/realtime.service.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
 const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
-const appVersion = '1.0.16';
+const appVersion = '1.0.17';
 const app = express();
 app.set('trust proxy', true);
 app.use(helmet());
@@ -50,6 +51,7 @@ app.get('/', (_, res) =>
       '/code-generator/',
       '/api/routes',
       '/api/nomad/routes?highlighted=true',
+      '/api/navigation/coach-route/SCHOOL-5010A0',
       '/api/reports/dashboard',
       '/api/runs/start',
       '/ws',
@@ -82,6 +84,7 @@ app.use('/api/gps', gpsRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/nomad', nomadRoutes);
+app.use('/api/navigation', navigationRoutes);
 app.use('/api/passenger', passengerRoutes);
 app.use('/api/runs', runRoutes);
 

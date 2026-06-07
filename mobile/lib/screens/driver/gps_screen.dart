@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,6 +22,7 @@ class _GpsScreenState extends State<GpsScreen> {
   StreamSubscription<Position>? sub;
   Position? last;
   NomadRoute? fullRoute;
+  Map<String, dynamic>? coachNavigation;
   String? runId;
   String status = 'Chargement du circuit';
   String? routeError;
@@ -31,6 +33,7 @@ class _GpsScreenState extends State<GpsScreen> {
   bool autoStartRequested = false;
   bool voiceNavigationOpened = false;
   bool loadingRoute = true;
+  final FlutterTts tts = FlutterTts();
 
   OfflineEventQueue queue(BuildContext context) =>
       OfflineEventQueue(context.read<ApiService>());
@@ -38,7 +41,15 @@ class _GpsScreenState extends State<GpsScreen> {
   @override
   void initState() {
     super.initState();
+    setupVoice();
     WidgetsBinding.instance.addPostFrameCallback((_) => prepareRouteAndGps());
+  }
+
+  Future<void> setupVoice() async {
+    await tts.setLanguage('fr-FR');
+    await tts.setSpeechRate(0.48);
+    await tts.setVolume(1);
+    await tts.setPitch(1);
   }
 
   Future<void> prepareRouteAndGps() async {
@@ -52,10 +63,23 @@ class _GpsScreenState extends State<GpsScreen> {
     }
 
     await loadFullRoute(route);
+    await loadCoachNavigation(route);
     await ensureRun(route);
     if (!mounted || autoStartRequested) return;
     autoStartRequested = true;
     await startTracking();
+  }
+
+  Future<void> loadCoachNavigation(NomadRoute route) async {
+    try {
+      final data =
+          await context.read<ApiService>().getCoachNavigation(route.id);
+      if (!mounted) return;
+      setState(() => coachNavigation = data);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => coachNavigation = null);
+    }
   }
 
   Future<void> loadFullRoute(NomadRoute route) async {
@@ -138,11 +162,25 @@ class _GpsScreenState extends State<GpsScreen> {
 
     await sub?.cancel();
     setState(() => status = 'Suivi GPS actif automatiquement');
+    await speakCoachPrompt();
     sub = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.best, distanceFilter: 10),
     ).listen((position) => sendPosition(route, position));
     await openGoogleMapsGuidance(auto: true);
+  }
+
+  Future<void> speakCoachPrompt() async {
+    final route = fullRoute ?? context.read<AppState>().selectedDriverRoute;
+    final provider = coachNavigation?['provider'] as String?;
+    final text = provider == null
+        ? 'Navigation car scolaire active. Suivez le circuit officiel.'
+        : 'Navigation car scolaire active avec moteur $provider. Suivez le circuit officiel valide par l exploitation.';
+    try {
+      await tts.stop();
+      await tts.speak(text);
+    } catch (_) {}
+    if (route == null) return;
   }
 
   Future<void> sendPosition(NomadRoute route, Position position) async {
@@ -230,6 +268,9 @@ class _GpsScreenState extends State<GpsScreen> {
       currentStop = nextIndex;
       lastStopMatchName = stopName;
     });
+    if (stopName.isNotEmpty) {
+      tts.speak('Arret detecte : $stopName');
+    }
   }
 
   String normalize(String value) => value
@@ -318,6 +359,7 @@ class _GpsScreenState extends State<GpsScreen> {
   @override
   void dispose() {
     sub?.cancel();
+    tts.stop();
     super.dispose();
   }
 
@@ -328,6 +370,12 @@ class _GpsScreenState extends State<GpsScreen> {
     final stops = route?.stopsPreview ?? [];
     final guidance = route?.coachGuidance;
     final vehicle = guidance?.vehicleProfile;
+    final provider =
+        coachNavigation?['provider'] as String? ?? 'reference locale';
+    final distance = coachNavigation?['distanceMeters'] is num
+        ? ((coachNavigation!['distanceMeters'] as num) / 1000)
+            .toStringAsFixed(1)
+        : null;
     final tracking = sub != null;
     final safeStopIndex =
         stops.isEmpty ? 0 : currentStop.clamp(0, stops.length - 1).toInt();
@@ -373,6 +421,21 @@ class _GpsScreenState extends State<GpsScreen> {
             sentCount: sentCount,
             queuedCount: queuedCount,
             lastStopMatchName: lastStopMatchName,
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.alt_route_outlined),
+              title: Text('Moteur GPS : $provider'),
+              subtitle: Text(distance == null
+                  ? 'Profil autocar avec regles locales et arrets officiels'
+                  : 'Itineraire calcule : $distance km - voix Android active'),
+              trailing: IconButton(
+                tooltip: 'Ecouter',
+                icon: const Icon(Icons.volume_up_outlined),
+                onPressed: speakCoachPrompt,
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           if (nextStop != null)

@@ -1,0 +1,52 @@
+{
+  "SCHOOL-5010A0": {
+    "source": "Coordonnees approximatives de demonstration a valider terrain/exploitation",
+    "stops": [
+      {
+        "sequence": 1,
+        "latitude": 49.7695,
+        "longitude": 1.7559
+      },
+      {
+        "sequence": 2,
+        "latitude": 49.7619,
+        "longitude": 1.7462
+      },
+      {
+        "sequence": 3,
+        "latitude": 49.7458,
+        "longitude": 1.7168
+      },
+      {
+        "sequence": 4,
+        "latitude": 49.7405,
+        "longitude": 1.6966
+      },
+      {
+        "sequence": 5,
+        "latitude": 49.7364,
+        "longitude": 1.6819
+      },
+      {
+        "sequence": 6,
+        "latitude": 49.7296,
+        "longitude": 1.6659
+      },
+      {
+        "sequence": 7,
+        "latitude": 49.7316,
+        "longitude": 1.6386
+      },
+      {
+        "sequence": 8,
+        "latitude": 49.7248,
+        "longitude": 1.6577
+      },
+      {
+        "sequence": 9,
+        "latitude": 49.6139,
+        "longitude": 1.5426
+      }
+    ]
+  }
+}

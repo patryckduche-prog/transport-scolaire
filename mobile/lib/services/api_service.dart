@@ -144,6 +144,10 @@ class ApiService {
   Future<Map<String, dynamic>> getNomadRoute(String routeId) async =>
       (await _dio.get('/nomad/routes/$routeId')).data as Map<String, dynamic>;
 
+  Future<Map<String, dynamic>> getCoachNavigation(String routeId) async =>
+      (await _dio.get('/navigation/coach-route/$routeId')).data
+          as Map<String, dynamic>;
+
   Future<Map<String, dynamic>> getPassengerSettings() async =>
       (await _dio.get('/passenger/settings')).data as Map<String, dynamic>;
 

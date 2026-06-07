@@ -7,4 +7,8 @@ export const env = {
   databaseSsl: process.env.DATABASE_SSL === 'true',
   jwtSecret: process.env.JWT_SECRET ?? 'dev-secret',
   fcmServiceAccountPath: process.env.FCM_SERVICE_ACCOUNT_PATH,
+  routingProvider: process.env.ROUTING_PROVIDER ?? 'osrm',
+  osrmBaseUrl: process.env.OSRM_BASE_URL ?? 'https://router.project-osrm.org',
+  graphhopperBaseUrl: process.env.GRAPHHOPPER_BASE_URL ?? 'https://graphhopper.com/api/1',
+  graphhopperApiKey: process.env.GRAPHHOPPER_API_KEY,
 };

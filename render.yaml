@@ -5,7 +5,7 @@ services:
     rootDir: backend
     plan: free
     buildCommand: npm ci
-    startCommand: npm start
+    startCommand: npm run migrate && npm run seed && npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION

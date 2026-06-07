@@ -1,6 +1,7 @@
-﻿import cors from 'cors';
+import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
+import http from 'http';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -16,10 +17,12 @@ import vehicleRoutes from './routes/vehicle.routes.js';
 import nomadRoutes from './routes/nomad.routes.js';
 import passengerRoutes from './routes/passenger.routes.js';
 import publicRoutes from './routes/public.routes.js';
+import runRoutes from './routes/run.routes.js';
+import { attachRealtime } from './services/realtime.service.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
 const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
-const appVersion = '1.0.13';
+const appVersion = '1.0.14';
 const app = express();
 app.set('trust proxy', true);
 app.use(helmet());
@@ -47,6 +50,8 @@ app.get('/', (_, res) =>
       '/api/routes',
       '/api/nomad/routes?highlighted=true',
       '/api/reports/dashboard',
+      '/api/runs/start',
+      '/ws',
     ],
   }),
 );
@@ -77,4 +82,8 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/nomad', nomadRoutes);
 app.use('/api/passenger', passengerRoutes);
-app.listen(env.port, () => console.log(`API running on http://localhost:${env.port}`));
+app.use('/api/runs', runRoutes);
+
+const server = http.createServer(app);
+attachRealtime(server);
+server.listen(env.port, () => console.log(`API running on http://localhost:${env.port}`));

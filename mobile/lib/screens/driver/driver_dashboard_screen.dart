@@ -7,6 +7,7 @@ import '../../widgets/metric_card.dart';
 import '../../widgets/root_back_guard.dart';
 import '../login_screen.dart';
 import 'delay_screen.dart';
+import 'driver_assistant_screen.dart';
 import 'gps_screen.dart';
 import 'nomad_routes_screen.dart';
 import 'stops_screen.dart';
@@ -102,6 +103,11 @@ class DriverDashboardScreen extends StatelessWidget {
               onPressed: () => requireRoute(context, const StopsScreen()),
               icon: const Icon(Icons.location_on_outlined),
               label: const Text('Parcours et arrets')),
+          OutlinedButton.icon(
+              onPressed: () =>
+                  requireRoute(context, const DriverAssistantScreen()),
+              icon: const Icon(Icons.dashboard_customize_outlined),
+              label: const Text('Assistant conduite')),
           OutlinedButton.icon(
               onPressed: () => requireRoute(context, const GpsScreen()),
               icon: const Icon(Icons.map_outlined),

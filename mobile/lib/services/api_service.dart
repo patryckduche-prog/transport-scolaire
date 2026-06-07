@@ -61,6 +61,70 @@ class ApiService {
         'speed': speed
       });
 
+  Future<Map<String, dynamic>> startRun({
+    required String routeId,
+    required String routeName,
+  }) async =>
+      (await _dio.post('/runs/start',
+              data: {'routeId': routeId, 'routeName': routeName}))
+          .data as Map<String, dynamic>;
+
+  Future<Map<String, dynamic>?> getCurrentRun() async =>
+      (await _dio.get('/runs/current')).data as Map<String, dynamic>?;
+
+  Future<List<dynamic>> getRunStudents(String runId) async =>
+      (await _dio.get('/runs/$runId/students')).data as List<dynamic>;
+
+  Future<Map<String, dynamic>> sendRunGps({
+    required String runId,
+    required double latitude,
+    required double longitude,
+    required double speed,
+    String? recordedAt,
+  }) async =>
+      (await _dio.post('/runs/$runId/gps', data: {
+        'latitude': latitude,
+        'longitude': longitude,
+        'speed': speed,
+        if (recordedAt != null) 'recordedAt': recordedAt,
+      }))
+          .data as Map<String, dynamic>;
+
+  Future<Map<String, dynamic>> updateRunStudentPresence({
+    required String runId,
+    required String studentId,
+    required bool present,
+    String? status,
+  }) async =>
+      (await _dio.post('/runs/$runId/students/$studentId/presence', data: {
+        'present': present,
+        if (status != null) 'status': status,
+      }))
+          .data as Map<String, dynamic>;
+
+  Future<Map<String, dynamic>> sendRunIncident({
+    required String runId,
+    required String type,
+    required String message,
+    String severity = 'warning',
+  }) async =>
+      (await _dio.post('/runs/$runId/incidents',
+              data: {'type': type, 'message': message, 'severity': severity}))
+          .data as Map<String, dynamic>;
+
+  Future<Map<String, dynamic>> sendFinishCheck({
+    required String runId,
+    required bool allStudentsChecked,
+    required bool busEmptyConfirmed,
+    String comment = '',
+  }) async =>
+      (await _dio.post('/runs/$runId/finish-check', data: {
+        'allStudentsChecked': allStudentsChecked,
+        'busEmptyConfirmed': busEmptyConfirmed,
+        'comment': comment,
+      }))
+          .data as Map<String, dynamic>;
+
   Future<Map<String, dynamic>> dashboard() async =>
       (await _dio.get('/reports/dashboard')).data as Map<String, dynamic>;
 

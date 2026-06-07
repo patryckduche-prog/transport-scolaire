@@ -20,3 +20,84 @@ create table if not exists gps_positions (id bigserial primary key, route_id uui
 alter table gps_positions add column if not exists route_external_id text;
 alter table gps_positions add column if not exists route_name text;
 create table if not exists route_signatures (id bigserial primary key, route_id uuid references school_routes(id), driver_id uuid references users(id), signature_base64 text not null, signed_at timestamptz not null default now());
+
+create table if not exists students (
+  id uuid primary key default gen_random_uuid(),
+  first_name text not null,
+  last_name text not null,
+  photo_url text,
+  guardian_user_id uuid references users(id) on delete set null,
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+create table if not exists student_route_assignments (
+  student_id uuid references students(id) on delete cascade,
+  route_external_id text not null,
+  stop_external_id text not null,
+  stop_name text not null,
+  direction text not null default 'aller',
+  active boolean not null default true,
+  primary key(student_id, route_external_id, direction)
+);
+create table if not exists route_stop_geofences (
+  id uuid primary key default gen_random_uuid(),
+  route_external_id text not null,
+  stop_external_id text not null,
+  stop_name text not null,
+  latitude numeric(9,6) not null,
+  longitude numeric(9,6) not null,
+  radius_meters int not null default 50,
+  sequence int not null,
+  active boolean not null default true,
+  unique(route_external_id, stop_external_id)
+);
+create table if not exists daily_runs (
+  id uuid primary key default gen_random_uuid(),
+  route_external_id text not null,
+  route_name text not null,
+  driver_id uuid references users(id) on delete set null,
+  vehicle_id uuid references vehicles(id) on delete set null,
+  service_date date not null default current_date,
+  status text not null default 'started' check (status in ('planned','started','paused','finished','cancelled')),
+  started_at timestamptz not null default now(),
+  finished_at timestamptz,
+  created_at timestamptz not null default now()
+);
+create index if not exists daily_runs_driver_status_idx on daily_runs(driver_id, status, service_date);
+create table if not exists daily_run_stop_events (
+  id bigserial primary key,
+  run_id uuid references daily_runs(id) on delete cascade,
+  stop_external_id text not null,
+  stop_name text not null,
+  event_type text not null check (event_type in ('approaching','arrived','departed','skipped')),
+  distance_meters numeric(8,2),
+  event_at timestamptz not null default now(),
+  unique(run_id, stop_external_id, event_type)
+);
+create table if not exists daily_run_student_presence (
+  run_id uuid references daily_runs(id) on delete cascade,
+  student_id uuid references students(id) on delete cascade,
+  expected boolean not null default true,
+  present boolean,
+  status text not null default 'expected' check (status in ('expected','present','absent','not_seen')),
+  updated_by uuid references users(id) on delete set null,
+  updated_at timestamptz not null default now(),
+  primary key(run_id, student_id)
+);
+create table if not exists run_incidents (
+  id bigserial primary key,
+  run_id uuid references daily_runs(id) on delete cascade,
+  driver_id uuid references users(id) on delete set null,
+  type text not null,
+  message text not null,
+  severity text not null default 'warning',
+  created_at timestamptz not null default now()
+);
+create table if not exists run_finish_checks (
+  run_id uuid primary key references daily_runs(id) on delete cascade,
+  driver_id uuid references users(id) on delete set null,
+  all_students_checked boolean not null default false,
+  bus_empty_confirmed boolean not null default false,
+  comment text,
+  checked_at timestamptz not null default now()
+);

@@ -24,7 +24,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   static const currentAppVersion =
-      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.24');
+      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.25');
 
   final driverCode = TextEditingController(text: 'AUMALE-2026');
   final adminEmail = TextEditingController(text: 'entreprise@demo.local');
@@ -454,14 +454,14 @@ class _AlertsPanel extends StatelessWidget {
                           critical
                               ? Icons.crisis_alert_outlined
                               : warning
-                              ? theme.alertIcon
-                              : Icons.check_circle_outline,
+                                  ? theme.alertIcon
+                                  : Icons.check_circle_outline,
                           size: 20,
                           color: critical
                               ? Colors.red.shade800
                               : warning
-                              ? Colors.orange.shade800
-                              : Colors.green.shade700),
+                                  ? Colors.orange.shade800
+                                  : Colors.green.shade700),
                       const SizedBox(width: 8),
                       Expanded(
                           child: Text(alert['message'] as String? ??

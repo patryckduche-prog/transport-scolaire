@@ -872,7 +872,7 @@ class _RouteProgressCard extends StatelessWidget {
           Text(status),
           const SizedBox(height: 12),
           SizedBox(
-            height: 260,
+            height: 340,
             width: double.infinity,
             child: geometry.length > 1
                 ? _CoachMap(
@@ -1036,8 +1036,17 @@ class _CoachMap extends StatelessWidget {
     final point = fallbackCoachPoint;
     final index = geometry.indexOf(point).clamp(0, geometry.length - 1);
     final nextIndex = math.min(index + 1, geometry.length - 1);
-    return index == nextIndex ? 0 : _bearing(geometry[index], geometry[nextIndex]);
+    return index == nextIndex
+        ? 0
+        : _bearing(geometry[index], geometry[nextIndex]);
   }
+
+  double get autoZoom => coachPoint == null ? 14.4 : 16.2;
+
+  double get mapHeading =>
+      coachPoint == null ? fallbackCoachHeading : coachHeading;
+
+  double get coachMarkerAngle => mapHeading - (math.pi / 2);
 
   double _bearing(LatLng from, LatLng to) {
     final lat1 = from.latitude * math.pi / 180;
@@ -1056,10 +1065,10 @@ class _CoachMap extends StatelessWidget {
       child: Stack(children: [
         FlutterMap(
           key: ValueKey(
-              '${mapCenter.latitude.toStringAsFixed(5)}-${mapCenter.longitude.toStringAsFixed(5)}'),
+              '${mapCenter.latitude.toStringAsFixed(5)}-${mapCenter.longitude.toStringAsFixed(5)}-${autoZoom.toStringAsFixed(1)}-${mapHeading.toStringAsFixed(2)}'),
           options: MapOptions(
             initialCenter: mapCenter,
-            initialZoom: 12.2,
+            initialZoom: autoZoom,
             interactionOptions:
                 const InteractionOptions(flags: InteractiveFlag.none),
           ),
@@ -1072,13 +1081,23 @@ class _CoachMap extends StatelessWidget {
               polylines: [
                 Polyline(
                   points: geometry,
-                  strokeWidth: 7,
-                  color: primary,
+                  strokeWidth: 18,
+                  color: Colors.black.withValues(alpha: .20),
                 ),
                 Polyline(
                   points: geometry,
-                  strokeWidth: 2,
-                  color: Colors.white.withValues(alpha: .8),
+                  strokeWidth: 14,
+                  color: Colors.white.withValues(alpha: .92),
+                ),
+                Polyline(
+                  points: geometry,
+                  strokeWidth: 10,
+                  color: primary.withValues(alpha: .96),
+                ),
+                Polyline(
+                  points: geometry,
+                  strokeWidth: 3,
+                  color: Colors.white.withValues(alpha: .86),
                 ),
               ],
             ),
@@ -1119,9 +1138,7 @@ class _CoachMap extends StatelessWidget {
                   width: 156,
                   height: 104,
                   child: Transform.rotate(
-                    angle: coachPoint == null
-                        ? fallbackCoachHeading
-                        : coachHeading,
+                    angle: coachMarkerAngle,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -1149,8 +1166,7 @@ class _CoachMap extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: primary,
                               shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.white, width: 4),
+                              border: Border.all(color: Colors.white, width: 4),
                               boxShadow: const [
                                 BoxShadow(
                                     color: Colors.black26,
@@ -1170,6 +1186,25 @@ class _CoachMap extends StatelessWidget {
             ),
           ],
         ),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white.withValues(alpha: .28),
+                    Colors.transparent,
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: .10),
+                  ],
+                  stops: const [0, .28, .72, 1],
+                ),
+              ),
+            ),
+          ),
+        ),
         Positioned(
           left: 10,
           top: 10,
@@ -1183,7 +1218,9 @@ class _CoachMap extends StatelessWidget {
               ],
             ),
             child: Text(
-              simulationActive ? 'Simulation GPS' : 'Position conducteur',
+              simulationActive
+                  ? 'Simulation GPS - zoom auto'
+                  : 'Position conducteur - zoom auto',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,

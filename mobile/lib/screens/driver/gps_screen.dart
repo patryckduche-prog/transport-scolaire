@@ -23,7 +23,11 @@ class GpsScreen extends StatefulWidget {
 
 class _GpsScreenState extends State<GpsScreen> {
   StreamSubscription<Position>? sub;
+  Timer? simulationTimer;
   Position? last;
+  LatLng? coachPoint;
+  double coachHeading = 0;
+  int simulationIndex = 0;
   NomadRoute? fullRoute;
   Map<String, dynamic>? coachNavigation;
   String? runId;
@@ -35,6 +39,8 @@ class _GpsScreenState extends State<GpsScreen> {
   int currentStop = 0;
   bool autoStartRequested = false;
   bool loadingRoute = true;
+  bool simulationActive = false;
+  bool realGpsLocked = false;
   final FlutterTts tts = FlutterTts();
 
   OfflineEventQueue queue(BuildContext context) =>
@@ -78,6 +84,7 @@ class _GpsScreenState extends State<GpsScreen> {
           await context.read<ApiService>().getCoachNavigation(route.id);
       if (!mounted) return;
       setState(() => coachNavigation = data);
+      initializeCoachOnRoute();
     } catch (_) {
       if (!mounted) return;
       setState(() => coachNavigation = null);
@@ -164,6 +171,112 @@ class _GpsScreenState extends State<GpsScreen> {
     }).toList();
   }
 
+  bool validCoordinate(double latitude, double longitude) =>
+      latitude >= -90 &&
+      latitude <= 90 &&
+      longitude >= -180 &&
+      longitude <= 180 &&
+      !(latitude == 0 && longitude == 0);
+
+  double headingBetween(LatLng from, LatLng to) {
+    final lat1 = from.latitude * math.pi / 180;
+    final lat2 = to.latitude * math.pi / 180;
+    final deltaLng = (to.longitude - from.longitude) * math.pi / 180;
+    final y = math.sin(deltaLng) * math.cos(lat2);
+    final x = math.cos(lat1) * math.sin(lat2) -
+        math.sin(lat1) * math.cos(lat2) * math.cos(deltaLng);
+    return math.atan2(y, x);
+  }
+
+  int nearestGeometryIndex(LatLng point, List<LatLng> geometry) {
+    var bestIndex = 0;
+    var bestDistance = double.infinity;
+    for (var index = 0; index < geometry.length; index++) {
+      final candidate = geometry[index];
+      final distance = Geolocator.distanceBetween(point.latitude,
+          point.longitude, candidate.latitude, candidate.longitude);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = index;
+      }
+    }
+    return bestIndex;
+  }
+
+  double distanceFromRoute(LatLng point, List<LatLng> geometry) {
+    if (geometry.isEmpty) return double.infinity;
+    final index = nearestGeometryIndex(point, geometry);
+    final candidate = geometry[index];
+    return Geolocator.distanceBetween(point.latitude, point.longitude,
+        candidate.latitude, candidate.longitude);
+  }
+
+  void initializeCoachOnRoute() {
+    final geometry = routeGeometry();
+    if (geometry.isEmpty || coachPoint != null) return;
+    final startIndex = geometry.length > 2 ? 1 : 0;
+    final nextIndex = math.min(startIndex + 1, geometry.length - 1);
+    setState(() {
+      simulationIndex = startIndex;
+      coachPoint = geometry[startIndex];
+      coachHeading = headingBetween(geometry[startIndex], geometry[nextIndex]);
+      simulationActive = true;
+      status = 'Simulation GPS active sur le circuit';
+    });
+  }
+
+  void startSimulation() {
+    simulationTimer?.cancel();
+    final geometry = routeGeometry();
+    if (geometry.length < 2) return;
+    initializeCoachOnRoute();
+    simulationTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+      if (!mounted) return;
+      if (realGpsLocked) return;
+      final latestGeometry = routeGeometry();
+      if (latestGeometry.length < 2) return;
+      final step = math.max(1, (latestGeometry.length / 120).round());
+      var nextIndex = simulationIndex + step;
+      if (nextIndex >= latestGeometry.length - 1) nextIndex = 0;
+      final previousPoint = latestGeometry[simulationIndex];
+      final nextPoint = latestGeometry[nextIndex];
+      setState(() {
+        simulationIndex = nextIndex;
+        coachPoint = nextPoint;
+        coachHeading = headingBetween(previousPoint, nextPoint);
+        simulationActive = true;
+      });
+    });
+  }
+
+  void updateVisibleCoachFromGps(Position position) {
+    if (!validCoordinate(position.latitude, position.longitude)) return;
+    final realPoint = LatLng(position.latitude, position.longitude);
+    final geometry = routeGeometry();
+    if (geometry.isEmpty) {
+      setState(() {
+        coachPoint = realPoint;
+        simulationActive = false;
+      });
+      return;
+    }
+
+    if (distanceFromRoute(realPoint, geometry) <= 500) {
+      final index = nearestGeometryIndex(realPoint, geometry);
+      final nextIndex = math.min(index + 1, geometry.length - 1);
+      setState(() {
+        simulationIndex = index;
+        coachPoint = geometry[index];
+        coachHeading = headingBetween(geometry[index], geometry[nextIndex]);
+        simulationActive = false;
+        realGpsLocked = true;
+      });
+    } else {
+      realGpsLocked = false;
+      if (coachPoint == null) initializeCoachOnRoute();
+    }
+  }
+
   List<_MapStop> mapStops() {
     final rawStops = coachNavigation?['stops'];
     if (rawStops is! List) return [];
@@ -238,10 +351,24 @@ class _GpsScreenState extends State<GpsScreen> {
     await sub?.cancel();
     setState(() => status = 'Suivi GPS actif automatiquement');
     await speakCoachPrompt();
+    try {
+      final current = await Geolocator.getCurrentPosition(
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.best),
+      ).timeout(const Duration(seconds: 5));
+      updateVisibleCoachFromGps(current);
+      await sendPosition(route, current);
+    } catch (_) {
+      initializeCoachOnRoute();
+    }
+    startSimulation();
     sub = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.best, distanceFilter: 10),
-    ).listen((position) => sendPosition(route, position));
+    ).listen((position) async {
+      updateVisibleCoachFromGps(position);
+      await sendPosition(route, position);
+    });
   }
 
   Future<void> speakCoachPrompt() async {
@@ -429,13 +556,21 @@ class _GpsScreenState extends State<GpsScreen> {
 
   Future<void> stop() async {
     await sub?.cancel();
+    simulationTimer?.cancel();
     sub = null;
-    if (mounted) setState(() => status = 'GPS arrete');
+    if (mounted) {
+      setState(() {
+        simulationActive = false;
+        realGpsLocked = false;
+        status = 'GPS arrete';
+      });
+    }
   }
 
   @override
   void dispose() {
     sub?.cancel();
+    simulationTimer?.cancel();
     tts.stop();
     super.dispose();
   }
@@ -507,6 +642,9 @@ class _GpsScreenState extends State<GpsScreen> {
             instruction: currentInstructionText(),
             geometry: routeGeometry(),
             mapStops: mapStops(),
+            coachPoint: coachPoint,
+            coachHeading: coachHeading,
+            simulationActive: simulationActive,
           ),
           const SizedBox(height: 12),
           Card(
@@ -688,6 +826,9 @@ class _RouteProgressCard extends StatelessWidget {
     required this.instruction,
     required this.geometry,
     required this.mapStops,
+    required this.coachPoint,
+    required this.coachHeading,
+    required this.simulationActive,
   });
 
   final List<NomadStop> stops;
@@ -701,6 +842,9 @@ class _RouteProgressCard extends StatelessWidget {
   final String instruction;
   final List<LatLng> geometry;
   final List<_MapStop> mapStops;
+  final LatLng? coachPoint;
+  final double coachHeading;
+  final bool simulationActive;
 
   @override
   Widget build(BuildContext context) {
@@ -737,6 +881,9 @@ class _RouteProgressCard extends StatelessWidget {
                     currentStop: currentStop,
                     primary: Theme.of(context).colorScheme.primary,
                     instruction: instruction,
+                    coachPoint: coachPoint,
+                    coachHeading: coachHeading,
+                    simulationActive: simulationActive,
                   )
                 : CustomPaint(
                     painter: _RoutePainter(
@@ -842,6 +989,9 @@ class _CoachMap extends StatelessWidget {
     required this.currentStop,
     required this.primary,
     required this.instruction,
+    required this.coachPoint,
+    required this.coachHeading,
+    required this.simulationActive,
   });
 
   final List<LatLng> geometry;
@@ -849,6 +999,9 @@ class _CoachMap extends StatelessWidget {
   final int currentStop;
   final Color primary;
   final String instruction;
+  final LatLng? coachPoint;
+  final double coachHeading;
+  final bool simulationActive;
 
   IconData get instructionIcon {
     final lower = instruction.toLowerCase();
@@ -861,12 +1014,13 @@ class _CoachMap extends StatelessWidget {
   }
 
   LatLng get mapCenter {
+    if (coachPoint != null) return coachPoint!;
     if (geometry.isEmpty) return const LatLng(49.70, 1.65);
     final middle = geometry[geometry.length ~/ 2];
     return middle;
   }
 
-  LatLng get coachPoint {
+  LatLng get fallbackCoachPoint {
     if (geometry.isEmpty) return mapCenter;
     final index = ((geometry.length - 1) *
             (stops.isEmpty
@@ -877,15 +1031,35 @@ class _CoachMap extends StatelessWidget {
     return geometry[index];
   }
 
+  double get fallbackCoachHeading {
+    if (geometry.length < 2) return 0;
+    final point = fallbackCoachPoint;
+    final index = geometry.indexOf(point).clamp(0, geometry.length - 1);
+    final nextIndex = math.min(index + 1, geometry.length - 1);
+    return index == nextIndex ? 0 : _bearing(geometry[index], geometry[nextIndex]);
+  }
+
+  double _bearing(LatLng from, LatLng to) {
+    final lat1 = from.latitude * math.pi / 180;
+    final lat2 = to.latitude * math.pi / 180;
+    final deltaLng = (to.longitude - from.longitude) * math.pi / 180;
+    final y = math.sin(deltaLng) * math.cos(lat2);
+    final x = math.cos(lat1) * math.sin(lat2) -
+        math.sin(lat1) * math.cos(lat2) * math.cos(deltaLng);
+    return math.atan2(y, x);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Stack(children: [
         FlutterMap(
+          key: ValueKey(
+              '${mapCenter.latitude.toStringAsFixed(5)}-${mapCenter.longitude.toStringAsFixed(5)}'),
           options: MapOptions(
             initialCenter: mapCenter,
-            initialZoom: 10.7,
+            initialZoom: 12.2,
             interactionOptions:
                 const InteractionOptions(flags: InteractiveFlag.none),
           ),
@@ -941,11 +1115,13 @@ class _CoachMap extends StatelessWidget {
                   ),
                 ),
                 Marker(
-                  point: coachPoint,
+                  point: coachPoint ?? fallbackCoachPoint,
                   width: 156,
                   height: 104,
                   child: Transform.rotate(
-                    angle: 0,
+                    angle: coachPoint == null
+                        ? fallbackCoachHeading
+                        : coachHeading,
                     child: Image.asset(
                       'assets/navigation/coach-marker.png',
                       fit: BoxFit.contain,
@@ -955,6 +1131,28 @@ class _CoachMap extends StatelessWidget {
               ],
             ),
           ],
+        ),
+        Positioned(
+          left: 10,
+          top: 10,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .94),
+              borderRadius: BorderRadius.circular(6),
+              boxShadow: const [
+                BoxShadow(color: Colors.black12, blurRadius: 8),
+              ],
+            ),
+            child: Text(
+              simulationActive ? 'Simulation GPS' : 'Position conducteur',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: simulationActive ? Colors.orange.shade900 : primary,
+              ),
+            ),
+          ),
         ),
         Positioned(
           right: 12,

@@ -17,8 +17,8 @@ android {
         applicationId "fr.busscolaireconnect.mobile"
         minSdkVersion flutter.minSdkVersion
         targetSdk 36
-        versionCode 4026
-        versionName "1.0.28"
+        versionCode 4027
+        versionName "1.0.29"
     }
 
     signingConfigs {

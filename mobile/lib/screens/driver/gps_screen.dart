@@ -942,10 +942,10 @@ class _CoachMap extends StatelessWidget {
                 ),
                 Marker(
                   point: coachPoint,
-                  width: 128,
-                  height: 82,
+                  width: 156,
+                  height: 104,
                   child: Transform.rotate(
-                    angle: -0.28,
+                    angle: 0,
                     child: Image.asset(
                       'assets/navigation/coach-marker.png',
                       fit: BoxFit.contain,

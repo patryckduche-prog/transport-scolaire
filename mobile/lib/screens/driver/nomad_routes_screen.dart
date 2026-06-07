@@ -51,6 +51,10 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
   }
 
   Future<void> chooseRoute(NomadRoute route, {bool openGps = false}) async {
+    if (route.suspended) {
+      showSuspension(route);
+      return;
+    }
     NomadRoute selected = route;
     try {
       final detail = await context.read<ApiService>().getNomadRoute(route.id);
@@ -59,6 +63,10 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
       selected = route;
     }
     if (!mounted) return;
+    if (selected.suspended) {
+      showSuspension(selected);
+      return;
+    }
     context.read<AppState>().selectDriverRoute(selected);
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ligne selectionnee : ${selected.shortName}')));
@@ -72,6 +80,27 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
   }
 
   bool isPreferredAumaleForges(NomadRoute route) => route.id == 'SCHOOL-5010A0';
+
+  void showSuspension(NomadRoute route) {
+    final suspension = route.suspension;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Transports interdits'),
+        content: Text(
+          '${route.shortName} - ${route.longName}\n\n'
+          '${suspension?.message ?? 'TRANSPORTS INTERDITS'}\n'
+          '${suspension?.legalBasis ?? 'Arrete prefectoral'}',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Compris'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,32 +154,58 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
                     itemBuilder: (context, index) {
                       final route = routes[index];
                       final preferred = isPreferredAumaleForges(route);
+                      final suspended = route.suspended;
                       return Card(
-                        color: preferred
+                        color: suspended
+                            ? Colors.red.shade50
+                            : preferred
                             ? Theme.of(context).colorScheme.primaryContainer
                             : null,
                         child: ExpansionTile(
                           leading: CircleAvatar(
-                            backgroundColor: preferred
+                            backgroundColor: suspended
+                                ? Colors.red.shade800
+                                : preferred
                                 ? Theme.of(context).colorScheme.primary
                                 : null,
-                            foregroundColor: preferred
+                            foregroundColor: suspended || preferred
                                 ? Theme.of(context).colorScheme.onPrimary
                                 : null,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Padding(
-                                padding: const EdgeInsets.all(3),
-                                child: Text(route.shortName,
-                                    textAlign: TextAlign.center),
-                              ),
-                            ),
+                            child: suspended
+                                ? const Icon(Icons.block)
+                                : FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(3),
+                                      child: Text(route.shortName,
+                                          textAlign: TextAlign.center),
+                                    ),
+                                  ),
                           ),
                           title: Text(route.longName),
-                          subtitle: Text(preferred
-                              ? 'Ton circuit Aumale 07:00 vers Forges 07:45'
-                              : '${route.stopCount} arrets - ${route.tripCount} trajets'),
+                          subtitle: Text(suspended
+                              ? 'TRANSPORTS INTERDITS - ${route.suspension?.legalBasis ?? 'Arrete prefectoral'}'
+                              : preferred
+                                  ? 'Ton circuit Aumale 07:00 vers Forges 07:45'
+                                  : '${route.stopCount} arrets - ${route.tripCount} trajets'),
                           children: [
+                            if (suspended)
+                              Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade800,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  'TRANSPORTS INTERDITS\n${route.suspension?.legalBasis ?? 'Arrete prefectoral'}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
                             ...route.stopsPreview.map((stop) => ListTile(
                                   dense: true,
                                   leading: Text(stop.sequence.toString()),
@@ -165,15 +220,19 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   FilledButton.icon(
-                                    onPressed: () => chooseRoute(route),
+                                    onPressed: suspended
+                                        ? null
+                                        : () => chooseRoute(route),
                                     icon:
                                         const Icon(Icons.check_circle_outline),
                                     label: const Text('Choisir cette ligne'),
                                   ),
                                   const SizedBox(height: 8),
                                   OutlinedButton.icon(
-                                    onPressed: () =>
-                                        chooseRoute(route, openGps: true),
+                                    onPressed: suspended
+                                        ? null
+                                        : () => chooseRoute(route,
+                                            openGps: true),
                                     icon: const Icon(Icons.navigation_outlined),
                                     label: const Text(
                                         'Choisir et lancer le GPS vocal'),

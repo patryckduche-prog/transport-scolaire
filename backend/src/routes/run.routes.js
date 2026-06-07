@@ -4,6 +4,7 @@ import { requireAuth } from '../middleware/auth.js';
 import { pool } from '../db/pool.js';
 import { detectStopEntry } from '../services/geofence.service.js';
 import { broadcastRealtime } from '../services/realtime.service.js';
+import { activeRouteSuspension, suspensionPayload } from '../services/route-alerts.service.js';
 
 const router = Router();
 
@@ -42,6 +43,14 @@ router.use(requireAuth());
 
 router.post('/start', requireAuth(['driver']), async (req, res) => {
   const input = startSchema.parse(req.body);
+  const suspension = await activeRouteSuspension(pool, input.routeId);
+  if (suspension) {
+    return res.status(423).json({
+      error: 'route_suspended',
+      message: 'TRANSPORTS INTERDITS',
+      alert: suspensionPayload(suspension),
+    });
+  }
   const { rows } = await pool.query(
     `insert into daily_runs(route_external_id, route_name, driver_id, vehicle_id, status)
      values ($1, $2, $3, $4, 'started')

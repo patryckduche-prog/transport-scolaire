@@ -137,8 +137,10 @@ router.get('/alerts', async (req, res) => {
       routeName: row.route_name,
       status: row.status,
       reason: row.reason,
-      message: row.broadcast_to_all
-        ? `Alerte prioritaire transport scolaire : ${row.status} - ${row.reason}.`
+      message: row.alert_category === 'suspension'
+        ? `TRANSPORT SCOLAIRE SUSPENDU\n${row.route_name}\nSuite a ${row.reason}, la circulation des transports scolaires est interdite aujourd'hui.`
+        : row.broadcast_to_all
+          ? `Alerte prioritaire transport scolaire : ${row.status} - ${row.reason}.`
         : `${row.route_name} : ${row.status} suite a ${row.reason}.`,
       createdAt: row.created_at,
       severity: row.severity ?? (row.status.toLowerCase().includes('retard') ? 'warning' : 'info'),

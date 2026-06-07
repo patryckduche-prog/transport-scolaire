@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -71,8 +72,18 @@ class _GpsScreenState extends State<GpsScreen> {
     }
 
     await loadFullRoute(route);
+    final loadedRoute = fullRoute ?? route;
+    if (loadedRoute.suspended) {
+      setState(() {
+        status =
+            'TRANSPORTS INTERDITS - ${loadedRoute.suspension?.legalBasis ?? 'Arrete prefectoral'}';
+        loadingRoute = false;
+      });
+      return;
+    }
     await loadCoachNavigation(route);
-    await ensureRun(route);
+    final runReady = await ensureRun(route);
+    if (!runReady) return;
     if (!mounted || autoStartRequested) return;
     autoStartRequested = true;
     await startTracking();
@@ -111,7 +122,7 @@ class _GpsScreenState extends State<GpsScreen> {
     }
   }
 
-  Future<void> ensureRun(NomadRoute route) async {
+  Future<bool> ensureRun(NomadRoute route) async {
     try {
       final api = context.read<ApiService>();
       final current = await api.getCurrentRun();
@@ -123,15 +134,27 @@ class _GpsScreenState extends State<GpsScreen> {
               routeId: route.id,
               routeName: '${route.shortName} - ${route.longName}',
             );
-      if (!mounted) return;
+      if (!mounted) return false;
       setState(() {
         runId = run['id'] as String;
         status = 'Tournee GPS ouverte';
       });
+      return true;
+    } on DioException catch (error) {
+      final data = error.response?.data;
+      final suspended = data is Map && data['error'] == 'route_suspended';
+      if (!mounted) return true;
+      setState(() {
+        status = suspended
+            ? 'TRANSPORTS INTERDITS - depart bloque par le serveur.'
+            : 'Tournee serveur indisponible, suivi local en attente reseau.';
+      });
+      return !suspended;
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted) return true;
       setState(() => status =
           'Tournee serveur indisponible, suivi local en attente reseau.');
+      return true;
     }
   }
 
@@ -346,6 +369,11 @@ class _GpsScreenState extends State<GpsScreen> {
   Future<void> startTracking() async {
     final route = context.read<AppState>().selectedDriverRoute;
     if (route == null) return;
+    if ((fullRoute ?? route).suspended) {
+      setState(() => status =
+          'TRANSPORTS INTERDITS - le suivi GPS ne peut pas demarrer.');
+      return;
+    }
     if (!await ensureLocationReady()) return;
 
     await sub?.cancel();

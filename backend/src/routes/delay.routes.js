@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { requireAuth } from '../middleware/auth.js';
 import { pool } from '../db/pool.js';
 import { sendCriticalSafetyNotification, sendDelayNotification } from '../services/fcm.service.js';
+import { classifyTransportAlert } from '../services/route-alerts.service.js';
 
 const router = Router();
 const schema = z.object({
@@ -11,26 +12,6 @@ const schema = z.object({
   status: z.string(),
   reason: z.string(),
 });
-
-function classifyAlert(status, reason) {
-  const text = `${status} ${reason}`.toLowerCase();
-  const criticalWords = [
-    'prefecture',
-    'prefet',
-    'interdiction',
-    'circulation interdite',
-    'chimique',
-    'nucleaire',
-    'orsec',
-    'evacuation',
-    'confinement',
-    'alerte rouge',
-  ];
-  if (criticalWords.some((word) => text.includes(word))) {
-    return { severity: 'critical', broadcastToAll: true, category: 'safety' };
-  }
-  return { severity: 'warning', broadcastToAll: false, category: 'route' };
-}
 
 function shortDelayStatus(status) {
   const match = String(status).match(/(\d+)/);
@@ -45,6 +26,9 @@ function compactRouteName(routeName, routeId) {
 }
 
 function notificationMessage({ routeName, routeId, status, reason, critical }) {
+  if (critical === 'suspension') {
+    return `${compactRouteName(routeName, routeId)}\nTRANSPORT SCOLAIRE SUSPENDU\nMotif : ${reason}`;
+  }
   if (critical) {
     return `ALERTE PRIORITAIRE\n${status}\nMotif : ${reason}`;
   }
@@ -54,7 +38,7 @@ function notificationMessage({ routeName, routeId, status, reason, critical }) {
 router.post('/', requireAuth(['driver']), async (req, res) => {
   const input = schema.parse(req.body);
   const uuidRoute = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.routeId);
-  const alert = classifyAlert(input.status, input.reason);
+  const alert = classifyTransportAlert(input.status, input.reason);
   const routeExternalId = uuidRoute ? input.routeId : input.routeId;
   const duplicate = await pool.query(
     `select *
@@ -88,24 +72,33 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
       alert.category,
     ],
   );
-  const body = alert.broadcastToAll
-    ? `Alerte prioritaire transport scolaire : ${input.status} - ${input.reason}.`
-    : `Bus ${input.routeName ?? input.routeId} : ${input.status} suite a ${input.reason}.`;
+  const body = alert.category === 'suspension'
+    ? `Transport scolaire suspendu sur ${input.routeName ?? input.routeId} : ${input.reason}.`
+    : alert.broadcastToAll
+      ? `Alerte prioritaire transport scolaire : ${input.status} - ${input.reason}.`
+      : `Bus ${input.routeName ?? input.routeId} : ${input.status} suite a ${input.reason}.`;
   const visibleMessage = notificationMessage({
     routeName: input.routeName,
     routeId: input.routeId,
     status: input.status,
     reason: input.reason,
-    critical: alert.broadcastToAll,
+    critical: alert.category === 'suspension' ? 'suspension' : alert.broadcastToAll,
   });
   if (alert.broadcastToAll) {
     await sendCriticalSafetyNotification(body, {
       alertId: rows[0].id,
+      title: alert.category === 'suspension'
+        ? 'TRANSPORT SCOLAIRE SUSPENDU'
+        : undefined,
+      category: alert.category,
+      routeId: input.routeId,
       message: visibleMessage,
     });
   } else {
     await sendDelayNotification(input.routeId, body, {
       alertId: rows[0].id,
+      severity: alert.severity,
+      category: alert.category,
       message: visibleMessage,
     });
   }

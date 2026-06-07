@@ -33,12 +33,20 @@ class DriverDashboardScreen extends StatelessWidget {
           MaterialPageRoute(builder: (_) => const NomadRoutesScreen()));
       return;
     }
+    if (route.suspended) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            'TRANSPORTS INTERDITS : ${route.suspension?.legalBasis ?? 'Arrete prefectoral'}'),
+      ));
+      return;
+    }
     Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 
   @override
   Widget build(BuildContext context) {
     final selectedRoute = context.watch<AppState>().selectedDriverRoute;
+    final routeSuspended = selectedRoute?.suspended == true;
     return RootBackGuard(
       message: 'Vous etes sur le tableau de bord conducteur.',
       onBack: () => returnToLogin(context),
@@ -67,7 +75,9 @@ class DriverDashboardScreen extends StatelessWidget {
                   : '${selectedRoute.shortName} - ${selectedRoute.longName}'),
               subtitle: Text(selectedRoute == null
                   ? 'Choisissez votre ligne avant le depart.'
-                  : '${selectedRoute.stopCount} arrets dans le parcours'),
+                  : routeSuspended
+                      ? 'TRANSPORTS INTERDITS - ${selectedRoute.suspension?.legalBasis ?? 'Arrete prefectoral'}'
+                      : '${selectedRoute.stopCount} arrets dans le parcours'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const NomadRoutesScreen())),
@@ -81,13 +91,15 @@ class DriverDashboardScreen extends StatelessWidget {
           ]),
           const SizedBox(height: 16),
           FilledButton.icon(
-            onPressed: selectedRoute == null
+            onPressed: selectedRoute == null || routeSuspended
                 ? null
                 : () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
                         'Depart depot declare pour ${selectedRoute.shortName}.'))),
             icon: const Icon(Icons.play_arrow),
-            label: const Text('Declarer le depart du depot'),
+            label: Text(routeSuspended
+                ? 'Demarrer la ligne interdit'
+                : 'Declarer le depart du depot'),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(

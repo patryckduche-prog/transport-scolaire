@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,6 +40,14 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
       });
       return;
     }
+    if (route.suspended) {
+      setState(() {
+        loading = false;
+        status =
+            'TRANSPORTS INTERDITS - ${route.suspension?.legalBasis ?? 'Arrete prefectoral'}';
+      });
+      return;
+    }
 
     try {
       final api = context.read<ApiService>();
@@ -58,6 +67,16 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
         queued = pending;
         loading = false;
         status = 'Tournee active - donnees anonymisees';
+      });
+    } on DioException catch (error) {
+      final data = error.response?.data;
+      final suspended = data is Map && data['error'] == 'route_suspended';
+      if (!mounted) return;
+      setState(() {
+        loading = false;
+        status = suspended
+            ? 'TRANSPORTS INTERDITS - depart bloque par le serveur.'
+            : 'Mode hors ligne : les actions seront synchronisees ensuite.';
       });
     } catch (_) {
       if (!mounted) return;

@@ -1,6 +1,8 @@
 import fs from 'fs';
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { pool } from '../db/pool.js';
+import { activeRouteSuspension, activeRouteSuspensions, suspensionPayload } from '../services/route-alerts.service.js';
 
 const router = Router();
 const dataUrl = new URL('../../data/nomad_routes.json', import.meta.url);
@@ -100,7 +102,7 @@ function routePriority(route) {
 
 router.use(requireAuth());
 
-router.get('/routes', (req, res) => {
+router.get('/routes', async (req, res) => {
   const query = normalize(req.query.q ?? '');
   const queryTerms = query.split(/\s+/).filter(Boolean);
   const highlighted = req.query.highlighted === 'true';
@@ -130,6 +132,7 @@ router.get('/routes', (req, res) => {
     if (priority !== 0) return priority;
     return String(a.shortName).localeCompare(String(b.shortName), 'fr');
   });
+  const suspensions = await activeRouteSuspensions(pool, routes.map((route) => route.id));
 
   res.json({
     summary: {
@@ -137,7 +140,9 @@ router.get('/routes', (req, res) => {
       schoolRouteCount: schoolData.routes.length,
       routeCount: data.summary.routeCount + schoolData.routes.length,
     },
-    routes: routes.map((route) => ({
+    routes: routes.map((route) => {
+      const suspension = suspensionPayload(suspensions.get(route.id));
+      return ({
       id: route.id,
       shortName: route.shortName,
       longName: route.longName,
@@ -149,19 +154,24 @@ router.get('/routes', (req, res) => {
       tripCount: route.tripCount,
       highlighted: route.highlighted,
       sectorName: sector?.name,
+      alertLevel: suspension ? 'red' : 'normal',
+      suspended: Boolean(suspension),
+      suspension,
       coachGuidance: route.coachGuidance ?? coachGuidanceFor(route.id),
       stopsPreview: route.stops.slice(0, 6),
-    })),
+    });
+    }),
     sector: sector ? { name: sector.name, keywords: sectorKeywords } : null,
   });
 });
 
-router.get('/routes/:id', (req, res) => {
+router.get('/routes/:id', async (req, res) => {
   const data = readNomadData();
   const schoolData = readSchoolData();
   const schoolRoute = schoolData.routes.map(toNomadShape).find((item) => item.id === req.params.id);
   const route = schoolRoute ?? data.routes.find((item) => item.id === req.params.id);
   if (!route) return res.status(404).json({ error: 'nomad_route_not_found' });
+  const suspension = suspensionPayload(await activeRouteSuspension(pool, route.id));
   res.json({
     id: route.id,
     shortName: route.shortName,
@@ -173,6 +183,9 @@ router.get('/routes/:id', (req, res) => {
     stopCount: route.stopCount,
     tripCount: route.tripCount,
     highlighted: route.highlighted,
+    alertLevel: suspension ? 'red' : 'normal',
+    suspended: Boolean(suspension),
+    suspension,
     coachGuidance: route.coachGuidance ?? coachGuidanceFor(route.id),
     stopsPreview: route.stops,
     stops: route.stops,

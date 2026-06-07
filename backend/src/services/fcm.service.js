@@ -65,8 +65,8 @@ export async function sendDelayNotification(routeId, body, options = {}) {
     tokens,
     data: {
       alertId: String(options.alertId ?? ''),
-      severity: 'warning',
-      category: 'favorite_route',
+      severity: String(options.severity ?? 'warning'),
+      category: String(options.category ?? 'favorite_route'),
       routeId: String(routeId),
       title,
       body: message,
@@ -98,7 +98,8 @@ export async function sendCriticalSafetyNotification(body, options = {}) {
     data: {
       alertId: String(options.alertId ?? ''),
       severity: 'critical',
-      category: 'safety',
+      category: String(options.category ?? 'safety'),
+      routeId: String(options.routeId ?? ''),
       title,
       body: message,
     },

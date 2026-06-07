@@ -7,6 +7,9 @@ class NomadRoute {
     required this.tripCount,
     required this.highlighted,
     required this.stopsPreview,
+    required this.suspended,
+    required this.alertLevel,
+    this.suspension,
     this.coachGuidance,
   });
 
@@ -16,6 +19,9 @@ class NomadRoute {
   final int stopCount;
   final int tripCount;
   final bool highlighted;
+  final bool suspended;
+  final String alertLevel;
+  final RouteSuspension? suspension;
   final List<NomadStop> stopsPreview;
   final CoachGuidance? coachGuidance;
 
@@ -26,6 +32,12 @@ class NomadRoute {
         stopCount: json['stopCount'] as int,
         tripCount: json['tripCount'] as int,
         highlighted: json['highlighted'] as bool,
+        suspended: json['suspended'] as bool? ?? false,
+        alertLevel: json['alertLevel'] as String? ?? 'normal',
+        suspension: json['suspension'] is Map<String, dynamic>
+            ? RouteSuspension.fromJson(
+                json['suspension'] as Map<String, dynamic>)
+            : null,
         stopsPreview:
             (((json['stopsPreview'] as List?) ?? (json['stops'] as List?)) ??
                     [])
@@ -35,6 +47,28 @@ class NomadRoute {
             ? CoachGuidance.fromJson(
                 json['coachGuidance'] as Map<String, dynamic>)
             : null,
+      );
+}
+
+class RouteSuspension {
+  const RouteSuspension({
+    required this.message,
+    required this.legalBasis,
+    this.status = '',
+    this.reason = '',
+  });
+
+  final String message;
+  final String legalBasis;
+  final String status;
+  final String reason;
+
+  factory RouteSuspension.fromJson(Map<String, dynamic> json) =>
+      RouteSuspension(
+        message: json['message'] as String? ?? 'TRANSPORTS INTERDITS',
+        legalBasis: json['legalBasis'] as String? ?? 'Arrete prefectoral',
+        status: json['status'] as String? ?? '',
+        reason: json['reason'] as String? ?? '',
       );
 }
 

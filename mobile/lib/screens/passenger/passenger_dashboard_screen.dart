@@ -463,12 +463,20 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                 ...alerts.take(5).map((item) {
                   final alert = item as Map<String, dynamic>;
                   return Card(
+                    color: alert['category'] == 'suspension'
+                        ? Colors.red.shade50
+                        : null,
                     child: ListTile(
-                      leading: Icon(Icons.notification_important_outlined,
+                      leading: Icon(
+                          alert['category'] == 'suspension'
+                              ? Icons.block
+                              : Icons.notification_important_outlined,
                           color: alert['severity'] == 'critical'
                               ? Colors.red.shade800
                               : Colors.orange.shade800),
-                      title: Text(alert['broadcastToAll'] == true
+                      title: Text(alert['category'] == 'suspension'
+                          ? 'Transport scolaire suspendu'
+                          : alert['broadcastToAll'] == true
                           ? 'Alerte securite prioritaire'
                           : alert['routeName'] as String? ?? 'Ligne favorite'),
                       subtitle: Text(alert['message'] as String? ?? ''),
@@ -554,6 +562,7 @@ class _FavoriteRouteCard extends StatelessWidget {
     final routeName = favorite['routeName'] as String? ?? 'Ligne favorite';
     final shortName = favorite['routeShortName'] as String? ?? '';
     final stops = detail?.stopsPreview ?? const <NomadStop>[];
+    final suspended = detail?.suspended == true;
     final nextTimes = stops
         .where((stop) => stop.arrivalTime.isNotEmpty)
         .take(4)
@@ -567,13 +576,16 @@ class _FavoriteRouteCard extends StatelessWidget {
       }
     }
     return Card(
+      color: suspended ? Colors.red.shade50 : null,
       child: ExpansionTile(
-        leading: const Icon(Icons.star, color: Colors.orange),
+        leading: Icon(suspended ? Icons.block : Icons.star,
+            color: suspended ? Colors.red.shade800 : Colors.orange),
         title: Text(routeName),
         subtitle: Text([
           if (shortName.isNotEmpty) shortName,
           if (absentToday) 'Absent aujourd hui',
           if (premiumEnabled && livePosition != null) 'Car en approche',
+          if (suspended) 'Transports interdits',
           if (!premiumEnabled) 'GPS Premium masque',
         ].join(' - ')),
         trailing: IconButton(
@@ -585,10 +597,15 @@ class _FavoriteRouteCard extends StatelessWidget {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.access_time),
-            title: const Text('Prochain passage theorique'),
-            subtitle: Text(nextPassage ??
-                'Horaire theorique indisponible pour cette ligne.'),
+            leading: Icon(suspended ? Icons.block : Icons.access_time,
+                color: suspended ? Colors.red.shade800 : null),
+            title: Text(suspended
+                ? 'TRANSPORT SCOLAIRE SUSPENDU'
+                : 'Prochain passage theorique'),
+            subtitle: Text(suspended
+                ? detail?.suspension?.legalBasis ?? 'Arrete prefectoral'
+                : nextPassage ??
+                    'Horaire theorique indisponible pour cette ligne.'),
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,

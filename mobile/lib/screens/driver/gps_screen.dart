@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -146,6 +148,36 @@ class _GpsScreenState extends State<GpsScreen> {
       final latitude = (stop['latitude'] as num).toDouble();
       final longitude = (stop['longitude'] as num).toDouble();
       return '$latitude,$longitude';
+    }).toList();
+  }
+
+  List<LatLng> routeGeometry() {
+    final rawGeometry = coachNavigation?['geometry'];
+    if (rawGeometry is! List) return [];
+    return rawGeometry.whereType<Map<String, dynamic>>().where((point) {
+      return point['latitude'] is num && point['longitude'] is num;
+    }).map((point) {
+      return LatLng(
+        (point['latitude'] as num).toDouble(),
+        (point['longitude'] as num).toDouble(),
+      );
+    }).toList();
+  }
+
+  List<_MapStop> mapStops() {
+    final rawStops = coachNavigation?['stops'];
+    if (rawStops is! List) return [];
+    return rawStops.whereType<Map<String, dynamic>>().where((stop) {
+      return stop['latitude'] is num && stop['longitude'] is num;
+    }).map((stop) {
+      return _MapStop(
+        sequence: (stop['sequence'] as num?)?.toInt() ?? 0,
+        name: stop['name'] as String? ?? 'Arret',
+        point: LatLng(
+          (stop['latitude'] as num).toDouble(),
+          (stop['longitude'] as num).toDouble(),
+        ),
+      );
     }).toList();
   }
 
@@ -473,6 +505,8 @@ class _GpsScreenState extends State<GpsScreen> {
             queuedCount: queuedCount,
             lastStopMatchName: lastStopMatchName,
             instruction: currentInstructionText(),
+            geometry: routeGeometry(),
+            mapStops: mapStops(),
           ),
           const SizedBox(height: 12),
           Card(
@@ -652,6 +686,8 @@ class _RouteProgressCard extends StatelessWidget {
     required this.queuedCount,
     required this.lastStopMatchName,
     required this.instruction,
+    required this.geometry,
+    required this.mapStops,
   });
 
   final List<NomadStop> stops;
@@ -663,6 +699,8 @@ class _RouteProgressCard extends StatelessWidget {
   final int queuedCount;
   final String? lastStopMatchName;
   final String instruction;
+  final List<LatLng> geometry;
+  final List<_MapStop> mapStops;
 
   @override
   Widget build(BuildContext context) {
@@ -690,19 +728,27 @@ class _RouteProgressCard extends StatelessWidget {
           Text(status),
           const SizedBox(height: 12),
           SizedBox(
-            height: 170,
+            height: 260,
             width: double.infinity,
-            child: CustomPaint(
-              painter: _RoutePainter(
-                stopCount: stops.length,
-                currentIndex: stops.isEmpty
-                    ? 0
-                    : currentStop.clamp(0, stops.length - 1).toInt(),
-                tracking: tracking,
-                primary: Theme.of(context).colorScheme.primary,
-                instruction: instruction,
-              ),
-            ),
+            child: geometry.length > 1
+                ? _CoachMap(
+                    geometry: geometry,
+                    stops: mapStops,
+                    currentStop: currentStop,
+                    primary: Theme.of(context).colorScheme.primary,
+                    instruction: instruction,
+                  )
+                : CustomPaint(
+                    painter: _RoutePainter(
+                      stopCount: stops.length,
+                      currentIndex: stops.isEmpty
+                          ? 0
+                          : currentStop.clamp(0, stops.length - 1).toInt(),
+                      tracking: tracking,
+                      primary: Theme.of(context).colorScheme.primary,
+                      instruction: instruction,
+                    ),
+                  ),
           ),
           const SizedBox(height: 10),
           Row(children: [
@@ -772,6 +818,178 @@ class _GpsMetric extends StatelessWidget {
                   ?.copyWith(fontWeight: FontWeight.w900)),
           Text(label, style: Theme.of(context).textTheme.bodySmall),
         ]),
+      ]),
+    );
+  }
+}
+
+class _MapStop {
+  const _MapStop({
+    required this.sequence,
+    required this.name,
+    required this.point,
+  });
+
+  final int sequence;
+  final String name;
+  final LatLng point;
+}
+
+class _CoachMap extends StatelessWidget {
+  const _CoachMap({
+    required this.geometry,
+    required this.stops,
+    required this.currentStop,
+    required this.primary,
+    required this.instruction,
+  });
+
+  final List<LatLng> geometry;
+  final List<_MapStop> stops;
+  final int currentStop;
+  final Color primary;
+  final String instruction;
+
+  IconData get instructionIcon {
+    final lower = instruction.toLowerCase();
+    if (lower.contains('droite')) return Icons.turn_right;
+    if (lower.contains('gauche')) return Icons.turn_left;
+    if (lower.contains('rond-point') || lower.contains('rond point')) {
+      return Icons.roundabout_right;
+    }
+    return Icons.straight;
+  }
+
+  LatLng get mapCenter {
+    if (geometry.isEmpty) return const LatLng(49.70, 1.65);
+    final middle = geometry[geometry.length ~/ 2];
+    return middle;
+  }
+
+  LatLng get coachPoint {
+    if (geometry.isEmpty) return mapCenter;
+    final index = ((geometry.length - 1) *
+            (stops.isEmpty
+                ? .28
+                : (currentStop / math.max(1, stops.length - 1)).clamp(.08, .9)))
+        .round()
+        .clamp(0, geometry.length - 1);
+    return geometry[index];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Stack(children: [
+        FlutterMap(
+          options: MapOptions(
+            initialCenter: mapCenter,
+            initialZoom: 10.7,
+            interactionOptions:
+                const InteractionOptions(flags: InteractiveFlag.none),
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'fr.busscolaireconnect.mobile',
+            ),
+            PolylineLayer(
+              polylines: [
+                Polyline(
+                  points: geometry,
+                  strokeWidth: 7,
+                  color: primary,
+                ),
+                Polyline(
+                  points: geometry,
+                  strokeWidth: 2,
+                  color: Colors.white.withValues(alpha: .8),
+                ),
+              ],
+            ),
+            MarkerLayer(
+              markers: [
+                ...stops.map(
+                  (stop) => Marker(
+                    point: stop.point,
+                    width: 34,
+                    height: 34,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: stop.sequence <= currentStop + 1
+                            ? Colors.green.shade700
+                            : Colors.blueGrey.shade600,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 5,
+                              offset: Offset(0, 2)),
+                        ],
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        stop.sequence.toString(),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 12),
+                      ),
+                    ),
+                  ),
+                ),
+                Marker(
+                  point: coachPoint,
+                  width: 128,
+                  height: 82,
+                  child: Transform.rotate(
+                    angle: -0.28,
+                    child: Image.asset(
+                      'assets/navigation/coach-marker.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        Positioned(
+          right: 12,
+          top: 12,
+          child: Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .95),
+              shape: BoxShape.circle,
+              boxShadow: const [
+                BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 4)),
+              ],
+            ),
+            child: Icon(instructionIcon, size: 38, color: primary),
+          ),
+        ),
+        Positioned(
+          left: 10,
+          bottom: 8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: .92),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: const Text(
+              '© OpenStreetMap',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ),
       ]),
     );
   }

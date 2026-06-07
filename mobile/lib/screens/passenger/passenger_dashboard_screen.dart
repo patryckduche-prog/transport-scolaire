@@ -24,6 +24,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   List<Map<String, dynamic>> favorites = [];
   List<dynamic> alerts = [];
   bool notificationsEnabled = true;
+  bool premiumEnabled = false;
   bool loading = true;
   bool searching = false;
   String? error;
@@ -69,6 +70,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
       setState(() {
         notificationsEnabled =
             settings['notificationsEnabled'] as bool? ?? true;
+        premiumEnabled = settings['premiumEnabled'] as bool? ?? false;
         favorites = favoriteData.cast<Map<String, dynamic>>();
         alerts = alertData;
         seenAlertIds.addAll(alertData
@@ -104,12 +106,23 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
 
       setState(() => alerts = alertData);
       for (final alert in newAlerts.reversed) {
-        await NotificationService.instance.showBusAlert(
-          title: alert['routeName'] as String? ?? 'Alerte bus scolaire',
-          body: alert['message'] as String? ??
-              'Nouvelle alerte sur une ligne favorite.',
-          id: int.tryParse((alert['id'] ?? '').toString()),
-        );
+        final critical = alert['severity'] == 'critical' ||
+            alert['broadcastToAll'] == true;
+        final title = critical
+            ? 'Alerte securite transport'
+            : alert['routeName'] as String? ?? 'Alerte bus scolaire';
+        final body = alert['message'] as String? ??
+            (critical
+                ? 'Alerte prioritaire transport scolaire.'
+                : 'Nouvelle alerte sur une ligne favorite.');
+        final id = int.tryParse((alert['id'] ?? '').toString());
+        if (critical) {
+          await NotificationService.instance
+              .showCriticalSafetyAlert(title: title, body: body, id: id);
+        } else {
+          await NotificationService.instance
+              .showBusAlert(title: title, body: body, id: id);
+        }
       }
     } catch (_) {}
   }
@@ -200,10 +213,11 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Notifications'),
                 subtitle: const Text(
-                    'Alertes activees par defaut pour les lignes favorites'),
+                    'Favoris uniquement, sauf alerte securite prioritaire'),
                 value: notificationsEnabled,
                 onChanged: toggleNotifications,
               ),
+              _PassengerPlanCard(premiumEnabled: premiumEnabled),
               const SizedBox(height: 8),
               TextField(
                 controller: search,
@@ -279,9 +293,12 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                   return Card(
                     child: ListTile(
                       leading: Icon(Icons.notification_important_outlined,
-                          color: Colors.orange.shade800),
-                      title: Text(
-                          alert['routeName'] as String? ?? 'Ligne favorite'),
+                          color: alert['severity'] == 'critical'
+                              ? Colors.red.shade800
+                              : Colors.orange.shade800),
+                      title: Text(alert['broadcastToAll'] == true
+                          ? 'Alerte securite prioritaire'
+                          : alert['routeName'] as String? ?? 'Ligne favorite'),
                       subtitle: Text(alert['message'] as String? ?? ''),
                     ),
                   );
@@ -340,6 +357,98 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PassengerPlanCard extends StatelessWidget {
+  const _PassengerPlanCard({required this.premiumEnabled});
+
+  final bool premiumEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = premiumEnabled ? Colors.green.shade700 : Colors.teal.shade700;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  premiumEnabled
+                      ? Icons.workspace_premium_outlined
+                      : Icons.lock_open_outlined,
+                  color: color,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    premiumEnabled
+                        ? 'Premium famille actif'
+                        : 'Gratuit aujourd hui',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              premiumEnabled
+                  ? 'Position du bus, estimation d arrivee et alertes avancees sur vos lignes favorites.'
+                  : 'Favoris, retards, absences et alertes securite prioritaires restent accessibles gratuitement.',
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _PlanChip(icon: Icons.star_outline, label: 'Favoris inclus'),
+                _PlanChip(
+                    icon: Icons.warning_amber_outlined,
+                    label: 'Securite gratuite'),
+                _PlanChip(
+                    icon: Icons.location_on_outlined,
+                    label: premiumEnabled ? 'GPS bus actif' : 'GPS bus premium'),
+              ],
+            ),
+            if (!premiumEnabled) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                        'Abonnement premium a connecter plus tard via Play Store / App Store.'),
+                  ),
+                ),
+                icon: const Icon(Icons.workspace_premium_outlined),
+                label: const Text('Voir Premium famille'),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PlanChip extends StatelessWidget {
+  const _PlanChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(
+      avatar: Icon(icon, size: 16),
+      label: Text(label),
+      visualDensity: VisualDensity.compact,
     );
   }
 }

@@ -2,30 +2,64 @@ Bus Scolaire Connect - Argumentaire Play Store / App Store
 
 Bus Scolaire Connect est une application de suivi et d'information dediee au transport scolaire regional.
 
-Elle permet aux familles de suivre l'etat d'une ligne scolaire, de recevoir des alertes en cas de retard, d'incident ou de changement important, et de signaler simplement une absence. Les conducteurs disposent d'un mode conduite sobre, concu pour limiter les manipulations, avec des actions rapides pour declarer un depart, un retard, un incident ou un changement de statut.
+Objectif :
+ameliorer l'information des familles, aider les conducteurs, reduire les appels vers l'exploitation et donner aux entreprises ou collectivites une vision claire des tournees scolaires.
 
-L'application aide les entreprises de transport et les services de gestion a mieux suivre les tournees, les retards, les motifs d'incident et la frequentation des lignes. Elle vise a ameliorer l'information en temps reel, la securite des trajets et la preparation des tournees futures.
+Version gratuite parent / eleve :
+- recherche de ligne scolaire ;
+- ajout de lignes favorites ;
+- alertes de retard ou incident uniquement sur les lignes favorites ;
+- signalement d'absence ;
+- alertes securite prioritaires gratuites pour les situations exceptionnelles : interdiction de circuler, decision prefectorale, consigne de securite, evenement majeur.
 
-Le suivi GPS est utilise pour afficher la progression du car pendant une tournee active et pour ameliorer l'information des usagers abonnes a une ligne. Les donnees de localisation ne sont pas destinees a surveiller les eleves. L'application ne demande aucune action obligatoire aux eleves et privilegie une approche passive et respectueuse.
+Version premium famille recommandee :
+prix conseille au lancement : 3,99 EUR a 5,99 EUR par mois.
+- position du car sur la ligne favorite ;
+- estimation d'arrivee a l'arret ;
+- notification "le car approche" ;
+- historique enrichi des alertes ;
+- gestion de plusieurs lignes ou plusieurs enfants dans le meme foyer.
 
-Argumentaire de validation :
+Positionnement important :
+la version premium ne doit pas etre presentee comme un suivi individuel permanent de l'enfant. Le bon positionnement est le suivi du car scolaire et de la ligne, avec information avancee pour les familles.
 
+Validation magasins :
 Bus Scolaire Connect n'est pas une application de surveillance individuelle. L'objectif principal est l'information operationnelle du transport scolaire : statut des tournees, retards, incidents, presence ou absence declaree volontairement, et suivi du vehicule pendant une tournee active.
 
 La localisation concerne le vehicule ou le conducteur en service, uniquement pendant l'utilisation de la fonction de suivi GPS. Elle sert a informer les familles de l'approche du car et a aider l'exploitation a suivre une tournee. Elle n'a pas pour but de suivre les enfants individuellement.
 
-Les eleves ne sont pas obliges d'interagir avec l'application. Les fonctions sensibles sont limitees par roles : conducteur, parent/eleve, entreprise, region. Les acces conducteur utilisent un code de secteur fourni par l'entreprise ou l'autorite competente. Les notifications sont envoyees aux utilisateurs abonnes aux lignes concernees.
+Les notifications normales sont envoyees uniquement aux utilisateurs abonnes aux lignes concernees. Les alertes securite prioritaires peuvent etre affichees plus largement lorsque l'information concerne la circulation scolaire ou la securite du transport.
 
-L'application respecte le principe de minimisation des donnees : seules les informations utiles au fonctionnement du service de transport scolaire sont traitees. Les donnees personnelles doivent etre configurees et gerees par l'exploitant conformement au RGPD, avec information des utilisateurs, droits d'acces, rectification et suppression.
+Strategie commerciale recommandee :
+faire payer d'abord les entreprises de transport et les collectivites, puis proposer une option premium famille a prix raisonnable.
+
+Tarifs indicatifs entreprise :
+- petite entreprise : 49 a 99 EUR par mois ;
+- entreprise moyenne : 149 a 299 EUR par mois ;
+- grand reseau : 499 EUR par mois et plus ;
+- variante possible : 5 a 15 EUR par vehicule et par mois selon les modules.
+
+Argumentaire entreprise :
+- moins d'appels entrants de parents ;
+- information instantanee en cas de retard ;
+- meilleure tracabilite des incidents ;
+- aide aux conducteurs remplacants ;
+- historique utile pour l'exploitation ;
+- image moderne et rassurante aupres des familles.
+
+Argumentaire region / departement :
+- vision globale des lignes scolaires ;
+- identification des lignes saturees ou peu frequentees ;
+- preparation des ajustements de carte scolaire et de tournees ;
+- donnees d'aide a la decision sans badge obligatoire des eleves ;
+- amelioration du service public sans imposer d'action aux enfants.
 
 Texte localisation :
-
 Bus Scolaire Connect utilise la localisation pendant une tournee active afin d'afficher la progression du car scolaire, calculer l'approche des arrets et envoyer des alertes utiles aux familles abonnees a la ligne.
 
 La localisation n'est pas utilisee pour suivre les eleves individuellement. Le suivi est lie au vehicule et au service de transport scolaire.
 
 Texte notifications :
-
 Les notifications permettent de recevoir les alertes importantes concernant une ligne scolaire : retard, incident, changement de statut, approche du car ou information d'exploitation.
 
-Les notifications peuvent etre desactivees depuis les parametres de l'application.
+Les notifications peuvent etre desactivees depuis les parametres de l'application. Les alertes securite prioritaires peuvent rester visibles dans l'interet de la securite du transport scolaire.

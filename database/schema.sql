@@ -16,6 +16,9 @@ create table if not exists presences (id bigserial primary key, user_id uuid ref
 create table if not exists delays (id bigserial primary key, route_id uuid references school_routes(id), driver_id uuid references users(id), status text not null, reason text not null, created_at timestamptz not null default now());
 alter table delays add column if not exists route_external_id text;
 alter table delays add column if not exists route_name text;
+alter table delays add column if not exists severity text not null default 'warning';
+alter table delays add column if not exists broadcast_to_all boolean not null default false;
+alter table delays add column if not exists alert_category text not null default 'route';
 create table if not exists gps_positions (id bigserial primary key, route_id uuid references school_routes(id), driver_id uuid references users(id), latitude numeric(9,6) not null, longitude numeric(9,6) not null, speed numeric(6,2) not null default 0, recorded_at timestamptz not null default now());
 alter table gps_positions add column if not exists route_external_id text;
 alter table gps_positions add column if not exists route_name text;

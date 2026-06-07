@@ -40,3 +40,23 @@ export async function sendDelayNotification(routeId, body) {
     android: { priority: 'high', notification: { sound: 'default' } },
   });
 }
+
+export async function sendCriticalSafetyNotification(body) {
+  const { rows } = await pool.query(
+    `select distinct fcm_token
+     from users
+     where role in ('driver', 'parent', 'student')
+       and fcm_token is not null`,
+  );
+  const tokens = rows.map((r) => r.fcm_token);
+  if (!ready || tokens.length === 0) {
+    console.log('[critical notification]', body);
+    return;
+  }
+  await admin.messaging().sendEachForMulticast({
+    tokens,
+    notification: { title: 'Alerte securite transport', body },
+    data: { severity: 'critical', category: 'safety' },
+    android: { priority: 'high', notification: { sound: 'default' } },
+  });
+}

@@ -21,7 +21,7 @@ router.get('/settings', async (req, res) => {
      returning enabled`,
     [req.user.sub],
   );
-  res.json({ notificationsEnabled: rows[0].enabled });
+  res.json({ notificationsEnabled: rows[0].enabled, premiumEnabled: false });
 });
 
 router.put('/settings', async (req, res) => {
@@ -33,7 +33,7 @@ router.put('/settings', async (req, res) => {
      returning enabled`,
     [req.user.sub, input.enabled],
   );
-  res.json({ notificationsEnabled: rows[0].enabled });
+  res.json({ notificationsEnabled: rows[0].enabled, premiumEnabled: false });
 });
 
 router.get('/favorites', async (req, res) => {
@@ -67,13 +67,14 @@ router.delete('/favorites/:routeExternalId', async (req, res) => {
 
 router.get('/alerts', async (req, res) => {
   const { rows } = await pool.query(
-    `select d.id, d.status, d.reason, d.created_at,
+    `select d.id, d.status, d.reason, d.created_at, d.severity, d.broadcast_to_all, d.alert_category,
             coalesce(d.route_external_id, d.route_id::text) as route_external_id,
             coalesce(d.route_name, r.name, f.route_name, 'Ligne scolaire') as route_name
      from delays d
-     join passenger_favorite_routes f on f.user_id=$1 and f.route_external_id=coalesce(d.route_external_id, d.route_id::text)
+     left join passenger_favorite_routes f on f.user_id=$1 and f.route_external_id=coalesce(d.route_external_id, d.route_id::text)
      left join school_routes r on r.id=d.route_id
      where d.created_at > now() - interval '7 days'
+       and (d.broadcast_to_all=true or f.user_id is not null)
      order by d.created_at desc
      limit 30`,
     [req.user.sub],
@@ -85,9 +86,13 @@ router.get('/alerts', async (req, res) => {
       routeName: row.route_name,
       status: row.status,
       reason: row.reason,
-      message: `${row.route_name} : ${row.status} suite à ${row.reason}.`,
+      message: row.broadcast_to_all
+        ? `Alerte prioritaire transport scolaire : ${row.status} - ${row.reason}.`
+        : `${row.route_name} : ${row.status} suite a ${row.reason}.`,
       createdAt: row.created_at,
-      severity: row.status.toLowerCase().includes('retard') ? 'warning' : 'info',
+      severity: row.severity ?? (row.status.toLowerCase().includes('retard') ? 'warning' : 'info'),
+      category: row.alert_category ?? 'route',
+      broadcastToAll: row.broadcast_to_all,
     })),
   });
 });

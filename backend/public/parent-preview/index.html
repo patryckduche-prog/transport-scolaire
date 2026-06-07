@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Parent eleve - Apercu premium</title>
+    <style>
+      :root {
+        --brand: #0f6f78;
+        --ink: #132326;
+        --muted: #607177;
+        --soft: #edf7f7;
+        --line: #d7e5e7;
+        --danger: #a82432;
+        --warn: #b75b00;
+        --green: #1f8b56;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 18px;
+        background: #eaf1f2;
+        color: var(--ink);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .phone {
+        width: min(430px, 100%);
+        margin: 0 auto;
+        overflow: hidden;
+        border: 8px solid #17262a;
+        border-radius: 34px;
+        background: #f8fbfb;
+        box-shadow: 0 18px 48px rgba(0,0,0,.22);
+      }
+      .appbar {
+        padding: 16px;
+        color: white;
+        background: var(--brand);
+        font-weight: 800;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .content {
+        padding: 14px;
+        display: grid;
+        gap: 12px;
+      }
+      .card {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+      }
+      h1, h2, p { margin-top: 0; }
+      h1 { font-size: 20px; margin-bottom: 6px; }
+      h2 { font-size: 16px; margin-bottom: 8px; }
+      p { color: var(--muted); line-height: 1.35; }
+      .switch {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+      .toggle {
+        width: 48px;
+        height: 28px;
+        border-radius: 999px;
+        background: var(--brand);
+        position: relative;
+      }
+      .toggle:after {
+        content: "";
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        top: 3px;
+        right: 3px;
+        border-radius: 50%;
+        background: white;
+      }
+      .plan {
+        border-left: 4px solid var(--brand);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        padding: 7px 9px;
+        border-radius: 999px;
+        background: var(--soft);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .alert {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 10px;
+      }
+      .icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: white;
+        font-weight: 900;
+      }
+      .icon.warn { background: var(--warn); }
+      .icon.critical { background: var(--danger); }
+      .favorite {
+        display: grid;
+        grid-template-columns: 54px 1fr auto;
+        gap: 10px;
+        align-items: center;
+      }
+      .badge {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: var(--brand);
+        color: white;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        line-height: 1.05;
+      }
+      .star { color: #d88600; font-size: 28px; }
+      .premium-grid {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 1fr 1fr;
+      }
+      .metric {
+        padding: 11px;
+        border-radius: 8px;
+        background: var(--soft);
+      }
+      .metric strong {
+        display: block;
+        margin-top: 4px;
+        color: var(--brand);
+        font-size: 19px;
+      }
+      button {
+        width: 100%;
+        min-height: 46px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--brand);
+        color: white;
+        font-weight: 900;
+      }
+      .caption {
+        width: min(560px, 100%);
+        margin: 14px auto 0;
+        color: var(--muted);
+        text-align: center;
+      }
+      @media (min-width: 860px) {
+        .phone {
+          width: min(980px, 100%);
+          border-radius: 28px;
+        }
+        .content {
+          grid-template-columns: 1fr 1fr;
+          align-items: start;
+        }
+        .switch, .plan { grid-column: 1; }
+        .favorites { grid-column: 1; }
+        .alerts { grid-column: 2; grid-row: 1 / span 3; }
+        .premium { grid-column: 2; }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="phone" aria-label="Apercu espace parent eleve">
+      <div class="appbar"><span>&lt;</span><span>Parent / Eleve</span></div>
+      <div class="content">
+        <section class="card switch">
+          <div>
+            <h1>Notifications activees</h1>
+            <p>Favoris uniquement, sauf alerte securite prioritaire.</p>
+          </div>
+          <div class="toggle" aria-hidden="true"></div>
+        </section>
+
+        <section class="card plan">
+          <h2>Gratuit aujourd'hui</h2>
+          <p>Favoris, retards, absences et alertes securite restent accessibles gratuitement.</p>
+          <div class="chips">
+            <span class="chip">Favoris inclus</span>
+            <span class="chip">Securite gratuite</span>
+            <span class="chip">GPS bus premium</span>
+          </div>
+        </section>
+
+        <section class="card favorites">
+          <h2>Mes lignes favorites</h2>
+          <div class="favorite">
+            <div class="badge">5010<br>A0</div>
+            <div>
+              <strong>Aumale vers Forges-les-Eaux</strong>
+              <p>Alertes recues uniquement pour cette ligne.</p>
+            </div>
+            <div class="star">★</div>
+          </div>
+        </section>
+
+        <section class="card alerts">
+          <h2>Alertes utiles</h2>
+          <div class="alert">
+            <div class="icon warn">!</div>
+            <div>
+              <strong>5010 A0 : retard 10 minutes</strong>
+              <p>Notification envoyee car la ligne est en favori.</p>
+            </div>
+          </div>
+          <div class="alert">
+            <div class="icon critical">!</div>
+            <div>
+              <strong>Alerte securite prioritaire</strong>
+              <p>Interdiction de circulation scolaire : visible pour tous les parents, eleves et conducteurs concernes.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card premium">
+          <h2>Premium famille</h2>
+          <p>Suivi avance du car scolaire, sans suivi individuel permanent de l'enfant.</p>
+          <div class="premium-grid">
+            <div class="metric">Arrivee estimee<strong>7 min</strong></div>
+            <div class="metric">Car approche<strong>800 m</strong></div>
+          </div>
+          <p>Prix conseille : 3,99 EUR a 5,99 EUR / mois.</p>
+          <button>Voir Premium famille</button>
+        </section>
+      </div>
+    </section>
+    <p class="caption">Apercu publication : les alertes de ligne restent ciblees sur les favoris, les alertes securite prioritaires restent gratuites.</p>
+  </body>
+</html>

@@ -23,7 +23,7 @@ import { attachRealtime } from './services/realtime.service.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
 const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
-const appVersion = '1.0.20';
+const appVersion = '1.0.21';
 const app = express();
 app.set('trust proxy', true);
 app.use(helmet({
@@ -49,6 +49,7 @@ app.use(morgan('dev'));
 app.use('/code-generator', express.static(path.join(publicDir, 'code-generator')));
 app.use('/driver-mode-preview', express.static(path.join(publicDir, 'driver-mode-preview')));
 app.use('/gps-preview', express.static(path.join(publicDir, 'gps-preview')));
+app.use('/parent-preview', express.static(path.join(publicDir, 'parent-preview')));
 app.get('/download/bus-scolaire-connect.apk', (_, res) => {
   res.setHeader('Content-Type', 'application/vnd.android.package-archive');
   res.setHeader('Content-Disposition', 'attachment; filename="bus-scolaire-connect.apk"');

@@ -22,7 +22,11 @@ class NotificationService {
         final body = message.notification?.body ??
             message.data['body'] as String? ??
             'Nouvelle alerte sur une ligne favorite.';
-        showBusAlert(title: title, body: body);
+        if (message.data['severity'] == 'critical') {
+          showCriticalSafetyAlert(title: title, body: body);
+        } else {
+          showBusAlert(title: title, body: body);
+        }
       });
     } catch (_) {}
     const android = AndroidInitializationSettings('@drawable/ic_launcher');
@@ -68,6 +72,29 @@ class NotificationService {
           playSound: true,
           enableVibration: true,
           vibrationPattern: Int64List.fromList([0, 700, 250, 700]),
+        ),
+      ),
+    );
+  }
+
+  Future<void> showCriticalSafetyAlert(
+      {required String title, required String body, int? id}) async {
+    await _local.show(
+      id ?? DateTime.now().millisecondsSinceEpoch.remainder(100000),
+      title,
+      body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'critical_transport_safety_v1',
+          'Alertes securite transport',
+          channelDescription:
+              'Alertes prioritaires securite, prefecture et circulation',
+          importance: Importance.max,
+          priority: Priority.max,
+          playSound: true,
+          enableVibration: true,
+          vibrationPattern:
+              Int64List.fromList([0, 900, 250, 900, 250, 900]),
         ),
       ),
     );

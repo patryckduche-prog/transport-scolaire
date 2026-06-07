@@ -24,7 +24,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   static const currentAppVersion =
-      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.20');
+      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.21');
 
   final driverCode = TextEditingController(text: 'AUMALE-2026');
   final adminEmail = TextEditingController(text: 'entreprise@demo.local');
@@ -442,18 +442,24 @@ class _AlertsPanel extends StatelessWidget {
             else
               ...alerts.take(3).map((item) {
                 final alert = item as Map<String, dynamic>;
-                final warning = alert['severity'] == 'warning';
+                final critical = alert['severity'] == 'critical' ||
+                    alert['broadcastToAll'] == true;
+                final warning = critical || alert['severity'] == 'warning';
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
-                          warning
+                          critical
+                              ? Icons.crisis_alert_outlined
+                              : warning
                               ? theme.alertIcon
                               : Icons.check_circle_outline,
                           size: 20,
-                          color: warning
+                          color: critical
+                              ? Colors.red.shade800
+                              : warning
                               ? Colors.orange.shade800
                               : Colors.green.shade700),
                       const SizedBox(width: 8),

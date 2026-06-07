@@ -21,14 +21,65 @@ Le suivi GPS est utilise pour afficher la progression du car pendant une tournee
 ## Points forts a mettre en avant
 
 - Information en temps reel sur les lignes scolaires.
-- Alertes de retard, incident, meteo ou circulation.
-- Suivi GPS de la tournee active pour les familles abonnees.
+- Alertes de retard, incident, meteo ou circulation uniquement sur les lignes favorites.
+- Alertes securite prioritaires visibles pour tous les utilisateurs concernes.
+- Suivi GPS du car pendant une tournee active pour les familles premium.
 - Mode conducteur simple, avec gros boutons et interface sobre.
 - Signalement d'absence par les parents ou eleves.
 - Fonctionnement offline-first avec synchronisation au retour du reseau.
 - Gestion par secteur, entreprise et region.
 - Historique et statistiques pour ameliorer les lignes.
 - Application concue pour le contexte du transport scolaire francais.
+
+## Offre gratuite et premium
+
+### Version gratuite parent / eleve
+
+- Recherche de ligne scolaire.
+- Ajout de lignes favorites.
+- Notifications de retard ou incident uniquement pour les lignes favorites.
+- Signalement d'absence.
+- Alertes securite prioritaires gratuites : interdiction de circuler, decision prefectorale, situation exceptionnelle, consigne de securite.
+
+### Version premium famille conseillee
+
+Prix recommande au lancement : 3,99 EUR a 5,99 EUR par mois.
+
+- Position du car sur la ligne favorite.
+- Estimation d'arrivee a l'arret.
+- Notification "le car approche".
+- Historique enrichi des alertes.
+- Gestion de plusieurs lignes ou plusieurs enfants dans le meme foyer.
+
+La version premium ne doit pas etre presentee comme un suivi individuel permanent de l'enfant. Le bon positionnement est le suivi du car scolaire et de la ligne, avec information avancee pour les familles.
+
+## Strategie commerciale recommandee
+
+Le modele le plus solide consiste a faire payer d'abord les entreprises de transport et les collectivites, puis a proposer une option premium famille a prix raisonnable.
+
+Tarifs indicatifs entreprise :
+
+- Petite entreprise : 49 a 99 EUR par mois.
+- Entreprise moyenne : 149 a 299 EUR par mois.
+- Grand reseau : 499 EUR par mois et plus.
+- Variante possible : 5 a 15 EUR par vehicule et par mois selon les modules.
+
+Argumentaire entreprise :
+
+- Moins d'appels entrants de parents.
+- Information instantanee en cas de retard.
+- Meilleure tracabilite des incidents.
+- Aide aux conducteurs remplacants.
+- Historique utile pour l'exploitation.
+- Image moderne et rassurante aupres des familles.
+
+Argumentaire region / departement :
+
+- Vision globale des lignes scolaires.
+- Identification des lignes saturees ou peu frequentees.
+- Preparation des ajustements de carte scolaire et de tournees.
+- Donnees d'aide a la decision sans badge obligatoire des eleves.
+- Amelioration du service public sans imposer d'action aux enfants.
 
 ## Argumentaire de validation Play Store / App Store
 

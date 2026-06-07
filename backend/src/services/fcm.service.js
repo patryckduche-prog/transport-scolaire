@@ -37,7 +37,22 @@ export async function sendDelayNotification(routeId, body) {
   await admin.messaging().sendEachForMulticast({
     tokens,
     notification: { title: 'Alerte bus scolaire', body },
-    android: { priority: 'high', notification: { sound: 'default' } },
+    data: {
+      severity: 'warning',
+      category: 'favorite_route',
+      routeId: String(routeId),
+      title: 'Alerte bus scolaire',
+      body,
+    },
+    android: {
+      priority: 'high',
+      notification: {
+        sound: 'default',
+        channelId: 'favorite_route_alerts_v2',
+        defaultSound: true,
+        defaultVibrateTimings: true,
+      },
+    },
   });
 }
 
@@ -56,7 +71,20 @@ export async function sendCriticalSafetyNotification(body) {
   await admin.messaging().sendEachForMulticast({
     tokens,
     notification: { title: 'Alerte securite transport', body },
-    data: { severity: 'critical', category: 'safety' },
-    android: { priority: 'high', notification: { sound: 'default' } },
+    data: {
+      severity: 'critical',
+      category: 'safety',
+      title: 'Alerte securite transport',
+      body,
+    },
+    android: {
+      priority: 'high',
+      notification: {
+        sound: 'default',
+        channelId: 'critical_transport_safety_v1',
+        defaultSound: true,
+        defaultVibrateTimings: true,
+      },
+    },
   });
 }

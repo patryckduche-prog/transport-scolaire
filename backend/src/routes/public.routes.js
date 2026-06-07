@@ -10,6 +10,7 @@ router.get('/alerts', async (_, res) => {
     from delays d
     left join school_routes r on r.id = d.route_id
     where d.created_at > now() - interval '24 hours'
+      and d.broadcast_to_all=true
     order by d.broadcast_to_all desc, d.created_at desc
     limit 10`);
 
@@ -18,13 +19,13 @@ router.get('/alerts', async (_, res) => {
       alerts: [
         {
           id: 'demo-ready',
-          routeName: 'Reseau scolaire',
-          status: 'Aucune alerte active',
-          reason: 'Trafic normal',
-          message: 'Aucune perturbation declaree sur les dernieres 24 heures.',
+          routeName: 'Securite transport',
+          status: 'Aucune alerte securite active',
+          reason: 'Aucune interdiction generale',
+          message: 'Aucune alerte prioritaire generale declaree.',
           createdAt: new Date().toISOString(),
           severity: 'info',
-          category: 'route',
+          category: 'safety',
           broadcastToAll: false,
         },
       ],

@@ -24,7 +24,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   static const currentAppVersion =
-      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.27');
+      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.28');
 
   final driverCode = TextEditingController(text: 'AUMALE-2026');
   final adminEmail = TextEditingController(text: 'entreprise@demo.local');
@@ -128,11 +128,26 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> loadAlerts() async {
     try {
       final data = await context.read<ApiService>().getPublicAlerts();
+      final publicAlerts = data.where((item) {
+        final alert = item as Map<String, dynamic>;
+        return alert['broadcastToAll'] == true ||
+            alert['category'] == 'safety' ||
+            alert['severity'] == 'critical';
+      }).toList();
       if (!mounted) return;
       setState(() {
-        alerts = data;
+        alerts = publicAlerts.isEmpty
+            ? [
+                {
+                  'message': 'Aucune alerte prioritaire generale declaree.',
+                  'severity': 'info',
+                  'category': 'safety',
+                  'broadcastToAll': false,
+                }
+              ]
+            : publicAlerts;
         seasonal = SeasonalTheme.fromDate(DateTime.now(),
-            weather: SeasonalTheme.weatherFromAlerts(data));
+            weather: SeasonalTheme.weatherFromAlerts(publicAlerts));
         alertsLoading = false;
       });
     } catch (_) {

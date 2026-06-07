@@ -42,6 +42,9 @@ export function fcmStatus() {
   };
 }
 
+const visibleAlertTitle = '🚨 ALERTE BUS SCOLAIRE';
+const criticalAlertTitle = '🚨 ALERTE SECURITE TRANSPORT';
+
 export async function sendDelayNotification(routeId, body, options = {}) {
   const { rows } = await pool.query(
     `select distinct u.fcm_token
@@ -56,26 +59,34 @@ export async function sendDelayNotification(routeId, body, options = {}) {
     console.log('[notification]', body);
     return;
   }
+  const title = options.title ?? visibleAlertTitle;
+  const message = options.message ?? body;
   await admin.messaging().sendEachForMulticast({
     tokens,
-    notification: { title: 'Alerte bus scolaire', body },
+    notification: { title, body: message },
     data: {
       alertId: String(options.alertId ?? ''),
       severity: 'warning',
       category: 'favorite_route',
       routeId: String(routeId),
-      title: 'Alerte bus scolaire',
-      body,
+      title,
+      body: message,
     },
     android: {
       priority: 'high',
       collapseKey: `route-${routeId}`,
+      ttl: 1000 * 60 * 60,
       notification: {
+        title,
+        body: message,
         sound: 'default',
-        channelId: 'favorite_route_alerts_v2',
+        channelId: 'favorite_route_alerts_v3',
         tag: `route-alert-${options.alertId ?? routeId}`,
+        priority: 'max',
+        visibility: 'public',
         defaultSound: true,
         defaultVibrateTimings: true,
+        vibrateTimingsMillis: [0, 900, 250, 900, 250, 900],
       },
     },
   });
@@ -93,25 +104,33 @@ export async function sendCriticalSafetyNotification(body, options = {}) {
     console.log('[critical notification]', body);
     return;
   }
+  const title = options.title ?? criticalAlertTitle;
+  const message = options.message ?? body;
   await admin.messaging().sendEachForMulticast({
     tokens,
-    notification: { title: 'Alerte securite transport', body },
+    notification: { title, body: message },
     data: {
       alertId: String(options.alertId ?? ''),
       severity: 'critical',
       category: 'safety',
-      title: 'Alerte securite transport',
-      body,
+      title,
+      body: message,
     },
     android: {
       priority: 'high',
       collapseKey: 'critical-transport-safety',
+      ttl: 1000 * 60 * 60,
       notification: {
+        title,
+        body: message,
         sound: 'default',
-        channelId: 'critical_transport_safety_v1',
+        channelId: 'critical_transport_safety_v2',
         tag: `critical-alert-${options.alertId ?? 'latest'}`,
+        priority: 'max',
+        visibility: 'public',
         defaultSound: true,
         defaultVibrateTimings: true,
+        vibrateTimingsMillis: [0, 1000, 200, 1000, 200, 1000],
       },
     },
   });

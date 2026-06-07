@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-const favoriteRouteChannelId = 'favorite_route_alerts_v2';
-const criticalSafetyChannelId = 'critical_transport_safety_v1';
+const favoriteRouteChannelId = 'favorite_route_alerts_v3';
+const criticalSafetyChannelId = 'critical_transport_safety_v2';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -42,23 +42,23 @@ Future<void> _createAndroidChannels(
   await android.createNotificationChannel(
     AndroidNotificationChannel(
       favoriteRouteChannelId,
-      'Alertes lignes favorites',
-      description: 'Notifications sonores pour les lignes favorites',
+      '🚨 Alertes bus scolaire',
+      description: 'Alertes visibles avec sonnerie et vibration forte',
       importance: Importance.max,
       playSound: true,
       enableVibration: true,
-      vibrationPattern: Int64List.fromList([0, 700, 250, 700]),
+      vibrationPattern: Int64List.fromList([0, 900, 250, 900, 250, 900]),
     ),
   );
   await android.createNotificationChannel(
     AndroidNotificationChannel(
       criticalSafetyChannelId,
-      'Alertes securite transport',
+      '🚨 Alertes securite transport',
       description: 'Alertes prioritaires securite, prefecture et circulation',
       importance: Importance.max,
       playSound: true,
       enableVibration: true,
-      vibrationPattern: Int64List.fromList([0, 900, 250, 900, 250, 900]),
+      vibrationPattern: Int64List.fromList([0, 1000, 200, 1000, 200, 1000]),
     ),
   );
 }
@@ -77,17 +77,25 @@ Future<void> _showAndroidAlert({
     NotificationDetails(
       android: AndroidNotificationDetails(
         critical ? criticalSafetyChannelId : favoriteRouteChannelId,
-        critical ? 'Alertes securite transport' : 'Alertes lignes favorites',
+        critical ? '🚨 Alertes securite transport' : '🚨 Alertes bus scolaire',
         channelDescription: critical
             ? 'Alertes prioritaires securite, prefecture et circulation'
-            : 'Notifications sonores pour les lignes favorites',
+            : 'Alertes visibles avec sonnerie et vibration forte',
         importance: Importance.max,
         priority: Priority.max,
         playSound: true,
         enableVibration: true,
         vibrationPattern: critical
-            ? Int64List.fromList([0, 900, 250, 900, 250, 900])
-            : Int64List.fromList([0, 700, 250, 700]),
+            ? Int64List.fromList([0, 1000, 200, 1000, 200, 1000])
+            : Int64List.fromList([0, 900, 250, 900, 250, 900]),
+        styleInformation: BigTextStyleInformation(
+          body,
+          contentTitle: title,
+          summaryText: 'Bus Scolaire Connect',
+        ),
+        ticker: title,
+        category: AndroidNotificationCategory.alarm,
+        visibility: NotificationVisibility.public,
       ),
     ),
   );

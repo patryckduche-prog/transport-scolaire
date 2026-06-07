@@ -32,6 +32,25 @@ function classifyAlert(status, reason) {
   return { severity: 'warning', broadcastToAll: false, category: 'route' };
 }
 
+function shortDelayStatus(status) {
+  const match = String(status).match(/(\d+)/);
+  if (match) return `${match[1]} min`;
+  if (String(status).toLowerCase().includes('superieur')) return '+30 min';
+  return status;
+}
+
+function compactRouteName(routeName, routeId) {
+  const raw = String(routeName ?? routeId);
+  return raw.replace(/^(\d+[A-Z0-9]*)\s*-\s*/i, 'Ligne $1 - ');
+}
+
+function notificationMessage({ routeName, routeId, status, reason, critical }) {
+  if (critical) {
+    return `ALERTE PRIORITAIRE\n${status}\nMotif : ${reason}`;
+  }
+  return `${compactRouteName(routeName, routeId)}\nRETARD : ${shortDelayStatus(status)}\nMotif : ${reason}`;
+}
+
 router.post('/', requireAuth(['driver']), async (req, res) => {
   const input = schema.parse(req.body);
   const uuidRoute = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.routeId);
@@ -72,10 +91,23 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
   const body = alert.broadcastToAll
     ? `Alerte prioritaire transport scolaire : ${input.status} - ${input.reason}.`
     : `Bus ${input.routeName ?? input.routeId} : ${input.status} suite a ${input.reason}.`;
+  const visibleMessage = notificationMessage({
+    routeName: input.routeName,
+    routeId: input.routeId,
+    status: input.status,
+    reason: input.reason,
+    critical: alert.broadcastToAll,
+  });
   if (alert.broadcastToAll) {
-    await sendCriticalSafetyNotification(body, { alertId: rows[0].id });
+    await sendCriticalSafetyNotification(body, {
+      alertId: rows[0].id,
+      message: visibleMessage,
+    });
   } else {
-    await sendDelayNotification(input.routeId, body, { alertId: rows[0].id });
+    await sendDelayNotification(input.routeId, body, {
+      alertId: rows[0].id,
+      message: visibleMessage,
+    });
   }
   res.status(201).json(rows[0]);
 });

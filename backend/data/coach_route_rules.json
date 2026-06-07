@@ -10,6 +10,29 @@
     "status": "a_verifier",
     "safetyNotice": "Google Maps et Waze calculent un trajet voiture. Pour un car scolaire, suivre le circuit valide par l'entreprise, la region et les arretes locaux.",
     "externalNavigationNotice": "Guidage externe a utiliser uniquement en secours visuel. Il ne garantit pas les interdictions poids lourds, gabarits, ponts, demi-tours ou arretes car scolaire.",
+    "checkedSources": [
+      {
+        "type": "prefecture",
+        "label": "Prefecture de Seine-Maritime - circulation poids lourds",
+        "url": "https://www.seine-maritime.gouv.fr/index.php/Actions-de-l-Etat/Transports-circulation-education-et-securite-routiere/Transports-et-reglementation/Circulation-des-poids-lourds-a-certaines-periodes/Interdiction-de-circulation-des-poids-lourds-a-certaines-periodes",
+        "status": "regle_generale",
+        "note": "La page concerne les interdictions de circulation des vehicules de transport de marchandises de plus de 7,5 t et les derogations prefectorales. Elle ne valide pas un itineraire car scolaire local."
+      },
+      {
+        "type": "prefecture",
+        "label": "Prefecture de Seine-Maritime - routes a grande circulation",
+        "url": "https://www.seine-maritime.gouv.fr/Actions-de-l-Etat/Transports-circulation-education-et-securite-routiere/Transports-et-reglementation/Routes-a-grande-circulation-RGC",
+        "status": "contexte_reglementaire",
+        "note": "Les RGC imposent des regles particulieres pour les travaux et arretes temporaires. Source utile pour controle exploitation, pas une autorisation de parcours car."
+      },
+      {
+        "type": "commune",
+        "label": "Forges-les-Eaux - arretes municipaux",
+        "url": "https://www.forgesleseaux.fr/941-arretes.htm",
+        "status": "source_locale_consultee",
+        "note": "Publication des actes municipaux de Forges-les-Eaux. Plusieurs arretes temporaires de circulation existent, mais aucun arrete permanent car scolaire Aumale-Forges n'a ete identifie dans la recherche."
+      }
+    ],
     "rules": [
       {
         "type": "official_route",
@@ -20,6 +43,16 @@
         "type": "manual_validation_required",
         "label": "Validation exploitation requise",
         "description": "Les routes autorisees/interdites car doivent etre confirmees avec l'entreprise, la region, les mairies ou les arretes prefectoraux."
+      },
+      {
+        "type": "official_sources_checked",
+        "label": "Sources officielles consultees",
+        "description": "Prefecture de Seine-Maritime et arretes municipaux de Forges-les-Eaux consultes en ligne. Aucune autorisation permanente publiee pour le parcours car scolaire n'a ete trouvee automatiquement."
+      },
+      {
+        "type": "osm_unofficial_warning",
+        "label": "Restrictions OpenStreetMap a verifier",
+        "description": "Les restrictions cartographiees OSM sont utiles pour alerter, mais doivent etre verifiees sur panneau, arrete municipal/prefectoral ou validation exploitation."
       }
     ]
   },
@@ -38,6 +71,31 @@
           "type": "municipal_order_possible",
           "label": "Arretes locaux possibles",
           "description": "Certaines routes interdites poids lourds peuvent rester autorisees aux cars scolaires par arrete municipal ou prefectoral. Verification documentaire necessaire."
+        },
+        {
+          "type": "osm_restriction_height",
+          "label": "OSM a verifier - D316 hauteur 3,0 m",
+          "description": "Deux segments OSM sur D316 vers 49.6733, 1.7611 indiquent maxheight 3.0. A verifier avant passage car, car un autocar scolaire peut depasser ce gabarit."
+        },
+        {
+          "type": "osm_restriction_height",
+          "label": "OSM a verifier - D919 / Avenue des Sources hauteur 4,0 m",
+          "description": "Segments OSM Avenue des Sources / D919 a Forges-les-Eaux indiquant maxheight 4.0. Generalement compatible avec beaucoup d'autocars, mais a verifier selon hauteur reelle du vehicule."
+        },
+        {
+          "type": "osm_restriction_height",
+          "label": "OSM a verifier - D919 Route de Riberpre hauteur 4,1 m",
+          "description": "Segment OSM Route de Riberpre / D919 indiquant maxheight 4.1. Controle panneau recommande si deviation ou variante de parcours."
+        },
+        {
+          "type": "osm_avoid_weight",
+          "label": "OSM a eviter - rues limitees 3,5 t / 5 t",
+          "description": "Autour du secteur, OSM signale Avenue Mathilde 3,5 t, Rue du Moulin 3,5 t, Rue du Therain 5 t. Ces voies ne doivent pas etre utilisees sans autorisation specifique."
+        },
+        {
+          "type": "osm_avoid_height_width",
+          "label": "OSM a eviter - petits gabarits",
+          "description": "Rue de la Passerelle signalee maxheight 1.8 et Impasse du Vieux Rosay maxwidth 3.0 / maxheight 3.0 dans OSM. A eviter pour un car sauf validation terrain."
         }
       ]
     }

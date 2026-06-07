@@ -307,7 +307,7 @@ class _GpsScreenState extends State<GpsScreen> {
                       : 'Google Maps et Waze restent des trajets voiture, a utiliser seulement en secours.'),
                   if ((guidance?.rules ?? []).isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    ...guidance!.rules.take(4).map(
+                    ...guidance!.rules.take(10).map(
                           (rule) => Padding(
                             padding: const EdgeInsets.only(bottom: 6),
                             child: Row(

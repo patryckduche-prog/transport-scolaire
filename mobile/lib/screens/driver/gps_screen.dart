@@ -29,6 +29,7 @@ class _GpsScreenState extends State<GpsScreen> {
   int queuedCount = 0;
   int currentStop = 0;
   bool autoStartRequested = false;
+  bool voiceNavigationOpened = false;
   bool loadingRoute = true;
 
   OfflineEventQueue queue(BuildContext context) =>
@@ -141,6 +142,7 @@ class _GpsScreenState extends State<GpsScreen> {
       locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.best, distanceFilter: 10),
     ).listen((position) => sendPosition(route, position));
+    await openGoogleMapsGuidance(auto: true);
   }
 
   Future<void> sendPosition(NomadRoute route, Position position) async {
@@ -236,10 +238,11 @@ class _GpsScreenState extends State<GpsScreen> {
       .replaceAll(RegExp(r'[^a-z0-9]+'), ' ')
       .trim();
 
-  Future<void> openGoogleMapsGuidance() async {
+  Future<void> openGoogleMapsGuidance({bool auto = false}) async {
     final route = fullRoute ?? context.read<AppState>().selectedDriverRoute;
     if (route == null) return;
-    if (sub == null) await startTracking();
+    if (auto && voiceNavigationOpened) return;
+    if (!auto && sub == null) await startTracking();
 
     final stops = routeStops(route);
     if (stops.isEmpty) {
@@ -258,7 +261,13 @@ class _GpsScreenState extends State<GpsScreen> {
       if (waypoints.isNotEmpty) 'waypoints': waypoints.join('|'),
     };
     final uri = Uri.https('www.google.com', '/maps/dir/', params);
-    await launchExternal(uri, 'Google Maps ouvert en secours voiture.');
+    voiceNavigationOpened = true;
+    await launchExternal(
+      uri,
+      auto
+          ? 'Navigation vocale Google Maps ouverte avec les arrets du circuit.'
+          : 'Google Maps ouvert avec les arrets du circuit.',
+    );
   }
 
   Future<void> openWazeGuidance() async {
@@ -385,7 +394,7 @@ class _GpsScreenState extends State<GpsScreen> {
               child: OutlinedButton.icon(
                 onPressed: route == null ? null : openGoogleMapsGuidance,
                 icon: const Icon(Icons.navigation_outlined),
-                label: const Text('Google Maps'),
+                label: const Text('GPS vocal'),
               ),
             ),
             const SizedBox(width: 8),
@@ -448,7 +457,7 @@ class _GpsScreenState extends State<GpsScreen> {
                   const SizedBox(height: 6),
                   Text(guidance?.externalNavigationNotice.isNotEmpty == true
                       ? guidance!.externalNavigationNotice
-                      : 'Google Maps et Waze restent des trajets voiture, a utiliser seulement en secours.'),
+                      : 'Google Maps est ouvert pour le guidage vocal. Le circuit officiel reste la reference car scolaire.'),
                   if ((guidance?.rules ?? []).isNotEmpty) ...[
                     const SizedBox(height: 10),
                     ...guidance!.rules.take(8).map(

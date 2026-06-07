@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models/nomad_route.dart';
 import '../../services/app_state.dart';
 import '../../services/api_service.dart';
+import 'gps_screen.dart';
 
 class NomadRoutesScreen extends StatefulWidget {
   const NomadRoutesScreen({super.key});
@@ -29,9 +30,13 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
   Future<void> load() async {
     final currentRequest = ++requestId;
     setState(() => loading = true);
-    final data = await context.read<ApiService>().getNomadRoutes(query: search.text, highlighted: false);
+    final data = await context
+        .read<ApiService>()
+        .getNomadRoutes(query: search.text, highlighted: false);
     if (currentRequest != requestId) return;
-    final list = (data['routes'] as List).map((item) => NomadRoute.fromJson(item)).toList();
+    final list = (data['routes'] as List)
+        .map((item) => NomadRoute.fromJson(item))
+        .toList();
     final meta = data['summary'] as Map<String, dynamic>;
     final sector = data['sector'] as Map<String, dynamic>?;
     if (!mounted) return;
@@ -45,7 +50,7 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
     });
   }
 
-  Future<void> chooseRoute(NomadRoute route) async {
+  Future<void> chooseRoute(NomadRoute route, {bool openGps = false}) async {
     NomadRoute selected = route;
     try {
       final detail = await context.read<ApiService>().getNomadRoute(route.id);
@@ -55,9 +60,18 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
     }
     if (!mounted) return;
     context.read<AppState>().selectDriverRoute(selected);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ligne selectionnee : ${selected.shortName}')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ligne selectionnee : ${selected.shortName}')));
+    if (openGps) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const GpsScreen()),
+      );
+      return;
+    }
     Navigator.of(context).pop();
   }
+
+  bool isPreferredAumaleForges(NomadRoute route) => route.id == 'SCHOOL-5010A0';
 
   @override
   Widget build(BuildContext context) {
@@ -110,32 +124,61 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
                     separatorBuilder: (_, __) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final route = routes[index];
+                      final preferred = isPreferredAumaleForges(route);
                       return Card(
+                        color: preferred
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : null,
                         child: ExpansionTile(
                           leading: CircleAvatar(
+                            backgroundColor: preferred
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                            foregroundColor: preferred
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : null,
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Padding(
                                 padding: const EdgeInsets.all(3),
-                                child: Text(route.shortName, textAlign: TextAlign.center),
+                                child: Text(route.shortName,
+                                    textAlign: TextAlign.center),
                               ),
                             ),
                           ),
                           title: Text(route.longName),
-                          subtitle: Text('${route.stopCount} arrets - ${route.tripCount} trajets'),
+                          subtitle: Text(preferred
+                              ? 'Ton circuit Aumale 07:00 vers Forges 07:45'
+                              : '${route.stopCount} arrets - ${route.tripCount} trajets'),
                           children: [
                             ...route.stopsPreview.map((stop) => ListTile(
-                                    dense: true,
-                                    leading: Text(stop.sequence.toString()),
-                                    title: Text(stop.name),
-                                    subtitle: stop.arrivalTime.isEmpty ? null : Text(stop.arrivalTime),
-                                  )),
+                                  dense: true,
+                                  leading: Text(stop.sequence.toString()),
+                                  title: Text(stop.name),
+                                  subtitle: stop.arrivalTime.isEmpty
+                                      ? null
+                                      : Text(stop.arrivalTime),
+                                )),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                              child: FilledButton.icon(
-                                onPressed: () => chooseRoute(route),
-                                icon: const Icon(Icons.check_circle_outline),
-                                label: const Text('Choisir cette ligne'),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  FilledButton.icon(
+                                    onPressed: () => chooseRoute(route),
+                                    icon:
+                                        const Icon(Icons.check_circle_outline),
+                                    label: const Text('Choisir cette ligne'),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  OutlinedButton.icon(
+                                    onPressed: () =>
+                                        chooseRoute(route, openGps: true),
+                                    icon: const Icon(Icons.navigation_outlined),
+                                    label: const Text(
+                                        'Choisir et lancer le GPS vocal'),
+                                  ),
+                                ],
                               ),
                             ),
                           ],

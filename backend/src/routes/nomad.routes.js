@@ -90,6 +90,14 @@ function routeMatchesKeywords(route, keywords) {
   return keywords.some((keyword) => routeText.includes(normalize(keyword)));
 }
 
+function routePriority(route) {
+  if (route.id === 'SCHOOL-5010A0') return 0;
+  if (route.id === 'SCHOOL-5010A4') return 1;
+  if (route.shortName?.startsWith('5010')) return 2;
+  if (route.schoolSector) return 3;
+  return 4;
+}
+
 router.use(requireAuth());
 
 router.get('/routes', (req, res) => {
@@ -116,6 +124,12 @@ router.get('/routes', (req, res) => {
       return queryTerms.every((term) => searchable.includes(term));
     });
   }
+
+  routes = routes.sort((a, b) => {
+    const priority = routePriority(a) - routePriority(b);
+    if (priority !== 0) return priority;
+    return String(a.shortName).localeCompare(String(b.shortName), 'fr');
+  });
 
   res.json({
     summary: {

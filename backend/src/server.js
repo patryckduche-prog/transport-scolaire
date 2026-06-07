@@ -24,7 +24,8 @@ import { attachRealtime } from './services/realtime.service.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
 const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
-const appVersion = '1.0.41';
+const apiVersion = '1.0.41';
+const androidApkVersion = '1.0.38';
 const app = express();
 app.set('trust proxy', true);
 app.use(helmet({
@@ -84,7 +85,8 @@ app.get('/api/app-version', (req, res) => {
   const protocol = local ? req.protocol : 'https';
   const baseUrl = `${protocol}://${host}`;
   res.json({
-    latestVersion: appVersion,
+    latestVersion: androidApkVersion,
+    apiVersion,
     minSupportedVersion: '1.0.9',
     apkUrl: `${baseUrl}/download/bus-scolaire-connect.apk`,
     downloadPageUrl: `${baseUrl}/download/`,

@@ -19,6 +19,7 @@ import navigationRoutes from './routes/navigation.routes.js';
 import passengerRoutes from './routes/passenger.routes.js';
 import publicRoutes from './routes/public.routes.js';
 import runRoutes from './routes/run.routes.js';
+import { fcmStatus } from './services/fcm.service.js';
 import { attachRealtime } from './services/realtime.service.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
@@ -75,7 +76,7 @@ app.get('/', (_, res) =>
     ],
   }),
 );
-app.get('/health', (_, res) => res.json({ ok: true, name: 'Bus Scolaire Connect API' }));
+app.get('/health', (_, res) => res.json({ ok: true, name: 'Bus Scolaire Connect API', fcm: fcmStatus() }));
 app.get('/api/app-version', (req, res) => {
   const host = req.get('host');
   const local = host?.startsWith('localhost') || host?.startsWith('127.0.0.1');

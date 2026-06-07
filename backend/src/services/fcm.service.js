@@ -4,20 +4,42 @@ import { pool } from '../db/pool.js';
 import { env } from '../config/env.js';
 
 let ready = false;
+let mode = 'disabled';
+let lastError = null;
 
 try {
-  if (env.fcmServiceAccountPath) {
+  if (env.fcmServiceAccountJson) {
+    const serviceAccount = JSON.parse(env.fcmServiceAccountJson);
+    if (serviceAccount.private_key) {
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
+    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+    ready = true;
+    mode = 'env_json';
+    console.log('FCM enabled from FIREBASE_SERVICE_ACCOUNT_JSON');
+  } else if (env.fcmServiceAccountPath) {
     if (fs.existsSync(env.fcmServiceAccountPath)) {
       const serviceAccount = JSON.parse(fs.readFileSync(env.fcmServiceAccountPath, 'utf8'));
       admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
       ready = true;
+      mode = 'file';
       console.log('FCM enabled');
     } else {
       console.warn(`FCM disabled: service account not found at ${env.fcmServiceAccountPath}`);
     }
   }
 } catch (error) {
+  lastError = error.message;
   console.warn('FCM disabled:', error.message);
+}
+
+export function fcmStatus() {
+  return {
+    ready,
+    mode,
+    configured: Boolean(env.fcmServiceAccountJson || env.fcmServiceAccountPath),
+    lastError,
+  };
 }
 
 export async function sendDelayNotification(routeId, body) {

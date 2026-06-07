@@ -18,3 +18,5 @@ services:
         generateValue: true
       - key: FCM_SERVICE_ACCOUNT_PATH
         value: ./config/firebase-service-account.json
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false

@@ -90,10 +90,27 @@ mobile/android/app/google-services.json
 backend/config/firebase-service-account.json
 ```
 
-3. Verifier dans `backend/.env` :
+3. En local, verifier dans `backend/.env` :
 
 ```text
 FCM_SERVICE_ACCOUNT_PATH=./config/firebase-service-account.json
+```
+
+Sur Render, ne pas committer le fichier secret. Ajouter plutot une variable d'environnement :
+
+```text
+FIREBASE_SERVICE_ACCOUNT_JSON={contenu complet du fichier firebase-service-account.json}
+```
+
+Le backend accepte les deux modes :
+
+- `FIREBASE_SERVICE_ACCOUNT_JSON` sur Render ;
+- `FCM_SERVICE_ACCOUNT_PATH` en local.
+
+Le statut FCM est visible dans :
+
+```text
+https://bus-scolaire-connect-api.onrender.com/health
 ```
 
 Sans ces fichiers officiels, l'application continue de fonctionner mais les notifications restent en mode journal serveur.

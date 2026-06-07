@@ -57,6 +57,28 @@
         gap: 10px;
         margin: 14px 0;
       }
+      .platforms {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+        text-align: left;
+      }
+      .platform {
+        padding: 16px;
+        border: 1px solid #c7d7da;
+        border-radius: 8px;
+        background: white;
+      }
+      .platform h2 {
+        margin: 0 0 6px;
+        font-size: 19px;
+      }
+      .platform p {
+        margin: 0 0 12px;
+      }
+      .disabled {
+        opacity: .72;
+      }
       .secondary {
         display: inline-flex;
         align-items: center;
@@ -69,6 +91,22 @@
         color: var(--ink);
         font-weight: 700;
         text-decoration: none;
+      }
+      .store {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 8px;
+        background: #132326;
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .store.disabled-link {
+        pointer-events: none;
+        background: #95a7ab;
       }
       code {
         display: block;
@@ -90,11 +128,23 @@
       <p><strong>Version test 1.0.20</strong> - serveur Render permanent, mode conduite anonyme, SOS, offline-first, WebSocket, carte OpenStreetMap, route OSRM, autocar realiste, consignes, fleches, voix Android et Google Maps en option.</p>
       <p>Scannez le QR code avec un telephone Android, ou ouvrez le lien direct ci-dessous.</p>
       <img class="qr" alt="QR code de telechargement" src="./qr-code.png">
-      <p><a class="button" href="./bus-scolaire-connect.apk" download>Telecharger Android recent</a></p>
+      <div class="platforms">
+        <section class="platform">
+          <h2>Android disponible</h2>
+          <p>Version APK de test pour Samsung, tablettes Android et emulateurs. La version Play Store utilisera ensuite le format officiel AAB signe.</p>
+          <p><a class="button" href="./bus-scolaire-connect.apk" download>Telecharger Android recent</a></p>
+        </section>
+        <section class="platform disabled">
+          <h2>iPhone / iPad</h2>
+          <p>Version Flutter compatible iOS a produire sur Mac avec Xcode, puis a diffuser par TestFlight ou App Store. Aucun fichier iPhone direct ne peut etre genere depuis Windows.</p>
+          <p><a class="store disabled-link" aria-disabled="true">Version iPhone en preparation</a></p>
+        </section>
+      </div>
       <p class="note">Si le bouton ne lance pas le telechargement, faites un appui long sur le lien direct puis choisissez Telecharger le lien.</p>
       <div class="links">
         <a class="secondary" href="./bus-scolaire-connect-ancien-android.apk" download>Ancien telephone Android</a>
         <a class="secondary" href="./bus-scolaire-connect-tablette-emulateur.apk" download>Tablette ou emulateur x86</a>
+        <a class="secondary" href="./publication-store.txt">Argumentaire Play Store / App Store</a>
       </div>
       <code>https://bus-scolaire-connect-api.onrender.com/download/bus-scolaire-connect.apk</code>
       <p class="note">Le serveur gratuit peut mettre quelques secondes a se reveiller apres une periode sans utilisation.</p>

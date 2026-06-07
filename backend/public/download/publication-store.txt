@@ -1,0 +1,31 @@
+Bus Scolaire Connect - Argumentaire Play Store / App Store
+
+Bus Scolaire Connect est une application de suivi et d'information dediee au transport scolaire regional.
+
+Elle permet aux familles de suivre l'etat d'une ligne scolaire, de recevoir des alertes en cas de retard, d'incident ou de changement important, et de signaler simplement une absence. Les conducteurs disposent d'un mode conduite sobre, concu pour limiter les manipulations, avec des actions rapides pour declarer un depart, un retard, un incident ou un changement de statut.
+
+L'application aide les entreprises de transport et les services de gestion a mieux suivre les tournees, les retards, les motifs d'incident et la frequentation des lignes. Elle vise a ameliorer l'information en temps reel, la securite des trajets et la preparation des tournees futures.
+
+Le suivi GPS est utilise pour afficher la progression du car pendant une tournee active et pour ameliorer l'information des usagers abonnes a une ligne. Les donnees de localisation ne sont pas destinees a surveiller les eleves. L'application ne demande aucune action obligatoire aux eleves et privilegie une approche passive et respectueuse.
+
+Argumentaire de validation :
+
+Bus Scolaire Connect n'est pas une application de surveillance individuelle. L'objectif principal est l'information operationnelle du transport scolaire : statut des tournees, retards, incidents, presence ou absence declaree volontairement, et suivi du vehicule pendant une tournee active.
+
+La localisation concerne le vehicule ou le conducteur en service, uniquement pendant l'utilisation de la fonction de suivi GPS. Elle sert a informer les familles de l'approche du car et a aider l'exploitation a suivre une tournee. Elle n'a pas pour but de suivre les enfants individuellement.
+
+Les eleves ne sont pas obliges d'interagir avec l'application. Les fonctions sensibles sont limitees par roles : conducteur, parent/eleve, entreprise, region. Les acces conducteur utilisent un code de secteur fourni par l'entreprise ou l'autorite competente. Les notifications sont envoyees aux utilisateurs abonnes aux lignes concernees.
+
+L'application respecte le principe de minimisation des donnees : seules les informations utiles au fonctionnement du service de transport scolaire sont traitees. Les donnees personnelles doivent etre configurees et gerees par l'exploitant conformement au RGPD, avec information des utilisateurs, droits d'acces, rectification et suppression.
+
+Texte localisation :
+
+Bus Scolaire Connect utilise la localisation pendant une tournee active afin d'afficher la progression du car scolaire, calculer l'approche des arrets et envoyer des alertes utiles aux familles abonnees a la ligne.
+
+La localisation n'est pas utilisee pour suivre les eleves individuellement. Le suivi est lie au vehicule et au service de transport scolaire.
+
+Texte notifications :
+
+Les notifications permettent de recevoir les alertes importantes concernant une ligne scolaire : retard, incident, changement de statut, approche du car ou information d'exploitation.
+
+Les notifications peuvent etre desactivees depuis les parametres de l'application.

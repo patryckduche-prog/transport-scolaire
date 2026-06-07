@@ -265,6 +265,40 @@
         margin: 14px auto 0;
         width: min(520px, 100%);
       }
+      @media (min-width: 860px) {
+        main { padding: 24px; }
+        .phone {
+          width: min(1040px, 100%);
+          border-radius: 28px;
+        }
+        .content {
+          grid-template-columns: minmax(0, 1.35fr) minmax(320px, .85fr);
+          align-items: start;
+          gap: 14px;
+        }
+        .route, .command, .map-card { grid-column: 1; }
+        .status, .next, .content > .card:nth-of-type(5), .buttons { grid-column: 2; }
+        .map { height: 440px; }
+        .coach {
+          left: 54%;
+          top: 18%;
+          width: 270px;
+          height: 180px;
+        }
+        .direction-bubble {
+          right: 34px;
+          top: 34px;
+        }
+        .s1 { left: 18%; top: 62%; }
+        .s2 { left: 34%; top: 50%; }
+        .s3 { left: 51%; top: 38%; }
+        .s4 { left: 73%; top: 45%; }
+        .road-a { width: 55%; left: 12%; top: 62%; }
+        .road-b { width: 31%; left: 56%; top: 40%; }
+        .line-a { width: 48%; left: 15%; top: 61%; }
+        .line-b { width: 23%; left: 57%; top: 41%; }
+        .caption { width: min(860px, 100%); }
+      }
     </style>
   </head>
   <body>

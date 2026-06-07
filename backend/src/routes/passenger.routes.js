@@ -32,6 +32,14 @@ async function ensurePassengerColumns() {
       primary key(user_id, route_external_id, service_date)
     )
   `);
+  await pool.query(`
+    create table if not exists passenger_hidden_alerts (
+      user_id uuid references users(id) on delete cascade,
+      delay_id bigint references delays(id) on delete cascade,
+      hidden_at timestamptz not null default now(),
+      primary key(user_id, delay_id)
+    )
+  `);
 }
 
 async function getPassengerSettings(userId) {
@@ -106,15 +114,18 @@ router.delete('/favorites/:routeExternalId', async (req, res) => {
 });
 
 router.get('/alerts', async (req, res) => {
+  await ensurePassengerColumns();
   const { rows } = await pool.query(
     `select d.id, d.status, d.reason, d.created_at, d.severity, d.broadcast_to_all, d.alert_category,
             coalesce(d.route_external_id, d.route_id::text) as route_external_id,
             coalesce(d.route_name, r.name, f.route_name, 'Ligne scolaire') as route_name
      from delays d
      left join passenger_favorite_routes f on f.user_id=$1 and f.route_external_id=coalesce(d.route_external_id, d.route_id::text)
+     left join passenger_hidden_alerts h on h.user_id=$1 and h.delay_id=d.id
      left join school_routes r on r.id=d.route_id
      where d.created_at > now() - interval '7 days'
        and (d.broadcast_to_all=true or f.user_id is not null)
+       and h.delay_id is null
      order by d.created_at desc
      limit 30`,
     [req.user.sub],
@@ -135,6 +146,36 @@ router.get('/alerts', async (req, res) => {
       broadcastToAll: row.broadcast_to_all,
     })),
   });
+});
+
+router.delete('/alerts/:alertId', async (req, res) => {
+  await ensurePassengerColumns();
+  const alertId = Number.parseInt(req.params.alertId, 10);
+  if (!Number.isInteger(alertId) || alertId <= 0) {
+    return res.status(400).json({ error: 'invalid_alert_id' });
+  }
+  await pool.query(
+    `insert into passenger_hidden_alerts(user_id, delay_id)
+     values ($1, $2)
+     on conflict (user_id, delay_id) do nothing`,
+    [req.user.sub, alertId],
+  );
+  res.status(204).end();
+});
+
+router.delete('/alerts', async (req, res) => {
+  await ensurePassengerColumns();
+  await pool.query(
+    `insert into passenger_hidden_alerts(user_id, delay_id)
+     select $1, d.id
+     from delays d
+     left join passenger_favorite_routes f on f.user_id=$1 and f.route_external_id=coalesce(d.route_external_id, d.route_id::text)
+     where d.created_at > now() - interval '7 days'
+       and (d.broadcast_to_all=true or f.user_id is not null)
+     on conflict (user_id, delay_id) do nothing`,
+    [req.user.sub],
+  );
+  res.status(204).end();
 });
 
 router.get('/absences', async (req, res) => {

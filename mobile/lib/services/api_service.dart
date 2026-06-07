@@ -181,6 +181,12 @@ class ApiService {
   Future<List<dynamic>> getPassengerAlerts() async =>
       ((await _dio.get('/passenger/alerts')).data['alerts'] as List<dynamic>);
 
+  Future<void> dismissPassengerAlert(String alertId) async =>
+      _dio.delete('/passenger/alerts/$alertId');
+
+  Future<void> dismissAllPassengerAlerts() async =>
+      _dio.delete('/passenger/alerts');
+
   Future<List<dynamic>> getPassengerAbsences() async =>
       ((await _dio.get('/passenger/absences')).data['absences']
           as List<dynamic>);

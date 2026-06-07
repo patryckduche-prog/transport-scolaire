@@ -240,6 +240,36 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
     ));
   }
 
+  Future<void> dismissAlert(Map<String, dynamic> alert) async {
+    final id = (alert['id'] ?? '').toString();
+    if (id.isEmpty) return;
+    setState(() {
+      alerts = alerts.where((item) {
+        final current = item as Map<String, dynamic>;
+        return (current['id'] ?? '').toString() != id;
+      }).toList();
+    });
+    try {
+      await context.read<ApiService>().dismissPassengerAlert(id);
+    } catch (_) {
+      await pollFavoriteAlerts();
+    }
+  }
+
+  Future<void> dismissAllAlerts() async {
+    if (alerts.isEmpty) return;
+    final previousAlerts = List<dynamic>.from(alerts);
+    setState(() => alerts = []);
+    try {
+      await context.read<ApiService>().dismissAllPassengerAlerts();
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => alerts = previousAlerts);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Impossible d effacer les alertes pour le moment.')));
+    }
+  }
+
   bool isAbsentToday(String routeId) => absences.any((item) {
         final absence = item as Map<String, dynamic>;
         return absence['routeExternalId'] == routeId &&
@@ -393,6 +423,15 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                       .textTheme
                       .titleMedium
                       ?.copyWith(fontWeight: FontWeight.w700)),
+              if (alerts.isNotEmpty)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: dismissAllAlerts,
+                    icon: const Icon(Icons.delete_sweep_outlined),
+                    label: const Text('Tout effacer'),
+                  ),
+                ),
               const SizedBox(height: 8),
               if (alerts.isEmpty)
                 const Card(
@@ -412,6 +451,11 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                           ? 'Alerte securite prioritaire'
                           : alert['routeName'] as String? ?? 'Ligne favorite'),
                       subtitle: Text(alert['message'] as String? ?? ''),
+                      trailing: IconButton(
+                        tooltip: 'Effacer cette alerte',
+                        icon: const Icon(Icons.close),
+                        onPressed: () => dismissAlert(alert),
+                      ),
                     ),
                   );
                 }),

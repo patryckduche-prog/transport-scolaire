@@ -29,6 +29,12 @@ alter table delays add column if not exists route_name text;
 alter table delays add column if not exists severity text not null default 'warning';
 alter table delays add column if not exists broadcast_to_all boolean not null default false;
 alter table delays add column if not exists alert_category text not null default 'route';
+create table if not exists passenger_hidden_alerts (
+  user_id uuid references users(id) on delete cascade,
+  delay_id bigint references delays(id) on delete cascade,
+  hidden_at timestamptz not null default now(),
+  primary key(user_id, delay_id)
+);
 create table if not exists gps_positions (id bigserial primary key, route_id uuid references school_routes(id), driver_id uuid references users(id), latitude numeric(9,6) not null, longitude numeric(9,6) not null, speed numeric(6,2) not null default 0, recorded_at timestamptz not null default now());
 alter table gps_positions add column if not exists route_external_id text;
 alter table gps_positions add column if not exists route_name text;

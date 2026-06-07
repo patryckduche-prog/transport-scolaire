@@ -7,11 +7,21 @@ export function normalizeAlertText(value) {
 
 export function classifyTransportAlert(status, reason) {
   const text = normalizeAlertText(`${status} ${reason}`);
-  const suspensionWords = [
-    'arrete',
+  const sectorSafetyWords = [
+    'arrete prefectoral',
     'prefectoral',
     'prefecture',
     'prefet',
+    'suspension transports scolaires',
+    'transport scolaire suspendu',
+    'transports scolaires suspendus',
+  ];
+  if (sectorSafetyWords.some((word) => text.includes(word))) {
+    return { severity: 'critical', broadcastToAll: false, category: 'sector_safety', level: 'red' };
+  }
+
+  const suspensionWords = [
+    'arrete',
     'interdiction',
     'interdit',
     'transports interdits',
@@ -38,13 +48,32 @@ export function classifyTransportAlert(status, reason) {
   return { severity: 'info', broadcastToAll: false, category: 'route', level: 'yellow' };
 }
 
+function routeDescriptor(route) {
+  if (typeof route === 'string') return { id: route, text: route };
+  return {
+    id: String(route?.id ?? ''),
+    text: normalizeAlertText(`${route?.id ?? ''} ${route?.shortName ?? ''} ${route?.longName ?? ''} ${(route?.sectorKeywords ?? []).join(' ')} ${(route?.stops ?? []).map((stop) => stop?.name ?? stop).join(' ')}`),
+  };
+}
+
+function sectorAlertMatchesRoute(alert, route) {
+  const keywords = Array.isArray(alert.affected_routes) ? alert.affected_routes : [];
+  const zone = normalizeAlertText(alert.official_zone);
+  const text = normalizeAlertText(route.text);
+  if (keywords.length === 0 && !zone) return false;
+  return [...keywords, zone]
+    .filter(Boolean)
+    .some((keyword) => text.includes(normalizeAlertText(keyword)));
+}
+
 export async function activeRouteSuspensions(pool, routeIds = []) {
-  const ids = [...new Set(routeIds.filter(Boolean).map(String))];
+  const routes = routeIds.map(routeDescriptor).filter((route) => route.id);
+  const ids = [...new Set(routes.map((route) => route.id))];
   if (ids.length === 0) return new Map();
 
-  const { rows } = await pool.query(
+  const { rows: exactRows } = await pool.query(
     `select distinct on (coalesce(route_external_id, route_id::text))
-            id, status, reason, created_at, severity, alert_category,
+            id, status, reason, created_at, severity, alert_category, official_zone, affected_routes,
             coalesce(route_external_id, route_id::text) as route_external_id,
             coalesce(route_name, route_external_id, route_id::text, 'Ligne scolaire') as route_name
      from delays
@@ -56,11 +85,28 @@ export async function activeRouteSuspensions(pool, routeIds = []) {
     [ids],
   );
 
-  return new Map(rows.map((row) => [row.route_external_id, row]));
+  const { rows: sectorRows } = await pool.query(
+    `select id, status, reason, created_at, severity, alert_category, official_zone, affected_routes,
+            coalesce(route_external_id, route_id::text) as route_external_id,
+            coalesce(route_name, route_external_id, route_id::text, 'Secteur transport scolaire') as route_name
+     from delays
+     where created_at >= current_date
+       and severity='critical'
+       and alert_category='sector_safety'
+     order by created_at desc`,
+  );
+
+  const result = new Map(exactRows.map((row) => [row.route_external_id, row]));
+  for (const route of routes) {
+    if (result.has(route.id)) continue;
+    const sectorAlert = sectorRows.find((alert) => sectorAlertMatchesRoute(alert, route));
+    if (sectorAlert) result.set(route.id, { ...sectorAlert, route_external_id: route.id });
+  }
+  return result;
 }
 
-export async function activeRouteSuspension(pool, routeId) {
-  const suspensions = await activeRouteSuspensions(pool, [routeId]);
+export async function activeRouteSuspension(pool, routeId, routeName = '') {
+  const suspensions = await activeRouteSuspensions(pool, [{ id: routeId, longName: routeName }]);
   return suspensions.get(String(routeId)) ?? null;
 }
 

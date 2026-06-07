@@ -43,7 +43,7 @@ router.use(requireAuth());
 
 router.post('/start', requireAuth(['driver']), async (req, res) => {
   const input = startSchema.parse(req.body);
-  const suspension = await activeRouteSuspension(pool, input.routeId);
+  const suspension = await activeRouteSuspension(pool, input.routeId, input.routeName);
   if (suspension) {
     return res.status(423).json({
       error: 'route_suspended',

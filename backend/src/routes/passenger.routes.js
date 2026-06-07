@@ -117,6 +117,7 @@ router.get('/alerts', async (req, res) => {
   await ensurePassengerColumns();
   const { rows } = await pool.query(
     `select d.id, d.status, d.reason, d.created_at, d.severity, d.broadcast_to_all, d.alert_category,
+            d.official_zone, d.affected_routes,
             coalesce(d.route_external_id, d.route_id::text) as route_external_id,
             coalesce(d.route_name, r.name, f.route_name, 'Ligne scolaire') as route_name
      from delays d
@@ -124,7 +125,25 @@ router.get('/alerts', async (req, res) => {
      left join passenger_hidden_alerts h on h.user_id=$1 and h.delay_id=d.id
      left join school_routes r on r.id=d.route_id
      where d.created_at > now() - interval '7 days'
-       and (d.broadcast_to_all=true or f.user_id is not null)
+       and (
+         d.broadcast_to_all=true
+         or f.user_id is not null
+         or (
+           d.alert_category='sector_safety'
+           and exists (
+             select 1
+             from passenger_favorite_routes sf
+             where sf.user_id=$1
+               and exists (
+                 select 1
+                 from unnest(d.affected_routes) kw
+                 where lower(sf.route_external_id) like '%' || lower(kw) || '%'
+                    or lower(sf.route_name) like '%' || lower(kw) || '%'
+                    or lower(sf.route_short_name) like '%' || lower(kw) || '%'
+               )
+           )
+         )
+       )
        and h.delay_id is null
      order by d.created_at desc
      limit 30`,
@@ -139,6 +158,8 @@ router.get('/alerts', async (req, res) => {
       reason: row.reason,
       message: row.alert_category === 'suspension'
         ? `TRANSPORT SCOLAIRE SUSPENDU\n${row.route_name}\nSuite a ${row.reason}, la circulation des transports scolaires est interdite aujourd'hui.`
+        : row.alert_category === 'sector_safety'
+          ? `TRANSPORT SCOLAIRE SUSPENDU\nSecteur : ${row.official_zone ?? row.route_name}\nSuite a ${row.reason}, la circulation des transports scolaires est interdite aujourd'hui.`
         : row.broadcast_to_all
           ? `Alerte prioritaire transport scolaire : ${row.status} - ${row.reason}.`
         : `${row.route_name} : ${row.status} suite a ${row.reason}.`,
@@ -173,7 +194,25 @@ router.delete('/alerts', async (req, res) => {
      from delays d
      left join passenger_favorite_routes f on f.user_id=$1 and f.route_external_id=coalesce(d.route_external_id, d.route_id::text)
      where d.created_at > now() - interval '7 days'
-       and (d.broadcast_to_all=true or f.user_id is not null)
+       and (
+         d.broadcast_to_all=true
+         or f.user_id is not null
+         or (
+           d.alert_category='sector_safety'
+           and exists (
+             select 1
+             from passenger_favorite_routes sf
+             where sf.user_id=$1
+               and exists (
+                 select 1
+                 from unnest(d.affected_routes) kw
+                 where lower(sf.route_external_id) like '%' || lower(kw) || '%'
+                    or lower(sf.route_name) like '%' || lower(kw) || '%'
+                    or lower(sf.route_short_name) like '%' || lower(kw) || '%'
+               )
+           )
+         )
+       )
      on conflict (user_id, delay_id) do nothing`,
     [req.user.sub],
   );

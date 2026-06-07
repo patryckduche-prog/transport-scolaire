@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth.js';
 import { pool } from '../db/pool.js';
-import { sendCriticalSafetyNotification, sendDelayNotification } from '../services/fcm.service.js';
+import { sendCriticalSafetyNotification, sendDelayNotification, sendSectorSafetyNotification } from '../services/fcm.service.js';
 import { classifyTransportAlert } from '../services/route-alerts.service.js';
 
 const router = Router();
@@ -26,6 +26,9 @@ function compactRouteName(routeName, routeId) {
 }
 
 function notificationMessage({ routeName, routeId, status, reason, critical }) {
+  if (critical === 'sector_safety') {
+    return `TRANSPORT SCOLAIRE SUSPENDU\nSecteur : ${routeName ?? routeId}\nMotif : ${reason}`;
+  }
   if (critical === 'suspension') {
     return `${compactRouteName(routeName, routeId)}\nTRANSPORT SCOLAIRE SUSPENDU\nMotif : ${reason}`;
   }
@@ -56,9 +59,13 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
     return res.status(200).json({ ...duplicate.rows[0], duplicate: true });
   }
 
-  const officialSource = alert.category === 'suspension' ? 'manual_validated' : 'manual';
+  const sectorKeywords = Array.isArray(req.user?.sector?.keywords) && req.user.sector.keywords.length > 0
+    ? req.user.sector.keywords
+    : [input.routeName ?? input.routeId];
+  const sectorName = req.user?.sector?.name ?? input.routeName ?? input.routeId;
+  const officialSource = ['suspension', 'sector_safety'].includes(alert.category) ? 'manual_validated' : 'manual';
   const officialText = `${input.status} - ${input.reason}`;
-  const officialZone = input.routeName ?? input.routeId;
+  const officialZone = alert.category === 'sector_safety' ? sectorName : input.routeName ?? input.routeId;
   const { rows } = await pool.query(
     `insert into delays(
        route_id, route_external_id, route_name, driver_id, status, reason,
@@ -81,21 +88,23 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
       officialSource,
       officialText,
       officialZone,
-      [routeExternalId],
+      alert.category === 'sector_safety' ? sectorKeywords : [routeExternalId],
       req.user.sub,
     ],
   );
-  const body = alert.category === 'suspension'
+  const body = alert.category === 'sector_safety'
+    ? `Transport scolaire suspendu sur le secteur ${sectorName} : ${input.reason}.`
+    : alert.category === 'suspension'
     ? `Transport scolaire suspendu sur ${input.routeName ?? input.routeId} : ${input.reason}.`
     : alert.broadcastToAll
       ? `Alerte prioritaire transport scolaire : ${input.status} - ${input.reason}.`
       : `Bus ${input.routeName ?? input.routeId} : ${input.status} suite a ${input.reason}.`;
   const visibleMessage = notificationMessage({
-    routeName: input.routeName,
+    routeName: alert.category === 'sector_safety' ? sectorName : input.routeName,
     routeId: input.routeId,
     status: input.status,
     reason: input.reason,
-    critical: alert.category === 'suspension' ? 'suspension' : alert.broadcastToAll,
+    critical: alert.category === 'sector_safety' ? 'sector_safety' : alert.category === 'suspension' ? 'suspension' : alert.broadcastToAll,
   });
   if (alert.broadcastToAll) {
     await sendCriticalSafetyNotification(body, {
@@ -105,6 +114,17 @@ router.post('/', requireAuth(['driver']), async (req, res) => {
         : undefined,
       category: alert.category,
       routeId: input.routeId,
+      excludeUserId: req.user.sub,
+      message: visibleMessage,
+    });
+  } else if (alert.category === 'sector_safety') {
+    await sendSectorSafetyNotification(sectorKeywords, body, {
+      alertId: rows[0].id,
+      title: 'TRANSPORT SCOLAIRE SUSPENDU',
+      severity: alert.severity,
+      category: alert.category,
+      routeId: input.routeId,
+      sectorName,
       excludeUserId: req.user.sub,
       message: visibleMessage,
     });

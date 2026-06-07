@@ -11,7 +11,6 @@
         --brand: #0f6f78;
         --soft: #edf7f7;
         --line: #cadbde;
-        --road: #f9fbfb;
         --green: #1f8b56;
         --warn: #b75b00;
         --danger: #9f2332;
@@ -77,99 +76,74 @@
       h1, h2, p { margin-top: 0; }
       h2 { font-size: 16px; margin-bottom: 8px; }
       p { color: var(--muted); line-height: 1.35; }
-      .map-card h2 { margin-bottom: 4px; }
-      .map-card .state {
-        display: flex;
+      .command {
+        background: var(--brand);
+        color: white;
+        display: grid;
+        grid-template-columns: 70px 1fr 32px;
+        gap: 12px;
         align-items: center;
-        gap: 8px;
+      }
+      .command p { color: white; margin: 0; }
+      .arrow {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+        background: white;
+        color: var(--brand);
+        display: grid;
+        place-items: center;
+        font-size: 48px;
+        font-weight: 900;
+      }
+      .distance { font-weight: 900; font-size: 19px; margin-bottom: 4px; }
+      .speak { font-size: 24px; }
+      .map-card .state {
         color: var(--green);
         font-weight: 800;
         margin-bottom: 10px;
       }
       .map {
-        height: 240px;
+        height: 265px;
         border-radius: 8px;
         position: relative;
         overflow: hidden;
-        background:
-          linear-gradient(42deg, transparent 42%, rgba(15,111,120,.12) 43%, rgba(15,111,120,.12) 48%, transparent 49%),
-          linear-gradient(120deg, transparent 52%, rgba(60,120,80,.15) 53%, rgba(60,120,80,.15) 58%, transparent 59%),
-          #dfeeed;
+        background: #e4efee;
         border: 1px solid var(--line);
       }
-      .road {
+      .minor-road {
         position: absolute;
-        left: 28px;
-        top: 170px;
-        width: 340px;
-        height: 18px;
-        background: var(--road);
-        border: 1px solid #bdc8ca;
-        transform-origin: left center;
-        transform: rotate(-25deg);
+        height: 8px;
+        background: rgba(255,255,255,.78);
         border-radius: 999px;
-        box-shadow: 0 0 0 7px rgba(255,255,255,.34);
+        box-shadow: 0 0 0 1px rgba(180,196,199,.55);
       }
-      .road.b {
-        left: 150px;
-        top: 106px;
-        width: 220px;
-        transform: rotate(24deg);
+      .mr1 { width: 390px; left: -30px; top: 42px; transform: rotate(-20deg); }
+      .mr2 { width: 420px; left: 8px; top: 132px; transform: rotate(-20deg); }
+      .mr3 { width: 370px; right: -20px; bottom: 36px; transform: rotate(-20deg); }
+      .mr4 { width: 330px; left: 30px; top: 180px; transform: rotate(28deg); }
+      .mr5 { width: 260px; left: 150px; top: 86px; transform: rotate(28deg); }
+      .main-road {
+        position: absolute;
+        height: 28px;
+        background: white;
+        border: 1px solid #b7c8cc;
+        border-radius: 999px;
       }
+      .road-a { width: 245px; left: 42px; top: 166px; transform: rotate(-25deg); }
+      .road-b { width: 170px; left: 220px; top: 98px; transform: rotate(22deg); }
       .route-line {
         position: absolute;
-        left: 58px;
-        top: 160px;
-        width: 210px;
-        height: 6px;
+        height: 10px;
         background: var(--brand);
-        transform-origin: left center;
-        transform: rotate(-25deg);
         border-radius: 999px;
       }
-      .route-line.b {
-        left: 206px;
-        top: 96px;
-        width: 86px;
-        background: var(--brand);
-        transform: rotate(24deg);
-      }
-      .bus {
-        position: absolute;
-        left: 206px;
-        top: 92px;
-        width: 78px;
-        height: 40px;
-        border-radius: 8px 14px 12px 8px;
-        background: linear-gradient(#fff, #e9f2f3);
-        border: 3px solid var(--brand);
-        transform: rotate(-18deg);
-        box-shadow: 0 10px 18px rgba(0,0,0,.2);
-      }
-      .bus:before {
-        content: "";
-        position: absolute;
-        left: 10px;
-        top: 7px;
-        width: 46px;
-        height: 10px;
-        background: #17343d;
-        border-radius: 5px;
-      }
-      .bus:after {
-        content: "";
-        position: absolute;
-        left: 12px;
-        bottom: -8px;
-        width: 50px;
-        height: 8px;
-        background: radial-gradient(circle at 7px 4px, #17262a 0 4px, transparent 5px),
-                    radial-gradient(circle at 40px 4px, #17262a 0 4px, transparent 5px);
-      }
+      .line-a { width: 206px; left: 62px; top: 160px; transform: rotate(-25deg); }
+      .line-b { width: 92px; left: 232px; top: 105px; transform: rotate(22deg); }
       .stop {
         position: absolute;
-        width: 26px;
-        height: 26px;
+        width: 28px;
+        height: 28px;
         display: grid;
         place-items: center;
         border-radius: 50%;
@@ -178,14 +152,75 @@
         font-size: 12px;
         font-weight: 800;
         border: 3px solid white;
+        z-index: 4;
       }
       .done { background: var(--green); }
       .future { background: #7e9095; }
-      .s1 { left: 48px; top: 152px; }
-      .s2 { left: 106px; top: 126px; }
-      .s3 { left: 164px; top: 98px; }
-      .s4 { left: 238px; top: 92px; }
-      .s5 { left: 314px; top: 124px; }
+      .s1 { left: 70px; top: 158px; }
+      .s2 { left: 141px; top: 126px; }
+      .s3 { left: 215px; top: 94px; }
+      .s4 { left: 292px; top: 112px; }
+      .coach {
+        position: absolute;
+        left: 225px;
+        top: 90px;
+        width: 98px;
+        height: 46px;
+        transform: rotate(17deg);
+        z-index: 5;
+        filter: drop-shadow(0 10px 12px rgba(0,0,0,.24));
+      }
+      .coach .body {
+        position: absolute;
+        inset: 0;
+        border-radius: 10px 18px 14px 10px;
+        background: linear-gradient(180deg,#ffffff,#e9f1f2);
+        border: 3px solid var(--brand);
+      }
+      .coach .stripe {
+        position: absolute;
+        left: 6px;
+        right: 8px;
+        bottom: 14px;
+        height: 7px;
+        background: rgba(15,111,120,.18);
+      }
+      .coach .windows {
+        position: absolute;
+        left: 12px;
+        top: 9px;
+        width: 58px;
+        height: 13px;
+        border-radius: 5px;
+        background: #18343a;
+        box-shadow: 65px 0 0 -47px #18343a;
+      }
+      .coach .wheel {
+        position: absolute;
+        bottom: -5px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #17262a;
+      }
+      .coach .w1 { left: 20px; }
+      .coach .w2 { right: 21px; }
+      .direction-bubble {
+        position: absolute;
+        right: 22px;
+        top: 22px;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.94);
+        color: var(--brand);
+        display: grid;
+        place-items: center;
+        font-size: 38px;
+        font-weight: 900;
+        z-index: 6;
+        box-shadow: 0 5px 14px rgba(0,0,0,.14);
+      }
       .status {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -242,49 +277,68 @@
       <section class="phone" aria-label="Apercu mobile GPS car scolaire actif">
         <div class="appbar">
           <span>&lt;</span>
-          <strong>Suivi GPS</strong>
+          <strong>Navigation car scolaire</strong>
         </div>
         <div class="content">
           <div class="card route">
             <div class="badge">5010<br>A0</div>
             <div>
               <h1 style="font-size:18px;margin-bottom:4px;">Aumale vers Forges-les-Eaux</h1>
-              <p style="margin-bottom:0;">9 arrets charges - suivi automatique</p>
+              <p style="margin-bottom:0;">36,9 km - 9 arrets - OSRM actif</p>
             </div>
+          </div>
+
+          <div class="card command">
+            <div class="arrow">↱</div>
+            <div>
+              <div class="distance">Dans 200 m</div>
+              <p>Tournez a droite sur la D919</p>
+            </div>
+            <div class="speak">🔊</div>
           </div>
 
           <div class="card map-card">
             <div class="state">GPS car scolaire actif</div>
-            <p>OSRM calcule le circuit avec les coordonnees des arrets. La voix Android annonce les consignes, Google Maps reste optionnel.</p>
             <div class="map">
-              <div class="road"></div>
-              <div class="road b"></div>
-              <div class="route-line"></div>
-              <div class="route-line b"></div>
+              <div class="minor-road mr1"></div>
+              <div class="minor-road mr2"></div>
+              <div class="minor-road mr3"></div>
+              <div class="minor-road mr4"></div>
+              <div class="minor-road mr5"></div>
+              <div class="main-road road-a"></div>
+              <div class="main-road road-b"></div>
+              <div class="route-line line-a"></div>
+              <div class="route-line line-b"></div>
               <div class="stop done s1">1</div>
               <div class="stop done s2">3</div>
-              <div class="stop done s3">6</div>
-              <div class="stop s4">8</div>
-              <div class="stop future s5">9</div>
-              <div class="bus" title="Position GPS simulee"></div>
+              <div class="stop s3">6</div>
+              <div class="stop future s4">9</div>
+              <div class="coach" title="Autocar scolaire">
+                <div class="body"></div>
+                <div class="stripe"></div>
+                <div class="windows"></div>
+                <div class="wheel w1"></div>
+                <div class="wheel w2"></div>
+              </div>
+              <div class="direction-bubble">↱</div>
             </div>
           </div>
 
           <div class="status">
-            <div class="metric"><span>Envois</span><strong>18</strong></div>
+            <div class="metric"><span>Moteur</span><strong>OSRM</strong></div>
             <div class="metric"><span>Hors ligne</span><strong>0</strong></div>
           </div>
 
           <div class="card next">
-            <h2>Arret suivi automatiquement</h2>
+            <h2>Prochain arret</h2>
             <p><strong>6 - Conteville - Les Defends</strong></p>
-            <p>Le conducteur n'a pas besoin d'appuyer sur suivant.</p>
+            <p>La voix Android annonce les prochaines consignes du trajet.</p>
           </div>
 
           <div class="card">
             <h2>Mode car scolaire</h2>
             <p><strong>Autocar scolaire standard : 13,0 m x 2,55 m.</strong></p>
-            <p>Suivre le circuit officiel valide par l'exploitation. Google Maps est disponible en option avec les coordonnees des arrets, mais ne remplace pas la validation car scolaire.</p>
+            <p>Le circuit officiel reste prioritaire. Google Maps est seulement une option externe par coordonnees.</p>
             <div class="rules">
               <div class="rule danger"><span>!</span><p><b>D316 hauteur 3,0 m</b><br>Restriction a verifier avant passage car.</p></div>
               <div class="rule"><span>!</span><p><b>D919 / Avenue des Sources 4,0 m</b><br>Controle panneau recommande selon hauteur reelle du vehicule.</p></div>
@@ -292,13 +346,12 @@
           </div>
 
           <div class="buttons">
-            <button>Relancer GPS car scolaire</button>
+            <button>Repeter la consigne</button>
             <button class="secondary">Google Maps option coordonnees</button>
-            <button class="secondary">Waze secours destination</button>
           </div>
         </div>
       </section>
-      <p class="caption">Apercu test statique : le vrai ecran mobile utilise la position GPS du telephone et le circuit selectionne par le conducteur.</p>
+      <p class="caption">Apercu test statique : l'ecran mobile reel utilise la position GPS, les instructions OSRM et le circuit selectionne.</p>
     </main>
   </body>
 </html>

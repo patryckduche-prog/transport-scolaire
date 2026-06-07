@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -148,6 +149,36 @@ class _GpsScreenState extends State<GpsScreen> {
     }).toList();
   }
 
+  List<Map<String, dynamic>> navigationSteps() {
+    final rawSteps = coachNavigation?['steps'];
+    if (rawSteps is! List) return [];
+    return rawSteps.whereType<Map<String, dynamic>>().toList();
+  }
+
+  Map<String, dynamic>? currentNavigationStep() {
+    final steps = navigationSteps();
+    if (steps.isEmpty) return null;
+    return steps.firstWhere(
+      (step) {
+        final instruction =
+            (step['instruction'] as String? ?? '').toLowerCase();
+        return !instruction.startsWith('depart');
+      },
+      orElse: () => steps.first,
+    );
+  }
+
+  String currentInstructionText() {
+    final step = currentNavigationStep();
+    return step?['instruction'] as String? ??
+        'Continuez sur le circuit officiel.';
+  }
+
+  int? currentInstructionDistance() {
+    final distance = currentNavigationStep()?['distanceMeters'];
+    return distance is num ? distance.round() : null;
+  }
+
   Future<bool> ensureLocationReady() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -182,16 +213,16 @@ class _GpsScreenState extends State<GpsScreen> {
   }
 
   Future<void> speakCoachPrompt() async {
-    final route = fullRoute ?? context.read<AppState>().selectedDriverRoute;
     final provider = coachNavigation?['provider'] as String?;
+    final instruction = currentInstructionText();
+    final distance = currentInstructionDistance();
     final text = provider == null
-        ? 'Navigation car scolaire active. Suivez le circuit officiel.'
-        : 'Navigation car scolaire active avec moteur $provider. Suivez le circuit officiel valide par l exploitation.';
+        ? 'Navigation car scolaire active. $instruction'
+        : 'Navigation car scolaire active avec moteur $provider. ${distance == null ? instruction : 'Dans $distance metres, $instruction'}';
     try {
       await tts.stop();
       await tts.speak(text);
     } catch (_) {}
-    if (route == null) return;
   }
 
   Future<void> sendPosition(NomadRoute route, Position position) async {
@@ -426,6 +457,12 @@ class _GpsScreenState extends State<GpsScreen> {
               ),
             ),
           const SizedBox(height: 12),
+          _NavigationCommandCard(
+            instruction: currentInstructionText(),
+            distanceMeters: currentInstructionDistance(),
+            onSpeak: speakCoachPrompt,
+          ),
+          const SizedBox(height: 12),
           _RouteProgressCard(
             stops: stops,
             currentStop: currentStop,
@@ -435,6 +472,7 @@ class _GpsScreenState extends State<GpsScreen> {
             sentCount: sentCount,
             queuedCount: queuedCount,
             lastStopMatchName: lastStopMatchName,
+            instruction: currentInstructionText(),
           ),
           const SizedBox(height: 12),
           Card(
@@ -613,6 +651,7 @@ class _RouteProgressCard extends StatelessWidget {
     required this.sentCount,
     required this.queuedCount,
     required this.lastStopMatchName,
+    required this.instruction,
   });
 
   final List<NomadStop> stops;
@@ -623,6 +662,7 @@ class _RouteProgressCard extends StatelessWidget {
   final int sentCount;
   final int queuedCount;
   final String? lastStopMatchName;
+  final String instruction;
 
   @override
   Widget build(BuildContext context) {
@@ -660,13 +700,7 @@ class _RouteProgressCard extends StatelessWidget {
                     : currentStop.clamp(0, stops.length - 1).toInt(),
                 tracking: tracking,
                 primary: Theme.of(context).colorScheme.primary,
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.directions_bus_filled,
-                  size: 46,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                instruction: instruction,
               ),
             ),
           ),
@@ -743,34 +777,137 @@ class _GpsMetric extends StatelessWidget {
   }
 }
 
+class _NavigationCommandCard extends StatelessWidget {
+  const _NavigationCommandCard({
+    required this.instruction,
+    required this.distanceMeters,
+    required this.onSpeak,
+  });
+
+  final String instruction;
+  final int? distanceMeters;
+  final VoidCallback onSpeak;
+
+  IconData get icon {
+    final lower = instruction.toLowerCase();
+    if (lower.contains('droite')) return Icons.turn_right;
+    if (lower.contains('gauche')) return Icons.turn_left;
+    if (lower.contains('rond-point') || lower.contains('rond point')) {
+      return Icons.roundabout_right;
+    }
+    if (lower.contains('demi-tour')) return Icons.u_turn_left;
+    return Icons.straight;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final label = distanceMeters == null
+        ? 'Maintenant'
+        : distanceMeters! < 1000
+            ? 'Dans $distanceMeters m'
+            : 'Dans ${(distanceMeters! / 1000).toStringAsFixed(1)} km';
+    return Card(
+      color: Theme.of(context).colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(children: [
+          Container(
+            width: 62,
+            height: 62,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onPrimary,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon,
+                size: 42, color: Theme.of(context).colorScheme.primary),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontWeight: FontWeight.w900)),
+                const SizedBox(height: 4),
+                Text(instruction,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimary)),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Repeter',
+            onPressed: onSpeak,
+            icon: Icon(Icons.volume_up,
+                color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
 class _RoutePainter extends CustomPainter {
   const _RoutePainter({
     required this.stopCount,
     required this.currentIndex,
     required this.tracking,
     required this.primary,
+    required this.instruction,
   });
 
   final int stopCount;
   final int currentIndex;
   final bool tracking;
   final Color primary;
+  final String instruction;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final background = Paint()..color = const Color(0xFFE7F0EF);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(10)),
+      background,
+    );
+
+    final localRoad = Paint()
+      ..color = Colors.white.withValues(alpha: .78)
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round;
+    for (var index = 0; index < 5; index++) {
+      final y = 26.0 + index * 34;
+      canvas.drawLine(
+          Offset(-20, y), Offset(size.width + 20, y - 64), localRoad);
+      canvas.drawLine(Offset(-18, size.height - y),
+          Offset(size.width + 18, size.height - y + 48), localRoad);
+    }
+
     final road = Paint()
-      ..color = const Color(0xFFE6ECEE)
-      ..strokeWidth = 18
+      ..color = const Color(0xFFFFFFFF)
+      ..strokeWidth = 24
       ..strokeCap = StrokeCap.round;
     final progress = Paint()
       ..color = primary
-      ..strokeWidth = 8
+      ..strokeWidth = 10
       ..strokeCap = StrokeCap.round;
     final path = Path()
       ..moveTo(24, size.height - 28)
-      ..quadraticBezierTo(size.width * .35, 28, size.width * .62, 80)
-      ..quadraticBezierTo(size.width * .82, 118, size.width - 24, 34);
+      ..cubicTo(size.width * .28, size.height * .55, size.width * .34,
+          size.height * .17, size.width * .58, size.height * .35)
+      ..cubicTo(size.width * .75, size.height * .48, size.width * .72,
+          size.height * .16, size.width - 24, 30);
     canvas.drawPath(path, road);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = const Color(0xFFB7C8CC)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
+    );
     if (stopCount > 1) {
       final progressEnd = currentIndex / (stopCount - 1);
       final metric = path.computeMetrics().first;
@@ -798,6 +935,85 @@ class _RoutePainter extends CustomPainter {
         canvas.drawCircle(point, 10, borderPaint);
       }
     }
+    final metric = path.computeMetrics().first;
+    final busOffset = stopCount <= 1
+        ? .38
+        : (currentIndex / math.max(1, stopCount - 1)).clamp(.08, .92);
+    final tangent = metric.getTangentForOffset(metric.length * busOffset);
+    if (tangent != null) {
+      final point = tangent.position;
+      final angle = tangent.angle;
+      _drawCoach(canvas, point, angle, primary);
+    }
+
+    final lower = instruction.toLowerCase();
+    final arrowIcon = lower.contains('droite')
+        ? Icons.turn_right
+        : lower.contains('gauche')
+            ? Icons.turn_left
+            : lower.contains('rond')
+                ? Icons.roundabout_right
+                : Icons.straight;
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: String.fromCharCode(arrowIcon.codePoint),
+        style: TextStyle(
+          fontFamily: arrowIcon.fontFamily,
+          package: arrowIcon.fontPackage,
+          fontSize: 34,
+          color: primary,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final arrowCenter = Offset(size.width - 52, 24);
+    canvas.drawCircle(
+      arrowCenter + const Offset(17, 17),
+      24,
+      Paint()..color = Colors.white.withValues(alpha: .92),
+    );
+    textPainter.paint(canvas, arrowCenter);
+  }
+
+  void _drawCoach(Canvas canvas, Offset center, double angle, Color primary) {
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(angle);
+    final shadow = Paint()..color = Colors.black.withValues(alpha: .22);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+          const Rect.fromLTWH(-35, 15, 70, 12), const Radius.circular(8)),
+      shadow,
+    );
+    final body = RRect.fromRectAndRadius(
+        const Rect.fromLTWH(-42, -18, 84, 36), const Radius.circular(9));
+    canvas.drawRRect(body, Paint()..color = Colors.white);
+    canvas.drawRRect(
+      body,
+      Paint()
+        ..color = primary
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+          const Rect.fromLTWH(-32, -11, 48, 12), const Radius.circular(4)),
+      Paint()..color = const Color(0xFF18343A),
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+          const Rect.fromLTWH(18, -11, 16, 12), const Radius.circular(4)),
+      Paint()..color = const Color(0xFF18343A),
+    );
+    canvas.drawRect(
+      const Rect.fromLTWH(-39, 3, 78, 6),
+      Paint()..color = primary.withValues(alpha: .18),
+    );
+    canvas.drawCircle(
+        const Offset(-24, 19), 6, Paint()..color = const Color(0xFF17262A));
+    canvas.drawCircle(
+        const Offset(25, 19), 6, Paint()..color = const Color(0xFF17262A));
+    canvas.restore();
   }
 
   List<Offset> _samplePath(Path path, int count) {
@@ -814,5 +1030,6 @@ class _RoutePainter extends CustomPainter {
       stopCount != oldDelegate.stopCount ||
       currentIndex != oldDelegate.currentIndex ||
       tracking != oldDelegate.tracking ||
-      primary != oldDelegate.primary;
+      primary != oldDelegate.primary ||
+      instruction != oldDelegate.instruction;
 }

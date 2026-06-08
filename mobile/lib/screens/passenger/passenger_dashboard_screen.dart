@@ -20,6 +20,149 @@ class PassengerDashboardScreen extends StatefulWidget {
       _PassengerDashboardScreenState();
 }
 
+class _PassengerSummaryPanel extends StatelessWidget {
+  const _PassengerSummaryPanel({
+    required this.favoriteCount,
+    required this.alertCount,
+    required this.absenceCount,
+    required this.notificationsEnabled,
+    required this.premiumEnabled,
+    required this.liveCount,
+  });
+
+  final int favoriteCount;
+  final int alertCount;
+  final int absenceCount;
+  final bool notificationsEnabled;
+  final bool premiumEnabled;
+  final int liveCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasAlert = alertCount > 0;
+    final statusColor =
+        hasAlert ? AppTheme.warningOrange : AppTheme.serviceGreen;
+    final statusText = hasAlert
+        ? '$alertCount alerte(s) sur vos favoris'
+        : 'Service normal sur vos favoris';
+    return Card(
+      color:
+          hasAlert ? AppTheme.warningOrangeLight : AppTheme.serviceGreenLight,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Icon(
+                hasAlert
+                    ? Icons.notification_important_outlined
+                    : Icons.check_circle_outline,
+                color: statusColor),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                statusText,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w900),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 12),
+          Row(children: [
+            Expanded(
+              child: _SummaryChip(
+                icon: Icons.star,
+                label: 'Favoris',
+                value: favoriteCount.toString(),
+                color: AppTheme.primaryBlue,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _SummaryChip(
+                icon: Icons.event_busy_outlined,
+                label: 'Absences',
+                value: absenceCount.toString(),
+                color: absenceCount > 0
+                    ? AppTheme.warningOrange
+                    : AppTheme.serviceGreen,
+              ),
+            ),
+          ]),
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(
+              child: _SummaryChip(
+                icon: notificationsEnabled
+                    ? Icons.notifications_active_outlined
+                    : Icons.notifications_off_outlined,
+                label: 'Notifications',
+                value: notificationsEnabled ? 'ON' : 'OFF',
+                color: notificationsEnabled
+                    ? AppTheme.serviceGreen
+                    : AppTheme.warningOrange,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _SummaryChip(
+                icon: premiumEnabled ? Icons.gps_fixed : Icons.lock_outline,
+                label: 'GPS parent',
+                value: premiumEnabled ? liveCount.toString() : 'Premium',
+                color: premiumEnabled
+                    ? AppTheme.serviceGreen
+                    : AppTheme.primaryBlue,
+              ),
+            ),
+          ]),
+        ]),
+      ),
+    );
+  }
+}
+
+class _SummaryChip extends StatelessWidget {
+  const _SummaryChip({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.28)),
+      ),
+      child: Row(children: [
+        Icon(icon, size: 20, color: color),
+        const SizedBox(width: 8),
+        Expanded(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+            Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+          ]),
+        ),
+      ]),
+    );
+  }
+}
+
 class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   final search = TextEditingController();
   List<NomadRoute> routes = [];
@@ -327,6 +470,18 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              _PassengerSummaryPanel(
+                favoriteCount: favorites.length,
+                alertCount: alerts.length,
+                absenceCount: absences
+                    .where((item) =>
+                        (item as Map<String, dynamic>)['absent'] == true)
+                    .length,
+                notificationsEnabled: notificationsEnabled,
+                premiumEnabled: premiumEnabled,
+                liveCount: livePositions.length,
+              ),
+              const SizedBox(height: 12),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Notifications'),

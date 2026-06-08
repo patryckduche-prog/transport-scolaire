@@ -25,7 +25,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   static const currentAppVersion =
-      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.43');
+      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.44');
 
   final driverCode = TextEditingController(text: 'AUMALE-2026');
   final adminEmail = TextEditingController(text: 'entreprise@demo.local');
@@ -373,12 +373,13 @@ class _BusHeader extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.black.withValues(alpha: 0.62),
-                  Colors.black.withValues(alpha: 0.1)
+                  Colors.black.withValues(alpha: theme.night ? 0.72 : 0.62),
+                  Colors.black.withValues(alpha: theme.night ? 0.28 : 0.1)
                 ],
               ),
             ),
           ),
+          if (theme.night) const _HeadlightGlow(),
           const Positioned(
             left: 20,
             top: 20,
@@ -418,6 +419,48 @@ class _BusHeader extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeadlightGlow extends StatelessWidget {
+  const _HeadlightGlow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      right: 34,
+      bottom: 46,
+      child: Row(children: [
+        _GlowDot(size: 34),
+        const SizedBox(width: 10),
+        _GlowDot(size: 26),
+      ]),
+    );
+  }
+}
+
+class _GlowDot extends StatelessWidget {
+  const _GlowDot({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: 0.82),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.62),
+            blurRadius: 28,
+            spreadRadius: 8,
           ),
         ],
       ),

@@ -172,15 +172,34 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
       builder: (context) => SafeArea(
         child: ListView(
           shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 18),
           children: [
-            Text('Motif du SOS', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
+            Text('SOS conducteur',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.w900)),
+            const SizedBox(height: 4),
+            const Text(
+                'Choisir le motif puis le depot est alerte immediatement.'),
+            const SizedBox(height: 12),
             ...reasons.map(
-              (reason) => ListTile(
-                leading: const Icon(Icons.warning_amber_outlined),
-                title: Text(reason),
-                onTap: () => Navigator.of(context).pop(reason),
+              (reason) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(56),
+                    backgroundColor: reason == 'SOS conducteur'
+                        ? AppTheme.emergencyRed
+                        : Theme.of(context).colorScheme.surfaceContainerHighest,
+                    foregroundColor: reason == 'SOS conducteur'
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onSurface,
+                  ),
+                  icon: const Icon(Icons.warning_amber_outlined),
+                  label: Text(reason),
+                  onPressed: () => Navigator.of(context).pop(reason),
+                ),
               ),
             ),
           ],
@@ -288,13 +307,17 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
                   const SizedBox(height: 12),
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(62),
+                      minimumSize: const Size.fromHeight(76),
                       backgroundColor: AppTheme.emergencyRed,
                       foregroundColor: Colors.white,
                     ),
                     onPressed: sendSos,
-                    icon: const Icon(Icons.sos),
-                    label: const Text('SOS / Incident regulation'),
+                    icon: const Icon(Icons.sos, size: 34),
+                    label: const Text(
+                      'SOS conducteur',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _PrivacyPanel(

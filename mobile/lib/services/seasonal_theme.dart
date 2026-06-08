@@ -15,6 +15,7 @@ class SeasonalTheme {
     required this.accent,
     required this.alertIcon,
     required this.label,
+    required this.night,
   });
 
   final AppSeason season;
@@ -24,12 +25,14 @@ class SeasonalTheme {
   final Color accent;
   final IconData alertIcon;
   final String label;
+  final bool night;
 
   static SeasonalTheme fromDate(
     DateTime date, {
     WeatherState weather = WeatherState.normal,
   }) {
     final season = _seasonFor(date);
+    final night = date.hour < 7 || date.hour >= 20;
     final base = switch (season) {
       AppSeason.spring => (
           asset: 'assets/seasons/spring.png',
@@ -56,7 +59,8 @@ class SeasonalTheme {
       primary: _weatherPrimary(weather),
       accent: _weatherAccent(weather),
       alertIcon: _iconFor(weather),
-      label: base.label,
+      label: night ? '${base.label} - nuit' : base.label,
+      night: night,
     );
   }
 

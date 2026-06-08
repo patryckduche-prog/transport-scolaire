@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bus-scolaire-connect-api:latest
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_SSL: ${DATABASE_SSL:-false}
+      JWT_SECRET: ${JWT_SECRET}
+      FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON:-}
+      FCM_SERVICE_ACCOUNT_PATH: ${FCM_SERVICE_ACCOUNT_PATH:-}
+      ROUTING_PROVIDER: ${ROUTING_PROVIDER:-osrm}
+      OSRM_BASE_URL: ${OSRM_BASE_URL:-https://router.project-osrm.org}
+      GRAPHHOPPER_BASE_URL: ${GRAPHHOPPER_BASE_URL:-https://graphhopper.com/api/1}
+      GRAPHHOPPER_API_KEY: ${GRAPHHOPPER_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bus}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bus}
+      POSTGRES_DB: ${POSTGRES_DB:-bus_scolaire_connect}
+    volumes:
+      - bus_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bus} -d ${POSTGRES_DB:-bus_scolaire_connect}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  bus_pgdata:

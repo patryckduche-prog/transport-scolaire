@@ -1,0 +1,8 @@
+.git
+mobile/build
+mobile/.dart_tool
+mobile/android/.gradle
+backend/node_modules
+backend/.env
+backend/config/firebase-service-account.json
+*.log

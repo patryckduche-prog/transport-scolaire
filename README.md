@@ -33,6 +33,24 @@ flutter pub get
 flutter run
 ```
 
+## Hebergement Docker portable
+
+Le projet inclut maintenant une configuration Docker portable a la racine :
+
+- `Dockerfile` : image backend autonome avec migrations PostgreSQL.
+- `docker-compose.prod.yml` : API + PostgreSQL local pour VPS Hetzner, OVH ou Scaleway.
+- `.env.docker.example` : variables a copier vers `.env`.
+- `docs/HEBERGEMENT_DOCKER_PORTABLE.md` : guide de transfert.
+
+Exemple :
+
+```bash
+cp .env.docker.example .env
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Avec une base externe, il suffit de renseigner `DATABASE_URL`, `DATABASE_SSL`, `JWT_SECRET` et Firebase. La meme image peut etre deployee sur Render, Hetzner, OVH, Scaleway ou tout serveur Docker.
+
 ## Acces application
 
 - Parent / eleve : acces direct depuis l'ecran d'accueil, sans nom, sans email et sans code.

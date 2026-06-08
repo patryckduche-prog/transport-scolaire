@@ -11,6 +11,7 @@ import '../services/app_state.dart';
 import '../services/notification_service.dart';
 import '../services/seasonal_theme.dart';
 import '../theme.dart';
+import '../widgets/weather_status_card.dart';
 import 'admin/company_dashboard_screen.dart';
 import 'admin/region_dashboard_screen.dart';
 import 'driver/driver_dashboard_screen.dart';
@@ -25,12 +26,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   static const currentAppVersion =
-      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.44');
+      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.45');
 
   final driverCode = TextEditingController(text: 'AUMALE-2026');
   final adminEmail = TextEditingController(text: 'entreprise@demo.local');
   final adminPassword = TextEditingController(text: 'demo1234');
   List<dynamic> alerts = [];
+  Map<String, dynamic>? weatherInfo;
   SeasonalTheme seasonal = SeasonalTheme.fromDate(DateTime.now());
   bool loading = false;
   bool alertsLoading = true;
@@ -128,7 +130,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> loadAlerts() async {
     try {
-      final data = await context.read<ApiService>().getPublicAlerts();
+      final api = context.read<ApiService>();
+      final data = await api.getPublicAlerts();
+      Map<String, dynamic>? weather;
+      try {
+        weather = await api.getPublicWeather();
+      } catch (_) {}
       final publicAlerts = data.where((item) {
         final alert = item as Map<String, dynamic>;
         return alert['broadcastToAll'] == true ||
@@ -136,7 +143,11 @@ class _LoginScreenState extends State<LoginScreen> {
             alert['severity'] == 'critical';
       }).toList();
       if (!mounted) return;
+      final weatherState = weather == null
+          ? SeasonalTheme.weatherFromAlerts(publicAlerts)
+          : SeasonalTheme.weatherFromApi(weather['weatherState'] as String?);
       setState(() {
+        weatherInfo = weather;
         alerts = publicAlerts.isEmpty
             ? [
                 {
@@ -147,8 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 }
               ]
             : publicAlerts;
-        seasonal = SeasonalTheme.fromDate(DateTime.now(),
-            weather: SeasonalTheme.weatherFromAlerts(publicAlerts));
+        seasonal = SeasonalTheme.fromDate(DateTime.now(), weather: weatherState);
         alertsLoading = false;
       });
     } catch (_) {
@@ -301,6 +311,8 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               _BusHeader(theme: seasonal),
               const SizedBox(height: 16),
+              WeatherStatusCard(weather: weatherInfo),
+              const SizedBox(height: 12),
               _AlertsPanel(
                   alerts: alerts, loading: alertsLoading, theme: seasonal),
               const SizedBox(height: 18),

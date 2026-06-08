@@ -10,6 +10,7 @@ import '../../services/api_service.dart';
 import '../../services/app_state.dart';
 import '../../theme.dart';
 import '../../widgets/root_back_guard.dart';
+import '../../widgets/weather_status_card.dart';
 import '../login_screen.dart';
 
 class PassengerDashboardScreen extends StatefulWidget {
@@ -171,6 +172,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
   List<dynamic> alerts = [];
   List<dynamic> absences = [];
   List<dynamic> livePositions = [];
+  Map<String, dynamic>? weatherInfo;
   bool notificationsEnabled = true;
   bool premiumEnabled = false;
   bool loading = true;
@@ -237,6 +239,10 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
       final alertData = await api.getPassengerAlerts();
       final absenceData = await api.getPassengerAbsences();
       final liveData = await api.getPassengerLivePositions();
+      Map<String, dynamic>? weather;
+      try {
+        weather = await api.getPublicWeather();
+      } catch (_) {}
       final details = <String, NomadRoute>{};
       for (final item in favoriteData) {
         final favorite = item as Map<String, dynamic>;
@@ -257,6 +263,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
         alerts = dedupeAlerts(alertData);
         absences = absenceData;
         livePositions = (liveData['positions'] as List?) ?? [];
+        weatherInfo = weather;
         seenAlertIds.addAll(alertData
             .map((item) =>
                 ((item as Map<String, dynamic>)['id'] ?? '').toString())
@@ -481,6 +488,8 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                 premiumEnabled: premiumEnabled,
                 liveCount: livePositions.length,
               ),
+              const SizedBox(height: 12),
+              WeatherStatusCard(weather: weatherInfo, compact: true),
               const SizedBox(height: 12),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,

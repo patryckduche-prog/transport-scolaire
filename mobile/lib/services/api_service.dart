@@ -159,6 +159,9 @@ class ApiService {
   Future<List<dynamic>> getPublicAlerts() async =>
       ((await _dio.get('/public/alerts')).data['alerts'] as List<dynamic>);
 
+  Future<Map<String, dynamic>> getPublicWeather() async =>
+      (await _dio.get('/public/weather')).data as Map<String, dynamic>;
+
   Future<Map<String, dynamic>> getNomadRoutes(
       {String query = '', bool highlighted = false}) async {
     final response = await _dio.get('/nomad/routes',

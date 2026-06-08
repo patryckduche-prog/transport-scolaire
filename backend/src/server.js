@@ -24,8 +24,8 @@ import { attachRealtime } from './services/realtime.service.js';
 
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public');
 const apkPath = path.join(publicDir, 'download', 'bus-scolaire-connect.apk');
-const apiVersion = '1.0.44';
-const androidApkVersion = '1.0.44';
+const apiVersion = '1.0.45';
+const androidApkVersion = '1.0.45';
 const app = express();
 app.set('trust proxy', true);
 app.use(helmet({
@@ -67,6 +67,7 @@ app.get('/', (_, res) =>
     endpoints: [
       '/health',
       '/api/public/alerts',
+      '/api/public/weather',
       '/api/auth/login',
       '/code-generator/',
       '/api/routes',
@@ -91,7 +92,7 @@ app.get('/api/app-version', (req, res) => {
     apkUrl: `${baseUrl}/download/bus-scolaire-connect.apk`,
     downloadPageUrl: `${baseUrl}/download/`,
     title: 'Nouvelle version disponible',
-    message: 'Une nouvelle version de Bus Scolaire Connect est prete. Telechargez-la pour profiter des dernieres corrections.',
+    message: 'Une nouvelle version de Bus Scolaire Connect est prete avec la meteo locale visible et les dernieres corrections.',
     mandatory: false,
   });
 });

@@ -86,6 +86,16 @@ class SeasonalTheme {
     return WeatherState.normal;
   }
 
+  static WeatherState weatherFromApi(String? state) => switch (state) {
+        'rain' => WeatherState.rain,
+        'snow' => WeatherState.snow,
+        'ice' => WeatherState.ice,
+        'fog' => WeatherState.fog,
+        'accident' => WeatherState.accident,
+        'traffic' => WeatherState.traffic,
+        _ => WeatherState.normal,
+      };
+
   static Color _weatherPrimary(WeatherState weather) => switch (weather) {
         WeatherState.accident => AppTheme.emergencyRed,
         WeatherState.traffic || WeatherState.ice => AppTheme.warningOrange,

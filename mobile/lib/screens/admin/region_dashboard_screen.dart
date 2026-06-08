@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../services/api_service.dart';
 import '../../services/app_state.dart';
+import '../../widgets/incident_history_panel.dart';
 import '../../widgets/metric_card.dart';
 import '../../widgets/root_back_guard.dart';
 import '../login_screen.dart';
@@ -55,6 +56,8 @@ class RegionDashboardScreen extends StatelessWidget {
                     leading: Icon(Icons.insights),
                     title: Text('Arrets peu frequentes'),
                     subtitle: Text('Analyse hebdomadaire et annuelle'))),
+            const SizedBox(height: 12),
+            const IncidentHistoryPanel(),
           ]),
         ),
       );

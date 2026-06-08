@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/nomad_route.dart';
@@ -114,32 +115,98 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
   Future<void> sendSos() async {
     final id = runId;
     if (id == null) return;
+    final api = context.read<ApiService>();
+    final offlineQueue = queue(context);
+    final reason = await _selectSosReason();
+    if (reason == null) return;
+    final position = await _currentPositionOrNull();
     final event = {
       'type': 'incident',
       'runId': id,
       'incidentType': 'sos',
-      'message': 'Demande assistance conducteur',
+      'reason': reason,
+      'message': 'SOS conducteur - $reason',
       'severity': 'critical',
+      if (position != null) 'latitude': position.latitude,
+      if (position != null) 'longitude': position.longitude,
+      if (position != null) 'speed': position.speed,
     };
-    final api = context.read<ApiService>();
-    final offlineQueue = queue(context);
     try {
       await api.sendRunIncident(
         runId: id,
         type: 'sos',
-        message: 'Demande assistance conducteur',
+        reason: reason,
+        message: 'SOS conducteur - $reason',
         severity: 'critical',
+        latitude: position?.latitude,
+        longitude: position?.longitude,
+        speed: position?.speed,
       );
       if (!mounted) return;
-      setState(() => status = 'SOS envoye a la regulation');
+      setState(() => status = 'SOS envoye au depot / exploitation');
     } catch (_) {
       await offlineQueue.enqueue(event);
       final pending = await offlineQueue.pendingCount();
       if (!mounted) return;
       setState(() {
         queued = pending;
-        status = 'SOS garde hors ligne, envoi des retour reseau';
+        status = 'SOS garde hors ligne, envoi au retour reseau';
       });
+    }
+  }
+
+  Future<String?> _selectSosReason() async {
+    const reasons = [
+      'SOS conducteur',
+      'Malaise ou blessure',
+      'Accident',
+      'Panne immobilisante',
+      'Agression ou menace',
+      'Enfant manquant',
+      'Autre incident',
+    ];
+    return showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+          children: [
+            Text('Motif du SOS',
+                style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            ...reasons.map(
+              (reason) => ListTile(
+                leading: const Icon(Icons.warning_amber_outlined),
+                title: Text(reason),
+                onTap: () => Navigator.of(context).pop(reason),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<Position?> _currentPositionOrNull() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return null;
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        return null;
+      }
+      return Geolocator.getCurrentPosition(
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.high),
+      ).timeout(const Duration(seconds: 6));
+    } catch (_) {
+      return null;
     }
   }
 

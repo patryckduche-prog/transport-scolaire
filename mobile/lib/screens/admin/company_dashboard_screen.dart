@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../services/api_service.dart';
 import '../../services/app_state.dart';
+import '../../widgets/incident_history_panel.dart';
 import '../../widgets/metric_card.dart';
 import '../../widgets/root_back_guard.dart';
 import '../login_screen.dart';
@@ -35,7 +36,7 @@ class CompanyDashboardScreen extends StatelessWidget {
             ],
           ),
           body: const SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: EdgeInsets.all(16),
               child: Column(children: [
                 Row(children: [
@@ -56,6 +57,8 @@ class CompanyDashboardScreen extends StatelessWidget {
                         leading: Icon(Icons.assignment_outlined),
                         title: Text('Rapports'),
                         subtitle: Text('Tournees realisees et motifs'))),
+                SizedBox(height: 12),
+                IncidentHistoryPanel(),
               ]),
             ),
           ),

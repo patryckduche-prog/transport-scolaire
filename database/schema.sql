@@ -115,10 +115,50 @@ create table if not exists run_incidents (
   id bigserial primary key,
   run_id uuid references daily_runs(id) on delete cascade,
   driver_id uuid references users(id) on delete set null,
+  vehicle_id uuid references vehicles(id) on delete set null,
+  route_external_id text,
+  route_name text,
+  driver_name text,
+  driver_email text,
+  vehicle_plate text,
   type text not null,
+  reason text not null default 'Demande assistance conducteur',
   message text not null,
   severity text not null default 'warning',
+  latitude numeric(9,6),
+  longitude numeric(9,6),
+  speed numeric(6,2),
+  status text not null default 'received',
+  status_updated_by uuid references users(id) on delete set null,
+  status_updated_at timestamptz,
+  acknowledged_at timestamptz,
+  closed_at timestamptz,
   created_at timestamptz not null default now()
+);
+alter table run_incidents add column if not exists vehicle_id uuid references vehicles(id) on delete set null;
+alter table run_incidents add column if not exists route_external_id text;
+alter table run_incidents add column if not exists route_name text;
+alter table run_incidents add column if not exists driver_name text;
+alter table run_incidents add column if not exists driver_email text;
+alter table run_incidents add column if not exists vehicle_plate text;
+alter table run_incidents add column if not exists reason text not null default 'Demande assistance conducteur';
+alter table run_incidents add column if not exists latitude numeric(9,6);
+alter table run_incidents add column if not exists longitude numeric(9,6);
+alter table run_incidents add column if not exists speed numeric(6,2);
+alter table run_incidents add column if not exists status text not null default 'received';
+alter table run_incidents add column if not exists status_updated_by uuid references users(id) on delete set null;
+alter table run_incidents add column if not exists status_updated_at timestamptz;
+alter table run_incidents add column if not exists acknowledged_at timestamptz;
+alter table run_incidents add column if not exists closed_at timestamptz;
+create index if not exists run_incidents_status_created_idx on run_incidents(status, created_at desc);
+create index if not exists run_incidents_route_created_idx on run_incidents(route_external_id, created_at desc);
+create table if not exists run_incident_status_history (
+  id bigserial primary key,
+  incident_id bigint references run_incidents(id) on delete cascade,
+  status text not null,
+  changed_by uuid references users(id) on delete set null,
+  comment text,
+  changed_at timestamptz not null default now()
 );
 create table if not exists run_finish_checks (
   run_id uuid primary key references daily_runs(id) on delete cascade,

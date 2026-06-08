@@ -67,7 +67,11 @@ class OfflineEventQueue {
           runId: event['runId'] as String,
           type: event['incidentType'] as String,
           message: event['message'] as String,
+          reason: event['reason'] as String?,
           severity: event['severity'] as String? ?? 'warning',
+          latitude: (event['latitude'] as num?)?.toDouble(),
+          longitude: (event['longitude'] as num?)?.toDouble(),
+          speed: (event['speed'] as num?)?.toDouble(),
         );
       case 'finishCheck':
         await api.sendFinishCheck(

@@ -5,6 +5,7 @@ import { pool } from '../db/pool.js';
 import { detectStopEntry } from '../services/geofence.service.js';
 import { broadcastRealtime } from '../services/realtime.service.js';
 import { activeRouteSuspension, suspensionPayload } from '../services/route-alerts.service.js';
+import { sendOperatorIncidentNotification } from '../services/fcm.service.js';
 
 const router = Router();
 
@@ -31,7 +32,11 @@ const absenceSchema = z.object({
 const incidentSchema = z.object({
   type: z.string().min(1),
   message: z.string().min(1),
+  reason: z.string().optional().default('Demande assistance conducteur'),
   severity: z.string().optional().default('warning'),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  speed: z.number().optional(),
 });
 const finishCheckSchema = z.object({
   allStudentsChecked: z.boolean(),
@@ -180,13 +185,86 @@ router.post('/absence', requireAuth(['parent', 'student']), async (req, res) => 
 
 router.post('/:runId/incidents', requireAuth(['driver']), async (req, res) => {
   const input = incidentSchema.parse(req.body);
-  const { rows } = await pool.query(
-    `insert into run_incidents(run_id, driver_id, type, message, severity)
-     values ($1, $2, $3, $4, $5) returning *`,
-    [req.params.runId, req.user.sub, input.type, input.message, input.severity],
+  const { rows: runRows } = await pool.query(
+    `select r.*, u.name as driver_name, u.email as driver_email,
+            v.id as vehicle_id, v.plate_number as vehicle_plate
+     from daily_runs r
+     join users u on u.id=$2
+     left join vehicles v on v.id=r.vehicle_id
+     where r.id=$1 and r.driver_id=$2`,
+    [req.params.runId, req.user.sub],
   );
-  broadcastRealtime({ type: 'run.incident', runId: req.params.runId, incidentType: input.type, severity: input.severity, message: input.message });
-  res.status(201).json(rows[0]);
+  const run = runRows[0];
+  if (!run) return res.status(404).json({ error: 'run_not_found' });
+
+  let latitude = input.latitude ?? null;
+  let longitude = input.longitude ?? null;
+  let speed = input.speed ?? null;
+  if (latitude == null || longitude == null) {
+    const { rows: gpsRows } = await pool.query(
+      `select latitude::float as latitude, longitude::float as longitude, speed::float as speed
+       from gps_positions
+       where driver_id=$1 and route_external_id=$2
+       order by recorded_at desc
+       limit 1`,
+      [req.user.sub, run.route_external_id],
+    );
+    const latest = gpsRows[0];
+    if (latest) {
+      latitude = latest.latitude;
+      longitude = latest.longitude;
+      speed = latest.speed;
+    }
+  }
+
+  const { rows } = await pool.query(
+    `insert into run_incidents(
+       run_id, driver_id, vehicle_id, route_external_id, route_name,
+       driver_name, driver_email, vehicle_plate, type, reason, message,
+       severity, latitude, longitude, speed, status
+     )
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 'received')
+     returning *`,
+    [
+      req.params.runId,
+      req.user.sub,
+      run.vehicle_id,
+      run.route_external_id,
+      run.route_name,
+      run.driver_name,
+      run.driver_email,
+      run.vehicle_plate,
+      input.type,
+      input.reason,
+      input.message,
+      input.severity,
+      latitude,
+      longitude,
+      speed,
+    ],
+  );
+  const incident = rows[0];
+  await pool.query(
+    `insert into run_incident_status_history(incident_id, status, changed_by, comment)
+     values ($1, 'received', $2, $3)`,
+    [incident.id, req.user.sub, 'SOS declenche par le conducteur'],
+  );
+  broadcastRealtime({
+    type: 'run.incident',
+    runId: req.params.runId,
+    routeId: run.route_external_id,
+    routeName: run.route_name,
+    incidentId: incident.id,
+    incidentType: input.type,
+    severity: input.severity,
+    status: incident.status,
+    message: input.message,
+    reason: input.reason,
+    latitude,
+    longitude,
+  });
+  await sendOperatorIncidentNotification(incident);
+  res.status(201).json(incident);
 });
 
 router.post('/:runId/finish-check', requireAuth(['driver']), async (req, res) => {

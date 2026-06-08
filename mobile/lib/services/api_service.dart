@@ -106,10 +106,21 @@ class ApiService {
     required String runId,
     required String type,
     required String message,
+    String? reason,
     String severity = 'warning',
+    double? latitude,
+    double? longitude,
+    double? speed,
   }) async =>
-      (await _dio.post('/runs/$runId/incidents',
-              data: {'type': type, 'message': message, 'severity': severity}))
+      (await _dio.post('/runs/$runId/incidents', data: {
+        'type': type,
+        'message': message,
+        'severity': severity,
+        if (reason != null) 'reason': reason,
+        if (latitude != null) 'latitude': latitude,
+        if (longitude != null) 'longitude': longitude,
+        if (speed != null) 'speed': speed,
+      }))
           .data as Map<String, dynamic>;
 
   Future<Map<String, dynamic>> sendFinishCheck({
@@ -127,6 +138,20 @@ class ApiService {
 
   Future<Map<String, dynamic>> dashboard() async =>
       (await _dio.get('/reports/dashboard')).data as Map<String, dynamic>;
+
+  Future<List<dynamic>> getRunIncidents() async =>
+      (await _dio.get('/reports/incidents')).data as List<dynamic>;
+
+  Future<Map<String, dynamic>> updateRunIncidentStatus({
+    required int incidentId,
+    required String status,
+    String comment = '',
+  }) async =>
+      (await _dio.patch('/reports/incidents/$incidentId/status', data: {
+        'status': status,
+        'comment': comment,
+      }))
+          .data as Map<String, dynamic>;
 
   Future<Map<String, dynamic>> getAppVersion() async =>
       (await _dio.get('/app-version')).data as Map<String, dynamic>;

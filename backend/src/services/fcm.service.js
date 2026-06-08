@@ -167,3 +167,45 @@ export async function sendCriticalSafetyNotification(body, options = {}) {
     },
   });
 }
+
+export async function sendOperatorIncidentNotification(incident) {
+  const { rows } = await pool.query(
+    `select distinct fcm_token
+     from users
+     where role in ('company', 'region')
+       and fcm_token is not null`,
+  );
+  const tokens = rows.map((r) => r.fcm_token);
+  const route = incident.route_name ?? incident.routeName ?? 'Ligne non renseignee';
+  const driver = incident.driver_name ?? incident.driverName ?? 'Conducteur non renseigne';
+  const vehicle = incident.vehicle_plate ?? incident.vehiclePlate ?? 'Vehicule non renseigne';
+  const reason = incident.reason ?? incident.message ?? 'SOS conducteur';
+  const latitude = incident.latitude ?? null;
+  const longitude = incident.longitude ?? null;
+  const position = latitude != null && longitude != null
+    ? `Position : ${latitude}, ${longitude}`
+    : 'Position GPS indisponible';
+  const body = `SOS conducteur\n${route}\n${driver}\n${vehicle}\nMotif : ${reason}\n${position}`;
+  if (!ready || tokens.length === 0) {
+    console.log('[operator sos]', body);
+    return;
+  }
+  await admin.messaging().sendEachForMulticast({
+    tokens,
+    data: {
+      alertId: String(incident.id ?? ''),
+      severity: 'critical',
+      category: 'operator_sos',
+      routeId: String(incident.route_external_id ?? incident.routeExternalId ?? ''),
+      runId: String(incident.run_id ?? incident.runId ?? ''),
+      incidentId: String(incident.id ?? ''),
+      title: 'SOS CONDUCTEUR',
+      body,
+    },
+    android: {
+      priority: 'high',
+      collapseKey: `operator-sos-${incident.id ?? Date.now()}`,
+      ttl: 1000 * 60 * 60,
+    },
+  });
+}

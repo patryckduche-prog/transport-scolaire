@@ -11,6 +11,12 @@ Le `Dockerfile` a la racine embarque :
 - un healthcheck `/health` ;
 - le demarrage automatique `migrate + seed + start`.
 
+Pour une exploitation complete avec SSL, sauvegardes, surveillance et serveur de secours, voir aussi :
+
+```text
+docs/ARCHITECTURE_PRODUCTION.md
+```
+
 Construire l'image :
 
 ```bash

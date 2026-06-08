@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../theme.dart';
+
 enum AppSeason { spring, summer, autumn, winter }
+
 enum WeatherState { normal, rain, snow, ice, fog, accident, traffic }
 
 class SeasonalTheme {
@@ -22,21 +25,36 @@ class SeasonalTheme {
   final IconData alertIcon;
   final String label;
 
-  static SeasonalTheme fromDate(DateTime date, {WeatherState weather = WeatherState.normal}) {
+  static SeasonalTheme fromDate(
+    DateTime date, {
+    WeatherState weather = WeatherState.normal,
+  }) {
     final season = _seasonFor(date);
     final base = switch (season) {
-      AppSeason.spring => (asset: 'assets/seasons/spring.png', primary: const Color(0xff1d7d63), accent: const Color(0xffb7dc6f), label: 'Printemps normand'),
-      AppSeason.summer => (asset: 'assets/seasons/summer.png', primary: const Color(0xff0f6f7d), accent: const Color(0xffffc857), label: 'Été sur les lignes'),
-      AppSeason.autumn => (asset: 'assets/seasons/autumn.png', primary: const Color(0xff7d4f1d), accent: const Color(0xffe8873c), label: 'Automne brumeux'),
-      AppSeason.winter => (asset: 'assets/seasons/winter.png', primary: const Color(0xff315d73), accent: const Color(0xffcfe8f3), label: 'Hiver en circulation'),
+      AppSeason.spring => (
+          asset: 'assets/seasons/spring.png',
+          label: 'Printemps normand'
+        ),
+      AppSeason.summer => (
+          asset: 'assets/seasons/summer.png',
+          label: 'Ete sur les lignes'
+        ),
+      AppSeason.autumn => (
+          asset: 'assets/seasons/autumn.png',
+          label: 'Automne brumeux'
+        ),
+      AppSeason.winter => (
+          asset: 'assets/seasons/winter.png',
+          label: 'Hiver en circulation'
+        ),
     };
 
     return SeasonalTheme(
       season: season,
       weather: weather,
       asset: base.asset,
-      primary: _weatherPrimary(weather, base.primary),
-      accent: base.accent,
+      primary: _weatherPrimary(weather),
+      accent: _weatherAccent(weather),
       alertIcon: _iconFor(weather),
       label: base.label,
     );
@@ -51,7 +69,10 @@ class SeasonalTheme {
   }
 
   static WeatherState weatherFromAlerts(List<dynamic> alerts) {
-    final text = alerts.map((item) => (item as Map<String, dynamic>)['message'].toString().toLowerCase()).join(' ');
+    final text = alerts
+        .map((item) =>
+            (item as Map<String, dynamic>)['message'].toString().toLowerCase())
+        .join(' ');
     if (text.contains('accident')) return WeatherState.accident;
     if (text.contains('bouchon')) return WeatherState.traffic;
     if (text.contains('verglas')) return WeatherState.ice;
@@ -61,14 +82,21 @@ class SeasonalTheme {
     return WeatherState.normal;
   }
 
-  static Color _weatherPrimary(WeatherState weather, Color fallback) => switch (weather) {
-        WeatherState.rain => const Color(0xff315d73),
-        WeatherState.snow => const Color(0xff54798d),
-        WeatherState.ice => const Color(0xff4f7c8f),
-        WeatherState.fog => const Color(0xff687986),
-        WeatherState.accident => const Color(0xff8b2f2f),
-        WeatherState.traffic => const Color(0xff8a5a20),
-        WeatherState.normal => fallback,
+  static Color _weatherPrimary(WeatherState weather) => switch (weather) {
+        WeatherState.accident => AppTheme.emergencyRed,
+        WeatherState.traffic || WeatherState.ice => AppTheme.warningOrange,
+        _ => AppTheme.primaryBlue,
+      };
+
+  static Color _weatherAccent(WeatherState weather) => switch (weather) {
+        WeatherState.normal => AppTheme.serviceGreen,
+        WeatherState.accident => AppTheme.emergencyRed,
+        WeatherState.traffic ||
+        WeatherState.ice ||
+        WeatherState.rain ||
+        WeatherState.snow ||
+        WeatherState.fog =>
+          AppTheme.warningOrange,
       };
 
   static IconData _iconFor(WeatherState weather) => switch (weather) {

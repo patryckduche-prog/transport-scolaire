@@ -14,6 +14,7 @@ import '../../models/nomad_route.dart';
 import '../../services/api_service.dart';
 import '../../services/app_state.dart';
 import '../../services/offline_event_queue.dart';
+import '../../theme.dart';
 
 class GpsScreen extends StatefulWidget {
   const GpsScreen({super.key});
@@ -370,8 +371,8 @@ class _GpsScreenState extends State<GpsScreen> {
     final route = context.read<AppState>().selectedDriverRoute;
     if (route == null) return;
     if ((fullRoute ?? route).suspended) {
-      setState(() => status =
-          'TRANSPORTS INTERDITS - le suivi GPS ne peut pas demarrer.');
+      setState(() =>
+          status = 'TRANSPORTS INTERDITS - le suivi GPS ne peut pas demarrer.');
       return;
     }
     if (!await ensureLocationReady()) return;
@@ -699,7 +700,7 @@ class _GpsScreenState extends State<GpsScreen> {
                 subtitle: Text(nextStop.name),
                 trailing: Icon(
                   tracking ? Icons.gps_fixed : Icons.gps_not_fixed,
-                  color: tracking ? Colors.green : null,
+                  color: tracking ? AppTheme.serviceGreen : null,
                 ),
               ),
             ),
@@ -819,7 +820,7 @@ class _GpsScreenState extends State<GpsScreen> {
                     backgroundColor: active
                         ? Theme.of(context).colorScheme.primary
                         : passed
-                            ? Colors.green.shade700
+                            ? AppTheme.serviceGreen
                             : null,
                     foregroundColor: active || passed ? Colors.white : null,
                     child: Text(stop.sequence.toString()),
@@ -882,7 +883,7 @@ class _RouteProgressCard extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Icon(tracking ? Icons.gps_fixed : Icons.gps_not_fixed,
-                color: tracking ? Colors.green.shade700 : null),
+                color: tracking ? AppTheme.serviceGreen : null),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -1219,7 +1220,7 @@ class _CoachMapState extends State<_CoachMap> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: stop.sequence <= widget.currentStop + 1
-                            ? Colors.green.shade700
+                            ? AppTheme.serviceGreen
                             : Colors.blueGrey.shade600,
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 3),
@@ -1333,7 +1334,7 @@ class _CoachMapState extends State<_CoachMap> {
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
                 color: widget.simulationActive
-                    ? Colors.orange.shade900
+                    ? AppTheme.warningOrange
                     : widget.primary,
               ),
             ),
@@ -1575,7 +1576,7 @@ class _RoutePainter extends CustomPainter {
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
     final activePaint = Paint()..color = primary;
-    final donePaint = Paint()..color = Colors.green.shade700;
+    final donePaint = Paint()..color = AppTheme.serviceGreen;
     for (var index = 0; index < points.length; index++) {
       final point = points[index];
       canvas.drawCircle(point, 11, dotPaint);

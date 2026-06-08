@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const favoriteRouteChannelId = 'favorite_route_alerts_v5';
 const criticalSafetyChannelId = 'critical_transport_safety_v4';
-const alertRed = Color(0xFFB00020);
+const alertRed = Color(0xFFB42318);
 
 int _stableId(String value) {
   final digits = int.tryParse(value);
@@ -40,7 +40,8 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       return;
     }
     final local = FlutterLocalNotificationsPlugin();
-    const android = AndroidInitializationSettings('@drawable/ic_stat_bus_alert');
+    const android =
+        AndroidInitializationSettings('@drawable/ic_stat_bus_alert');
     await local.initialize(const InitializationSettings(android: android));
     await _createAndroidChannels(local);
     final title = message.notification?.title ??
@@ -149,7 +150,8 @@ class NotificationService {
   final _local = FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    const android = AndroidInitializationSettings('@drawable/ic_stat_bus_alert');
+    const android =
+        AndroidInitializationSettings('@drawable/ic_stat_bus_alert');
     await _local.initialize(const InitializationSettings(android: android));
     await _createAndroidChannels(_local);
     try {
@@ -161,8 +163,7 @@ class NotificationService {
           .setForegroundNotificationPresentationOptions(
               alert: true, badge: true, sound: true);
       FirebaseMessaging.onMessage.listen((message) {
-        final title =
-            message.notification?.title ?? 'ALERTE BUS SCOLAIRE';
+        final title = message.notification?.title ?? 'ALERTE BUS SCOLAIRE';
         final body = message.notification?.body ??
             message.data['body'] as String? ??
             'Nouvelle alerte sur une ligne favorite.';

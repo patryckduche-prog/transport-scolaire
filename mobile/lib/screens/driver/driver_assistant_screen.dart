@@ -7,6 +7,7 @@ import '../../models/nomad_route.dart';
 import '../../services/api_service.dart';
 import '../../services/app_state.dart';
 import '../../services/offline_event_queue.dart';
+import '../../theme.dart';
 
 class DriverAssistantScreen extends StatefulWidget {
   const DriverAssistantScreen({super.key});
@@ -173,8 +174,7 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
           shrinkWrap: true,
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           children: [
-            Text('Motif du SOS',
-                style: Theme.of(context).textTheme.titleLarge),
+            Text('Motif du SOS', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
             ...reasons.map(
               (reason) => ListTile(
@@ -266,7 +266,7 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
     return Theme(
       data: ThemeData.dark(useMaterial3: true).copyWith(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF0F6F78), brightness: Brightness.dark),
+            seedColor: AppTheme.primaryBlue, brightness: Brightness.dark),
       ),
       child: Scaffold(
         appBar: AppBar(
@@ -289,7 +289,8 @@ class _DriverAssistantScreenState extends State<DriverAssistantScreen> {
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(62),
-                      backgroundColor: Colors.red.shade700,
+                      backgroundColor: AppTheme.emergencyRed,
+                      foregroundColor: Colors.white,
                     ),
                     onPressed: sendSos,
                     icon: const Icon(Icons.sos),
@@ -382,7 +383,8 @@ class _RunHeader extends StatelessWidget {
           if (queued > 0) ...[
             const SizedBox(height: 8),
             Row(children: [
-              const Icon(Icons.cloud_off_outlined, color: Colors.orange),
+              const Icon(Icons.cloud_off_outlined,
+                  color: AppTheme.warningOrange),
               const SizedBox(width: 8),
               Text('$queued action(s) en attente de synchronisation'),
             ]),
@@ -520,7 +522,8 @@ class _StopLoadTile extends StatelessWidget {
         subtitle: Text(
             '${load.remaining} a verifier - ${load.absent} absence(s) declaree(s)'),
         trailing: load.remaining == 0
-            ? const Icon(Icons.check_circle_outline, color: Colors.green)
+            ? const Icon(Icons.check_circle_outline,
+                color: AppTheme.serviceGreen)
             : const Icon(Icons.more_horiz),
       ),
     );

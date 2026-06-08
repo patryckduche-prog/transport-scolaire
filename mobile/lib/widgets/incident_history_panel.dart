@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/api_service.dart';
+import '../theme.dart';
 
 class IncidentHistoryPanel extends StatefulWidget {
   const IncidentHistoryPanel({super.key});
@@ -13,8 +14,7 @@ class IncidentHistoryPanel extends StatefulWidget {
 class _IncidentHistoryPanelState extends State<IncidentHistoryPanel> {
   late Future<List<dynamic>> _future = _load();
 
-  Future<List<dynamic>> _load() =>
-      context.read<ApiService>().getRunIncidents();
+  Future<List<dynamic>> _load() => context.read<ApiService>().getRunIncidents();
 
   Future<void> _refresh() async {
     setState(() => _future = _load());
@@ -39,8 +39,7 @@ class _IncidentHistoryPanelState extends State<IncidentHistoryPanel> {
         padding: const EdgeInsets.all(14),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Icon(Icons.emergency_share_outlined,
-                color: Theme.of(context).colorScheme.error),
+            Icon(Icons.emergency_share_outlined, color: AppTheme.emergencyRed),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -66,8 +65,8 @@ class _IncidentHistoryPanelState extends State<IncidentHistoryPanel> {
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
-              final incidents =
-                  (snapshot.data ?? const <dynamic>[]).cast<Map<String, dynamic>>();
+              final incidents = (snapshot.data ?? const <dynamic>[])
+                  .cast<Map<String, dynamic>>();
               if (incidents.isEmpty) {
                 return const ListTile(
                   leading: Icon(Icons.verified_outlined),
@@ -114,9 +113,9 @@ class _IncidentTile extends StatelessWidget {
       };
 
   Color statusColor(BuildContext context) => switch (status) {
-        'in_progress' => Colors.orange,
-        'closed' => Colors.green,
-        _ => Theme.of(context).colorScheme.error,
+        'in_progress' => AppTheme.warningOrange,
+        'closed' => AppTheme.serviceGreen,
+        _ => AppTheme.emergencyRed,
       };
 
   @override
@@ -126,12 +125,13 @@ class _IncidentTile extends StatelessWidget {
         incident['driverName'] as String? ?? 'Conducteur non renseigne';
     final vehicle =
         incident['vehiclePlate'] as String? ?? 'Vehicule non renseigne';
-    final reason = incident['reason'] as String? ?? incident['message'] as String? ?? 'SOS';
+    final reason = incident['reason'] as String? ??
+        incident['message'] as String? ??
+        'SOS';
     final lat = incident['latitude'];
     final lon = incident['longitude'];
-    final position = lat != null && lon != null
-        ? 'GPS : $lat, $lon'
-        : 'GPS non disponible';
+    final position =
+        lat != null && lon != null ? 'GPS : $lat, $lon' : 'GPS non disponible';
 
     return Container(
       width: double.infinity,
@@ -143,20 +143,18 @@ class _IncidentTile extends StatelessWidget {
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(Icons.warning_amber_rounded,
-              color: Theme.of(context).colorScheme.error),
+          Icon(Icons.warning_amber_rounded, color: AppTheme.emergencyRed),
           const SizedBox(width: 8),
           Expanded(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(route,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w800)),
-                  Text(reason),
-                ]),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(route,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w800)),
+              Text(reason),
+            ]),
           ),
           _StatusPill(label: statusLabel, color: statusColor(context)),
         ]),

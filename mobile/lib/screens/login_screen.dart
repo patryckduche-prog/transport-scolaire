@@ -10,6 +10,7 @@ import '../services/api_service.dart';
 import '../services/app_state.dart';
 import '../services/notification_service.dart';
 import '../services/seasonal_theme.dart';
+import '../theme.dart';
 import 'admin/company_dashboard_screen.dart';
 import 'admin/region_dashboard_screen.dart';
 import 'driver/driver_dashboard_screen.dart';
@@ -24,7 +25,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   static const currentAppVersion =
-      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.42');
+      String.fromEnvironment('APP_VERSION', defaultValue: '1.0.43');
 
   final driverCode = TextEditingController(text: 'AUMALE-2026');
   final adminEmail = TextEditingController(text: 'entreprise@demo.local');
@@ -326,7 +327,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: Text(error!,
-                        style: const TextStyle(color: Colors.red))),
+                        style: const TextStyle(color: AppTheme.emergencyRed))),
               const SizedBox(height: 20),
               OutlinedButton.icon(
                 onPressed: loading ? null : submitDriverCode,
@@ -473,10 +474,10 @@ class _AlertsPanel extends StatelessWidget {
                                   : Icons.check_circle_outline,
                           size: 20,
                           color: critical
-                              ? Colors.red.shade800
+                              ? AppTheme.emergencyRed
                               : warning
-                                  ? Colors.orange.shade800
-                                  : Colors.green.shade700),
+                                  ? AppTheme.warningOrange
+                                  : AppTheme.serviceGreen),
                       const SizedBox(width: 8),
                       Expanded(
                           child: Text(alert['message'] as String? ??

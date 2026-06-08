@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../models/nomad_route.dart';
 import '../../services/api_service.dart';
 import '../../services/app_state.dart';
+import '../../theme.dart';
 import '../../widgets/root_back_guard.dart';
 import '../login_screen.dart';
 
@@ -362,7 +363,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                 Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(error!,
-                        style: const TextStyle(color: Colors.red))),
+                        style: const TextStyle(color: AppTheme.emergencyRed))),
               const SizedBox(height: 16),
               Text('Mes lignes favorites',
                   style: Theme.of(context)
@@ -464,7 +465,7 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                   final alert = item as Map<String, dynamic>;
                   return Card(
                     color: alert['category'] == 'suspension'
-                        ? Colors.red.shade50
+                        ? AppTheme.emergencyRedLight
                         : null,
                     child: ListTile(
                       leading: Icon(
@@ -472,13 +473,14 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                               ? Icons.block
                               : Icons.notification_important_outlined,
                           color: alert['severity'] == 'critical'
-                              ? Colors.red.shade800
-                              : Colors.orange.shade800),
+                              ? AppTheme.emergencyRed
+                              : AppTheme.warningOrange),
                       title: Text(alert['category'] == 'suspension'
                           ? 'Transport scolaire suspendu'
                           : alert['broadcastToAll'] == true
-                          ? 'Alerte securite prioritaire'
-                          : alert['routeName'] as String? ?? 'Ligne favorite'),
+                              ? 'Alerte securite prioritaire'
+                              : alert['routeName'] as String? ??
+                                  'Ligne favorite'),
                       subtitle: Text(alert['message'] as String? ?? ''),
                       trailing: IconButton(
                         tooltip: 'Effacer cette alerte',
@@ -517,7 +519,9 @@ class _PassengerDashboardScreenState extends State<PassengerDashboardScreen> {
                             isFavorite(route.id)
                                 ? Icons.star
                                 : Icons.star_outline,
-                            color: isFavorite(route.id) ? Colors.orange : null),
+                            color: isFavorite(route.id)
+                                ? AppTheme.warningOrange
+                                : null),
                         onPressed: () => toggleFavorite(route),
                       ),
                       children: route.stopsPreview
@@ -576,10 +580,10 @@ class _FavoriteRouteCard extends StatelessWidget {
       }
     }
     return Card(
-      color: suspended ? Colors.red.shade50 : null,
+      color: suspended ? AppTheme.emergencyRedLight : null,
       child: ExpansionTile(
         leading: Icon(suspended ? Icons.block : Icons.star,
-            color: suspended ? Colors.red.shade800 : Colors.orange),
+            color: suspended ? AppTheme.emergencyRed : AppTheme.warningOrange),
         title: Text(routeName),
         subtitle: Text([
           if (shortName.isNotEmpty) shortName,
@@ -598,7 +602,7 @@ class _FavoriteRouteCard extends StatelessWidget {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(suspended ? Icons.block : Icons.access_time,
-                color: suspended ? Colors.red.shade800 : null),
+                color: suspended ? AppTheme.emergencyRed : null),
             title: Text(suspended
                 ? 'TRANSPORT SCOLAIRE SUSPENDU'
                 : 'Prochain passage theorique'),
@@ -660,8 +664,7 @@ class _PremiumLiveCard extends StatelessWidget {
     final signalLabel = fresh
         ? 'Signal GPS recent'
         : 'Dernier signal il y a ${(ageSeconds / 60).round()} min';
-    final signalColor =
-        fresh ? Colors.green.shade700 : Colors.orange.shade800;
+    final signalColor = fresh ? AppTheme.serviceGreen : AppTheme.warningOrange;
     if (latitude == null || longitude == null) {
       return const SizedBox.shrink();
     }
@@ -672,7 +675,7 @@ class _PremiumLiveCard extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Icon(Icons.workspace_premium_outlined,
-                color: Colors.green.shade700),
+                color: AppTheme.serviceGreen),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -778,7 +781,7 @@ class _PassengerPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = premiumEnabled ? Colors.green.shade700 : Colors.teal.shade700;
+    final color = premiumEnabled ? AppTheme.serviceGreen : AppTheme.primaryBlue;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),

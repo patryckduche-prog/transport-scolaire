@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models/nomad_route.dart';
 import '../../services/app_state.dart';
 import '../../services/api_service.dart';
+import '../../theme.dart';
 import 'gps_screen.dart';
 
 class NomadRoutesScreen extends StatefulWidget {
@@ -157,17 +158,17 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
                       final suspended = route.suspended;
                       return Card(
                         color: suspended
-                            ? Colors.red.shade50
+                            ? AppTheme.emergencyRedLight
                             : preferred
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : null,
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : null,
                         child: ExpansionTile(
                           leading: CircleAvatar(
                             backgroundColor: suspended
-                                ? Colors.red.shade800
+                                ? AppTheme.emergencyRed
                                 : preferred
-                                ? Theme.of(context).colorScheme.primary
-                                : null,
+                                    ? Theme.of(context).colorScheme.primary
+                                    : null,
                             foregroundColor: suspended || preferred
                                 ? Theme.of(context).colorScheme.onPrimary
                                 : null,
@@ -195,7 +196,7 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
                                 margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.shade800,
+                                  color: AppTheme.emergencyRed,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -231,8 +232,8 @@ class _NomadRoutesScreenState extends State<NomadRoutesScreen> {
                                   OutlinedButton.icon(
                                     onPressed: suspended
                                         ? null
-                                        : () => chooseRoute(route,
-                                            openGps: true),
+                                        : () =>
+                                            chooseRoute(route, openGps: true),
                                     icon: const Icon(Icons.navigation_outlined),
                                     label: const Text(
                                         'Choisir et lancer le GPS vocal'),

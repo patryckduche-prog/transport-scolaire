@@ -24,6 +24,40 @@ function numberQuery(value, fallback) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function fallbackWeatherPayload(latitude, longitude) {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const hour = now.getHours();
+  const isDay = hour >= 7 && hour < 21;
+  const summer = month >= 6 && month <= 8;
+  const spring = month >= 3 && month <= 5;
+  const autumn = month >= 9 && month <= 11;
+  const temperatureC = summer
+    ? (hour < 10 ? 14 : 22)
+    : spring
+      ? (hour < 10 ? 10 : 17)
+      : autumn
+        ? (hour < 10 ? 8 : 15)
+        : (hour < 10 ? 2 : 6);
+  return {
+    source: 'fallback-estimate',
+    location: {
+      name: 'Aumale / Normandie',
+      latitude,
+      longitude,
+    },
+    temperatureC,
+    humidity: null,
+    windKmh: null,
+    weatherCode: null,
+    weatherLabel: 'Meteo locale en attente',
+    weatherIcon: isDay ? 'sun' : 'night',
+    weatherState: 'normal',
+    isDay,
+    updatedAt: now.toISOString(),
+  };
+}
+
 router.get('/alerts', async (_, res) => {
   const { rows } = await pool.query(`
     select d.id, d.status, d.reason, d.created_at, d.severity, d.broadcast_to_all, d.alert_category,
@@ -116,10 +150,7 @@ router.get('/weather', async (req, res) => {
     weatherCache.set(cacheKey, { cachedAt: Date.now(), payload });
     return res.json(payload);
   } catch (_) {
-    return res.status(503).json({
-      error: 'weather_unavailable',
-      message: 'Meteo locale indisponible pour le moment.',
-    });
+    return res.json(fallbackWeatherPayload(latitude, longitude));
   }
 });
 
